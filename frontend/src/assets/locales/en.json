@@ -1,0 +1,927 @@
+{
+  "sidebar": {
+    "overview": "Overview",
+    "device": {
+      "title": "Device type",
+      "device": "Device list"
+    },
+    "configMetering": "Device Configuration",
+    "user": "User Management",
+    "organization": "Organization Management",
+    "area": "Area",
+    "role": "Role Management"
+  },
+  "tree": {
+    "no_selection_org": "Not belong to any organization",
+    "warning_no_multiple_superord_org": "Please select one parent organization to view statistics"
+  },
+  "nav": {
+    "hello": "Hello",
+    "friend": "Friend",
+    "setup": "Setup",
+    "support": "Support",
+    "manual": "User Guide",
+    "choose_lang": "Choose Language",
+    "overview": "Dashboard & Reports",
+    "monitoring": "Map View",
+    "management": "Devices",
+    "asset": "Assets",
+    "area": "Areas",
+    "alert": "Alerts",
+    "reporting": "Report",
+    "device": "Devices",
+    "org": "Organization Management",
+    "user": "User Management",
+    "config": "Device Configuration",
+    "project_manager": "Project Management",
+    "default_project_name": "Your Project",
+    "camera": "AI Camera",
+    "collapse": "Collapse"
+  },
+  "noti": {
+    "retry": "Retry"
+  },
+  "overview": {
+    "title": "Overview",
+    "reload": "Reload Data",
+    "header_chart": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "7_days_ago": "7 days ago",
+      "30_days_ago": "30 days ago"
+    },
+    "item_view": {
+      "static": "Statistics"
+    },
+    "line_chart": {
+      "hour": "Hour",
+      "no_data": "No data found",
+      "time": "Time: "
+    }
+  },
+  "monitoring": {
+    "all": "All",
+    "name": "Device name",
+    "key": "Device key",
+    "title": "Monitoring",
+    "info": "General information",
+    "status_select": "Select status",
+    "alert_select": "Select alert",
+    "status": "Status",
+    "alert": "Alert",
+    "monitoring_status": "Monitoring status",
+    "monitoring_alert": "Monitoring alert",
+    "select_all": "Select all",
+    "search": "Search",
+    "device_list": "Device list",
+    "warning_list": "Alert device list",
+    "warning": {
+      "all": "All alert",
+      "title": "Alert status",
+      "noWarning": "No alerts"
+    },
+    "config_success": "Configured successfully",
+    "config_error": "Configured unsuccessfully"
+  },
+  "report_lighting": {
+    "create_report": "Create report",
+    "history_rp_table": {
+      "no": "No",
+      "name": "Executing account",
+      "phone": "Number",
+      "role": "Role",
+      "act": "Action",
+      "time": "Time",
+      "deviceinfo": "Device info",
+      "device_key": "Device key",
+      "device_name": "Device name",
+      "area": "Area"
+    }
+  },
+
+  "overview_metering": {
+    "item_view": {
+      "customer": "Customer",
+      "total_devices": "Number of devices",
+      "online": "Online devices",
+      "low_battery": "Low battery"
+    },
+    "line_chart": {
+      "total_volume_water_use": "Water level",
+      "total_volume_water_use_in": "Water level in: ",
+      "total_volume_water_table_in": "Water table: ",
+      "total_volume_water_sewer_in": "Water level Sewer: ",
+      "total_volume_water_road_in": "Water level Road: ",
+      "camera_congestion": "Congestion: ",
+      "conductivity": "Conductivity",
+      "tds": "Total dissolved solids",
+      "salinity": "Salinity",
+      "m": " m"
+    }
+  },
+  "management_metering": {
+    "overview": "Overview",
+    "history": "History",
+    "raw": "Raw message",
+    "warning": "Alert",
+    "no_device_data": "No device information",
+    "no_device_data_search": "Device not found",
+    "item_view": {
+      "total_meter_water": "Current water level",
+      "lat_long": "Lat & Long",
+      "operator_phone": "Operator Phone number",
+      "operator_email": "Operator email",
+      "operator_name": "Operator name",
+      "community_name": "Community name",
+      "last_updated": "Last updated time",
+      "temp": "Temperature",
+      "batery_percent": "Battery",
+      "status": "Status",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "line_chart": {
+      "total_volume_water_use": "Daily water level"
+    },
+    "other_indicators": {
+      "other_indicators": "Other indicators",
+      "water_flow": "Water pressure (bar)",
+      "positive": "Danger level (m) ",
+      "negative": "Low level (m) ",
+      "water_last_month": "Last month average water level (m)",
+      "water_month": "This month average water level (m)",
+      "location": "Mounting position",
+      "time_update": "Last updated time",
+      "coordinate": "Coordinate"
+    },
+    "device_information": {
+      "device_customer_information": "Device and customer information",
+      "device_code": "Device code",
+      "device_name": "Device name",
+      "device_type": "Device type",
+      "organization": "Organization affiliation",
+      "customer_name": "Customer name",
+      "phone": "Number",
+      "location": "Customer address"
+    },
+    "configuration_info": {
+      "configuration_info": "Other indicators",
+      "sending_cycle": "Maximum allowed sending cycle (s)",
+      "pressure": "Water pressure (bar)",
+      "tds": "Total dissolved solids (mg/l)",
+      "conductivity": "Conductivity (µS/cm)",
+      "salinity": "Salinity (ppt)",
+      "status_metering": "Off/ On Device",
+      "elevation": "Elevation (m)",
+      "network_signal": "Network signal (dB)",
+      "Reporting_cycle": "Reporting cycle (s)"
+    },
+    "histoty_table": {
+      "title": "Position history",
+      "stt": "No",
+      "time": "Time",
+      "total": "Water level (m)",
+      "positive": "Danger level (m)",
+      "negative": "Low level (m)",
+      "temp": "Temperature (°C)",
+      "battery": "Battery (V)",
+      "position": "Position",
+      "tds": "TDS(mg/l)",
+      "salinity": "Salinity (ppt)",
+      "conductivity": "Conductivity (µS/cm)",
+      "elevation": "Elevation (m)",
+      "network": "Network signal (dB)"
+    },
+    "histotyraw_table": {
+      "stt": "No",
+      "time": "Time",
+      "raw": "Raw message"
+    },
+    "alert_table": {
+      "time": "Time",
+      "parameter": "Parameter",
+      "severity": "Severity",
+      "status": "Status",
+      "alert": {
+        "all": "View all",
+        "flood": "Flooding",
+        "other": "Temp. & Pressure",
+        "hardware": "Hardware",
+        "quality": "Quality"
+      }
+    }
+  },
+  "project_manager": {
+    "title": "Project Management",
+    "project": "Projects List",
+    "no_data": "You haven't had any projects yet, please create a new project",
+    "count_project": "You are managing {{NO_OF_PROJECT}} projects",
+    "backup": "Export Project",
+    "restore": "Import Project",
+    "add_project": {
+      "title": "Add New Project",
+      "avatar": "Choose Avatar",
+      "upload_ava": "Upload Image",
+      "upload_ava_default": "Choose Default Image",
+      "upload_instruction": "Please select an image in jpg or png format with a maximum size of 5MB",
+      "restore_project": "Import Project",
+      "name": "Project Name",
+      "edit": "Edit Project",
+      "description": "Description",
+      "delete_project": "Delete Project",
+      "confirm_delete": "Are you sure you want to delete project {{PROJECT}}",
+      "choose_file": "Please choose the file to upload",
+      "success_add": "Successfully added new project",
+      "success_update": "Successfully updated project",
+      "success_delete": "Successfully deleted project",
+      "success_restore": "Successfully restored device template",
+      "choose_project": "Please choose a project"
+    }
+  },
+
+  "btn": {
+    "create": "Create New",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "add": "Add",
+    "update": "Update",
+    "save": "Save",
+    "cancel": "Cancel",
+    "setup": "Setup"
+  },
+  "error": {
+    "no_data": "No data found",
+    "not_found": "Not found",
+    "no_user": "User does not exist",
+    "error_page": {
+      "title": "Error! Please press F5 to refresh the page."
+    },
+    "page_not_found": "404 - Page not found. Redirecting to the homepage in 5s...",
+    "server_res": {
+      "title": "Error. Please try again.",
+      "malformed_data": "Error 400: Invalid data submitted.",
+      "authorization": "Error 403: You do not have permission to access this page.",
+      "server": "Error 500: Server is currently down, please try again later.",
+      "notfound": "Error 404: Website is currently down for maintenance, patching is underway. We apologize for any inconvenience.",
+      "entity_already_exists": "The device code already exists. Please check again.",
+      "same_identifier": "The email address and phone number already exist. Please check again."
+    },
+    "no_data_res": "Incorrect data returned.",
+    "default_zod_err": {
+      "select": "Please select",
+      "select_union": "Please select one of the following options:",
+      "number": "Please enter a number"
+    },
+    "refresh": "Refresh Page",
+    "wrong_input": "Wrong input:"
+  },
+  "success": {
+    "create_config": "Successfully created new configuration",
+    "update_config": "Successfully updated configuration",
+    "delete_config": "Successfully deleted configuration"
+  },
+  "loading": {
+    "loading": "Please wait..."
+  },
+  "placeholder": {
+    "select": "Please select",
+    "select_value": "Select {{VALUE}}",
+    "search": "Type to search",
+    "input_text": "Enter text",
+    "input_text_value": "Enter {{VALUE}}",
+    "select_org": "Select organization"
+  },
+  "user": {
+    "login": "Log In",
+    "logout": "Log Out",
+    "register": "Register",
+    "password": "Password",
+    "forgot_password": "Forgot Password",
+    "reset_password": "Reset Password",
+    "change_password": "Change Password",
+    "change_info": "Change Info",
+    "change_avatar": "Change Avatar",
+    "change_email": "Change Email",
+    "change_phone": "Change Phone Number",
+    "change_address": "Change Address",
+    "create_user": "Successfully registered account",
+    "copy_device_token": "Copy Device Token",
+    "cmp": "CMP System",
+    "user_info": "User Info"
+  },
+  "validate": {
+    "name_max_length": "Please choose a name with a maximum length of 30 characters",
+    "image_max_size": "Image size must not exceed 5MB",
+    "image_type": "Only jpg, jpeg, or png format images are allowed",
+    "json_type": "Only .json or .txt format files are allowed",
+    "choose_avatar": "Please choose an avatar"
+  },
+  "auth": {
+    "footer_text_1": "© {{YEAR}}",
+    "footer_text_2": "Copyright by Dubai Municipality",
+    "checkbox": "Remember me",
+    "from_login_to_register": "Register",
+    "forgot_password": "Forgot your password?",
+    "no_account": "Don't have an account?",
+    "change_password": "Change Password",
+    "have_an_account": "Already have an account?",
+    "sent_otp": "Send OTP",
+    "require_otp": "Enter OTP to activate email",
+    "require_email": "Enter email",
+    "require_password": "Enter password",
+    "require_password_old": "Enter old password",
+    "require_password_new": "Enter new password",
+    "success_password": "Successfully updated password",
+    "confirm_password": "Confirm password",
+    "pass_invalid": "Invalid confirm password",
+    "back_to_home": "Back to Home",
+    "type_login": "Choose role",
+    "user": "User",
+    "admin": "Admin"
+  },
+  "schema": {
+    "name_long": "Name is too long",
+    "name_short": "Name is too short",
+    "name_regex": "Service name only includes letters, numbers, or underscores, no spaces or special characters",
+    "version_scheam": "Please enter the version number in the form x.x.x | Example 1.0.0",
+    "otp": "Please enter the correct OTP",
+    "wrong_email": "Invalid email format",
+    "email_long": "Email is too long",
+    "email_short": "Email is too short",
+    "password_long": "Password is too long",
+    "password_short": "Password is too short",
+    "attributename_long": "Attribute name is too long",
+    "attributename_short": "Attribute name is too short",
+    "value_type": "Please select value type",
+    "leave_item": "Please do not leave this item blank",
+    "select_item": "Please select this item",
+    "select_devices": "Please select device code",
+    "phone_correct": "Incorrect phone number format",
+    "all": "All",
+    "select_resource": "Please select at least 1 resource",
+    "select_action": "Please select at least 1 action",
+    "read": "Read",
+    "create": "Create",
+    "modify": "Modify",
+    "delete": "Delete",
+    "users": "Users",
+    "groups": "Groups",
+    "templates": "Device Templates",
+    "events": "Events",
+    "organizations": "Organizations",
+    "roles": "Roles",
+    "projects": "Projects",
+    "devices": "Devices",
+    "developing": "Developing",
+    "bill": "Bill Number",
+    "customer_name": "Customer Name",
+    "customer_code": "Customer Code",
+    "customer_phone": "Customer Phone",
+    "registration_code": "Registration Code",
+    "empty_name": "Username not entered",
+    "empty_phone": "Phone number not entered",
+    "empty_email": "Email not entered"
+  },
+  "map": {
+    "setting": {
+      "label": "Label",
+      "map": "Map",
+      "satellite": "Satellite"
+    },
+    "label": {
+      "serial": "Serial Number",
+      "manage": "Management Account",
+      "type": "Device Type",
+      "lamp": "Device",
+      "tech": "Technology",
+      "status": "Status",
+      "mode": "Operating Mode",
+      "warning": "Alert",
+      "position": "Position",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "control": "Controller",
+      "version": "Controller Version",
+      "last_update": "Last Update",
+      "online": "On",
+      "offline": "Off",
+      "turn_off": "Device off",
+      "turn_on": "Device on",
+      "description": "Description",
+      "coordinates": "Coordinates",
+      "driver": "Driver",
+      "scheduled": "Scheduled",
+      "manual": "Manual"
+    },
+    "metering": {
+      "all_status": "All statuses",
+      "all_alert": "All alert devices",
+      "on": "Online device",
+      "off": "Disconnected device",
+      "error": "Faulty device",
+      "noWarning": "No alert",
+      "lowBattery": "Low battery alert",
+      "leakage": "Water leakage alert",
+      "damageMeter": "Faulty device, pipeline damage alert",
+      "reverseFlow": "Backflow alert",
+      "emptyPipe": "Empty pipe alert"
+    }
+  },
+
+  "management": {
+    "search": {
+      "user_placeholder": "Enter username, phone number",
+      "user_title": "User"
+    },
+    "table": {
+      "no_data": "No data found",
+      "device": {
+        "no": "No",
+        "action": "Action",
+        "name": "Device name",
+        "code": "Device code",
+        "location": "Location",
+        "type": "Device type",
+        "type_input": "Lamp",
+        "tech": "Technology",
+        "control": "Control",
+        "version": "Version control",
+        "coordinate": "Coordinate",
+        "placeholder": "Search",
+        "title": "Device"
+      },
+      "user": {
+        "no": "No",
+        "name": "User name",
+        "user_name": "User name",
+        "org_name": "Organization name",
+        "phone_number": "Phone number",
+        "email": "Email",
+        "role": "Role"
+      }
+    },
+    "config": {
+      "add": "Add a new device",
+      "createDialog": {
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "deleteDialog": {
+        "message": "Are you sure you want to delete this configuration?",
+        "confirm": "Are you sure you want to delete this configuration? This action cannot be undone! Proceed with deletion?"
+      }
+    },
+    "device": {
+      "add_device": {
+        "add": "Add Device",
+        "device_name": "Device name",
+        "device_id": "Device id",
+        "gateway_id": "Controller",
+        "controller_version": "Controller version",
+        "controller_driver": "Controller driver",
+        "position": "Position",
+        "coordinates": "Coordinates",
+        "location": "Location",
+        "area" : "Area",
+        "street" : "Street",
+        "type": "Type",
+        "device_type": "Device type",
+        "notes": "Note",
+        "add_success": "Created device successfully",
+        "deveui": "DevEUI",
+        "otta_key": "OTTA Key",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "placeholder": "Enter content",
+        "placeholder_coordinate": "Select location coordinates",
+        "or_address": "Or enter mounting location"
+      },
+      "delete_device": {
+        "delete": "Delete Device",
+        "delete_confirm": "Are you sure you want to delete the device? This action cannot be undone! Proceed with deletion?",
+        "delete_success": "Deleted device successfully"
+      },
+      "view_device": "View Device",
+      "update_device": {
+        "update": "Update Device",
+        "update_success": "Updated device successfully"
+      }
+    },
+    "area": {
+      "title": "Area",
+      "view_area": {
+        "title": "View Area"
+      },
+      "create_area": {
+        "title": "Add Area",
+        "success": "Added area successfully"
+      },
+      "update_area": {
+        "title": "Update Area",
+        "success": "Updated area successfully"
+      },
+      "delete_area": {
+        "title": "Delete Area",
+        "confirm": "The selected area will be deleted from the system. This action cannot be undone. Continue with deletion?",
+        "success": "Deleted area successfully"
+      },
+      "no": "No",
+      "name": "Area name",
+      "parent_name": "Subordinate to the area",
+      "representative": "Representative",
+      "phone": "Representative number",
+      "address": "Address",
+      "email": "Representative email",
+      "description": "Description",
+      "search_placeholder": "Input area name"
+    },
+    "user": {
+      "add_user": {
+        "add": "Add User",
+        "name": "User name",
+        "role": "Role",
+        "org_name": "Organization name",
+        "user_name": "Name",
+        "phone_number": "Number",
+        "email": "Email",
+        "emptyRole": "Please select at least 1 role",
+        "emptyName": "Username not entered",
+        "emptyUserName": "Full name not entered"
+      },
+      "delete_user": {
+        "delete": "Delete User",
+        "delete_confirm": "Are you sure you want to delete the user? This action cannot be undone! Continue with deletion?",
+        "delete_success": "Deleted user successfully"
+      },
+      "view_user": "View User",
+      "update_user": {
+        "update": "Update User",
+        "update_success": "Updated user successfully"
+      }
+    }
+  },
+  "metering": {
+    "overview": {
+      "title": "Overview"
+    },
+    "management": {
+      "title": "Management",
+      "customer": {
+        "table": {
+          "no": "No",
+          "name": "Full name",
+          "phone": "Phone number",
+          "email": "Email",
+          "org_name": "Organization name",
+          "role_name": "Role",
+          "address": "Address",
+          "time": "Created time"
+        },
+        "view_customer": {
+          "title": "View User"
+        },
+        "edit_customer": {
+          "title": "Update User",
+          "success": "Updated user successfully"
+        },
+        "add_customer": {
+          "button": "Add",
+          "title": "Add User",
+          "success": "Added user successfully"
+        },
+        "delete_customer": {
+          "title": "Delete User",
+          "confirm_message": "Are you sure you want to delete this user?",
+          "success": "Deleted user successfully"
+        },
+        "dialog": {
+          "customer_name": "Full name",
+          "customer_phone_number": "Phone number",
+          "customer_email": "Email",
+          "org_name": "Organization name",
+          "role": "Role",
+          "customer_address": "Address",
+          "customer_note": "Note"
+        }
+      },
+      "device": {
+        "view_detail": "View Detail",
+        "table": {
+          "no": "No",
+          "type": "Device type",
+          "key": "Device ID",
+          "name": "Device name",
+          "group": "Device group",
+          "status": "Status",
+          "org_name": "Organization name",
+          "battery": "Battery volt",
+          "connect": "Connectivity",
+          "alert": "Alert"
+        },
+        "dialog": {
+          "device_type": "Device type",
+          "position_setup": "Mounting position",
+          "address_customer": "Customer address",
+          "coordinates": "Coordinates",
+          "longitude": "Longitude",
+          "latitude": "Latitude",
+          "emptyName": "Device name is required",
+          "emptyKey": "Device code is required",
+          "emptyType": "Please select at least one device type",
+          "emptyOrg": "Please select at least one organization",
+          "emptyCustomer": "Customer name is required",
+          "emptyPhone": "Phone number is required"
+        }
+      },
+      "config": {
+        "info": "Config info",
+        "type": "Device type",
+        "device": "Device",
+        "stats": "Statistics",
+        "save": "Save",
+        "type_placeholder": "Select device type",
+        "device_placeholder": "Select device",
+        "empty_device": "Please select at least one device",
+        "empty_type": "Please select at least one device type",
+        "basic": {
+          "title": "Basic Configuration",
+          "cycle": "Sending message cycle (s)",
+          "burst_level": "Total dissolved solids (mg/l)",
+          "leakage_level": "Conductivity (µS/cm)",
+          "freeze_level": "Salinity (ppt)",
+          "status": "Off/On device",
+          "cycle_placeholder": "1h",
+          "placeholder": "Enter information"
+        }
+      },
+      "organization": {
+        "table": {
+          "no": "No",
+          "org_name": "Organization name",
+          "org_representative": "Representative",
+          "org_phone": "Phone number",
+          "parent_name": "Parent organization",
+          "org_address": "Organization address",
+          "description": "Description",
+          "choose_org": "Select organization"
+        },
+        "dialog": {
+          "create_org": {
+            "title": "Add Organization",
+            "org_name": "Organization name",
+            "org_representative": "Representative",
+            "org_phone": "Phone number",
+            "parent_name": "Parent organization",
+            "org_address": "Organization address",
+            "org_email": "Organization email",
+            "description": "Description",
+            "add_success": "Created organization successfully"
+          },
+          "view_org": {
+            "title": "View Organization"
+          },
+          "update_org": {
+            "title": "Edit Organization",
+            "update_success": "Updated organization successfully"
+          },
+          "delete_org": {
+            "title": "Delete Organization",
+            "delete_confirm": "Are you sure you want to delete this organization?",
+            "delete_success": "Deleted organization successfully"
+          }
+        }
+      },
+      "role": {
+        "table": {
+          "no": "No",
+          "name": "Role name",
+          "org": "Belongs to organization"
+        },
+        "dialog": {
+          "header_view": "View Role",
+          "header_edit": "Edit Role",
+          "header_create": "Add Role",
+          "name": "Role name",
+          "org": "Belongs to organization",
+          "close": "Close",
+          "save": "Save",
+          "add_success": "Created role successfully",
+          "update_success": "Updated role successfully",
+          "tree": {
+            "header": "Feature List",
+            "smartMetering": "SmartMetering",
+            "overview": "Overview",
+            "management": "Management",
+            "management_device": "Device",
+            "management_device_view": "View Device",
+            "management_device_add": "Add Device",
+            "management_device_edit": "Edit Device",
+            "management_device_delete": "Delete Device",
+            "management_org": "Organization",
+            "management_org_view": "View Organization",
+            "management_org_add": "Add Organization",
+            "management_org_edit": "Edit Organization",
+            "management_org_delete": "Delete Organization",
+            "management_user": "User",
+            "management_user_view": "View User",
+            "management_user_add": "Add User",
+            "management_user_edit": "Edit User",
+            "management_user_delete": "Delete User",
+            "management_role": "Role",
+            "management_role_view": "View Role",
+            "management_role_add": "Add Role",
+            "management_role_edit": "Edit Role",
+            "management_role_delete": "Delete Role",
+            "management_config": "Configuration",
+            "management_config_basic": "Basic Configuration",
+            "management_config_advance": "Advanced Configuration",
+            "monitoring": "Monitoring",
+            "alert": "Alert",
+            "alert_view": "View Alert",
+            "alert_setting": "Alert Setting",
+            "report": "Statistics - Reports"
+          }
+        },
+        "delete": {
+          "title": "Delete Role",
+          "confirm": "Are you sure you want to delete this role?",
+          "success": "Deleted role successfully"
+        },
+        "search": {
+          "placeholder": "Enter role name",
+          "title": "Role"
+        }
+      }
+    },
+    "monitoring": {
+      "title": "Monitoring"
+    },
+    "report": {
+      "title": "Report",
+      "title_consumtion": "Water Level",
+      "title_status": "Status",
+      "title_battery": "Battery",
+      "title_alert": "Alert",
+      "title_network": "Signal Quality",
+      "title_flow": "Hourly Flow Rate",
+      "org": "Organization",
+      "select_org": "Select Organization",
+      "status": "Status",
+      "select_status": "Select status",
+      "alert": "Alert",
+      "select_alert": "Select alert",
+      "area": "Area",
+      "select_area": "Select Area",
+      "act": "Action",
+      "select_act": "Select Action"
+    },
+    "alert": {
+      "title": "List of alerts",
+      "title_list": "Alert List",
+      "title_setting": "Alert Setting",
+      "sidebar": {
+        "list": "Alert List",
+        "setting": "Alert Setting"
+      },
+      "form": {
+        "from": "From",
+        "to": "To",
+        "area": "Area",
+        "choose_area": "Choose area",
+        "device": "Device",
+        "device_placeholder": "Search",
+        "alert_type": "Alert type",
+        "alert_type_placeholder": "Enter alert type",
+        "required_error": "Please select date",
+        "date_error": "The end date must be after the start date"
+      },
+      "table": {
+        "no": "No",
+        "time": "Time",
+        "area": "Area",
+        "street": "Street",
+        "device_code": "Device code",
+        "device_name": "Device name",
+        "device_group": "Device group",
+        "parameter": "Parameter",
+        "severity": "Severity",
+        "status": "Status"
+      },
+      "setting": {
+        "system_alert": "System Alert",
+        "alert_status": "Alert status",
+        "alert_type": "Alert type",
+        "threshold": "Threshold",
+        "on_off": "Off/On",
+        "battery_warning": "Battery warning (V)",
+        "low_temperature_warning": "Low temperature warning (℃)",
+        "high_temperature_warning": "High temperature warning (℃)",
+        "water_level_warning": "Water level warning (m)",
+        "leakage_warning": "Leakage warning",
+        "message": "Message",
+        "message_status": "Message status",
+        "message_battery_warning": "Battery warning message",
+        "message_low_temperature_warning": "Low temperature warning message",
+        "message_high_temperature_warning": "High temperature warning message",
+        "message_water_level_warning": "Water level warning message",
+        "save": "Save"
+      }
+    }
+  },
+  "search": {
+    "title": "Search",
+    "no_org": "Not belongs to any organization",
+    "org_not_found": "Organization not found"
+  },
+  "table": {
+    "pagination": "Record / page",
+    "total": "TOTAL",
+    "searchCount": "Search results",
+    "selectCount": "Selected",
+    "excel": "Export to Excel",
+    "delete": "Delete",
+    "paginationSelected": "Records {{min}}-{{max}} of {{total}} Records",
+    "loading": "Please wait..."
+  },
+  "dialog": {
+    "cancel": "Cancel",
+    "submit": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "reset": "Reset"
+  },
+  "filter": {
+    "from": "From",
+    "to": "To",
+    "device": "Device",
+    "warning": "Alert type",
+    "date_placeholder": "Choose date",
+    "datetime_placeholder": "Choose date and time",
+    "device_placeholder": "Enter device code",
+    "select_device_placeholder": "Select device",
+    "warning_placeholder": "All",
+    "selected": "Selected",
+    "orgs": "organizations",
+    "device_type_placeholder": "Select device type",
+    "select_all": "Select all",
+    "device_selected": "selected device"
+  },
+  "page_name":{
+    "alert":"List of alerts",
+    "asset":"List of assets",
+    "device":"List of devices",
+    "area":"List of areas"
+  },
+  "tabstrigger":{
+    "view" : "View all",
+    "uptabstrigger":{
+      "flood" :"Flood data",
+      "alert": "Alert",
+      "location":"Location",
+      "device_data":"Device data",
+      "congestion" :"Congestion data"
+    },
+    "alert":{
+      "flood" :"Flooding",
+      "quality": "Quality"
+    },
+    "asset":{
+      "storm_station" : "Stormwater Station",
+      "sewage_station":"Sewage Station",
+      "pump_station":"Pumping Stations",  
+      "storm_ponds": "Stormwater Ponds"
+    },
+    "device":{
+      "flood" : "Flooding",
+      "sewage":"Sewage",
+      "water_table":"Water Table",
+      "camera":"Camera"
+    },
+    "area":{
+      "zone" :"Zone"
+    }
+  },
+  "card":{
+    "alert":{
+      "low_risk":"Open Low Risk",
+      "medium_risk":"Open Medium Risk",
+      "high_risk":"Open High Risk",
+      "cri_risk":"Open Critical Risk",
+      "all_risk": "All Open Risk"
+    },
+    "asset":{
+      "total_asset":"Total assets",
+      "asset_alert":"Asset with alert"
+    },
+    "device":{
+      "open_alert":"Open Alert",
+      "flood_device":"Flood Devices",
+      "sewage_device":"Sewage Devices",
+      "water_table_device":"Water Table Devices",
+      "camera_device":"Camera Devices"
+    }
+  }
+}

@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Research } from "@/types";
 import { toast } from "sonner";
 
@@ -123,16 +122,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // };
 
 export const useGetAllResearches = () => {
-  const { getAccessTokenSilently } = useAuth0(); // Lấy accessToken từ Auth0
-
   const getResearchesRequest = async (): Promise<Research[]> => {
-    const accessToken = await getAccessTokenSilently(); // Lấy accessToken
-
     const response = await fetch(`${API_BASE_URL}/api/research`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
       },
     });
 
@@ -171,16 +165,13 @@ export const useGetResearchById = (id: string) => {
 
 export const useAddResearch = () => {
   const queryClient = useQueryClient();
-  const { getAccessTokenSilently } = useAuth0(); // Lấy accessToken từ Auth0
 
   const addResearchRequest = async (newResearch: Research): Promise<Research> => {
-    const accessToken = await getAccessTokenSilently(); // Lấy accessToken
 
     const response = await fetch(`${API_BASE_URL}/api/research`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
       },
       body: JSON.stringify(newResearch),
     });
@@ -205,24 +196,20 @@ export const useAddResearch = () => {
 
 export const useEditResearch = () => {
   const queryClient = useQueryClient();
-  const { getAccessTokenSilently } = useAuth0();
 
   const editResearchRequest = async ({
     _id,
-    submitter_id,
     updatedResearch,
   }: {
     _id: string,
     submitter_id?: string;
     updatedResearch: Research;
   }): Promise<Research> => {
-    const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/research/${_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(updatedResearch),
     });
@@ -249,16 +236,13 @@ export const useEditResearch = () => {
 
 export const useDeleteResearch = () => {
   const queryClient = useQueryClient();
-  const { getAccessTokenSilently } = useAuth0();
 
   const deleteResearchRequest = async (_id: string): Promise<void> => {
-    const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/research/${_id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
     });
 

@@ -4,9 +4,6 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import myUserRoute from "./routes/MyUserRoute";
 import { v2 as cloudinary } from "cloudinary";
-import myRestaurantRoute from "./routes/MyRestaurantRoute";
-import restaurantRoute from "./routes/RestaurantRoutes";
-import orderRoute from "./routes/OrderRoute";
 import recordRoute from "./routes/RecordRoute";
 import researchRoute from "./routes/ResearchRoute";
 import fileRoute from "./routes/LungFileRoute"
@@ -34,9 +31,6 @@ app.get("/health", async (req: Request, res: Response)=>{
 });
 
 app.use("/api/my/user", myUserRoute);
-app.use("/api/my/restaurant", myRestaurantRoute);
-app.use("/api/restaurant",restaurantRoute);
-app.use("/api/order", orderRoute);
 app.use("/api/record", recordRoute);
 app.use("/api/research", researchRoute);
 app.use("/api/multiomics", fileRoute);

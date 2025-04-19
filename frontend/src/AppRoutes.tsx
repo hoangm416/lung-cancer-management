@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./layouts/layout";
 import HomePage from "./pages/HomePage";
-import AuthCallbackPage from "./pages/AuthCallbackPage";
-import UserProfilePage from "./pages/UserProfilePage";
-import ProtectedRoute from "./auth/ProtectedRoute";
+// import AuthCallbackPage from "./pages/AuthCallbackPage";
+// import UserProfilePage from "./pages/UserProfilePage";
+// import ProtectedRoute from "./auth/ProtectedRoute";
 import Research from "./pages/ResearchPage";
 import ResearchDetail from "./pages/ResearchDetail";
 import Analytics from "./pages/Analytics";
@@ -21,7 +21,7 @@ const AppRoutes = () => {
           </Layout>
         }
       />
-      <Route path="/auth-callback" element={<AuthCallbackPage />} />
+      {/* <Route path="/auth-callback" element={<AuthCallbackPage />} /> */}
 
       <Route
         path="/research"
@@ -74,7 +74,7 @@ const AppRoutes = () => {
         }
       />
       
-      <Route element={<ProtectedRoute />}>
+      {/* <Route element={<ProtectedRoute />}>
         <Route
           path="/user-profile"
           element={
@@ -83,7 +83,7 @@ const AppRoutes = () => {
             </Layout>
           }
         />
-      </Route>
+      </Route> */}
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

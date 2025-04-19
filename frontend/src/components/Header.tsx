@@ -1,5 +1,5 @@
-import MobileNav from "./MobileNav";
-import MainNav from "./MainNav";
+// import MobileNav from "./MobileNav";
+// import MainNav from "./MainNav";
 import { Link, NavLink } from "react-router-dom";
 import {
   LucidePieChart as PieChartIcon,
@@ -11,17 +11,17 @@ import {
 const Header = () => {
   return (
     <div className="border-b-2 border-primary py-4 shadow-md bg-white h-20">
-      <div className="container mx-auto flex justify-between items-center px-4 md:px-8">
+      <div className="container flex justify-start gap-32 items-center px-4 md:px-8">
         {/* Logo */}
         <Link
           to="/"
           className="text-3xl font-bold tracking-tight text-primary"
         >
-          LungTrack
+          LungCare
         </Link>
 
         {/* Navigation Menu */}
-        <nav className="hidden md:flex gap-6">
+        <nav className="hidden md:flex gap-4">
           {[
             { path: "/", label: "Thống kê", Icon: PieChartIcon },
             { path: "/research", label: "Nghiên cứu", Icon: BookIcon },
@@ -38,15 +38,14 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Mobile & Extra Navigation */}
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           <div className="md:hidden">
             <MobileNav />
           </div>
           <div className="hidden md:block">
             <MainNav />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

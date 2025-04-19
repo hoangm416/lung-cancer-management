@@ -1,21 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useAuth0 } from "@auth0/auth0-react"; // Import useAuth0
+// import { useAuth0 } from "@auth0/auth0-react"; // Import useAuth0
 import { Record } from "@/types";
 import { toast } from "sonner"; // Import thư viện toast
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useGetRecord = () => {
-  const { getAccessTokenSilently } = useAuth0(); // Lấy accessToken từ Auth0
+  // const { getAccessTokenSilently } = useAuth0(); // Lấy accessToken từ Auth0
 
   const getRecordsRequest = async (): Promise<Record[]> => {
-    const accessToken = await getAccessTokenSilently(); // Lấy accessToken
+    // const accessToken = await getAccessTokenSilently(); // Lấy accessToken
 
     const response = await fetch(`${API_BASE_URL}/api/record`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+        // Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
       },
     });
 
@@ -37,22 +37,22 @@ export const useGetRecord = () => {
 
 export const useAddRecord = () => {
   const queryClient = useQueryClient();
-  const { getAccessTokenSilently } = useAuth0(); // Lấy accessToken từ Auth0
+  // const { getAccessTokenSilently } = useAuth0(); // Lấy accessToken từ Auth0
 
   const addRecordRequest = async (newRecord: Record): Promise<Record> => {
-    const accessToken = await getAccessTokenSilently(); // Lấy accessToken
+    // const accessToken = await getAccessTokenSilently(); // Lấy accessToken
 
     const response = await fetch(`${API_BASE_URL}/api/record`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+        // Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
       },
       body: JSON.stringify(newRecord),
     });
 
     if (!response.ok) {
-      throw new Error("Thêm Record thất bại");
+      throw new Error("Thêm bản ghi thất bại");
     }
 
     return response.json();
@@ -71,7 +71,7 @@ export const useAddRecord = () => {
 
 export const useEditRecord = () => {
   const queryClient = useQueryClient();
-  const { getAccessTokenSilently } = useAuth0();
+  // const { getAccessTokenSilently } = useAuth0();
 
   const editRecordRequest = async ({
     case_submitter_id,
@@ -80,13 +80,13 @@ export const useEditRecord = () => {
     case_submitter_id?: string;
     updatedRecord: Record;
   }): Promise<Record> => {
-    const accessToken = await getAccessTokenSilently();
+    // const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/record/${case_submitter_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        // Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(updatedRecord),
     });
@@ -94,7 +94,7 @@ export const useEditRecord = () => {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || "Sửa Record thất bại");
+      throw new Error(result.message || "Sửa bản ghi thất bại");
     }
 
     return result.record;
@@ -113,23 +113,23 @@ export const useEditRecord = () => {
 
 export const useDeleteRecord = () => {
   const queryClient = useQueryClient();
-  const { getAccessTokenSilently } = useAuth0();
+  // const { getAccessTokenSilently } = useAuth0();
 
   const deleteRecordRequest = async (case_submitter_id: string): Promise<void> => {
-    const accessToken = await getAccessTokenSilently();
+    // const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/record/${case_submitter_id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        // Authorization: `Bearer ${accessToken}`,
       },
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || "Xóa Record thất bại");
+      throw new Error(result.message || "Xóa bản ghi thất bại");
     }
   };
 

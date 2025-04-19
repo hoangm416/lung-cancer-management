@@ -47,6 +47,24 @@ const AppRoutes = () => {
           </Layout>
         }
       />
+
+      <Route
+        path="/record"
+        element={
+          <Layout>
+            <HealthRecord />
+          </Layout>
+        }
+      />
+      <Route
+        path="/record/:sample_id"
+        element={
+          <Layout>
+            <RecordDetail />
+          </Layout>
+        }
+      />
+
       <Route
         path="/analytics"
         element={
@@ -57,23 +75,6 @@ const AppRoutes = () => {
       />
       
       <Route element={<ProtectedRoute />}>
-        <Route
-          path="/record"
-          element={
-            <Layout>
-              <HealthRecord />
-            </Layout>
-          }
-        />
-        <Route
-          path="/record/:sample_id"
-          element={
-            <Layout>
-              <RecordDetail />
-            </Layout>
-          }
-        />
-
         <Route
           path="/user-profile"
           element={

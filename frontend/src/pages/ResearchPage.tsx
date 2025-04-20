@@ -149,7 +149,7 @@ const ResearchPage = () => {
             onClick={() => navigate(`/research/${cat.id}`)}
             className={`py-2 px-4 rounded-md font-medium ${
               activeTab === cat.id
-                ? "bg-yellow-500 text-white"
+                ? "bg-green-500 text-white"
                 : "bg-gray-100 text-gray-800 hover:bg-gray-200"
             }`}
           >

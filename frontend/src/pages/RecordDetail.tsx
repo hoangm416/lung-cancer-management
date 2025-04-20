@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { LucideDownload, LucideEdit, LucideMoveLeft, LucidePlus, LucideTrash } from 'lucide-react';
-import { useState } from 'react';
-import FileManagement from '@/components/FileManagement';
+import { LucideMoveLeft } from 'lucide-react';
+// import { useState } from 'react';
+// import FileManagement from '@/components/FileManagement';
 
 const RecordDetail = () => {
   const { sample_id } = useParams();
@@ -134,7 +134,7 @@ const RecordDetail = () => {
         </div>
       </div>
 
-      <div className="mt-4 gap-7 p-4">
+      {/* <div className="mt-4 gap-7 p-4">
         <div className="col-span-1 border-2">
           <p className=" bg-[#F2F1F1] px-2 py-2 text-lg font-semibold">
             Thông tin chuyên ngành 
@@ -142,7 +142,7 @@ const RecordDetail = () => {
           <FileManagement case_submitter_id={record.case_submitter_id} />
         </div>
 
-      </div>
+      </div> */}
     </div>
   );
 };

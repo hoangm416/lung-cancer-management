@@ -1,23 +1,23 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
-const ageData = [
-  { ageRange: "0-10", count: 5 },
-  { ageRange: "11-20", count: 15 },
-  { ageRange: "21-30", count: 25 },
-  { ageRange: "31-40", count: 20 },
-  { ageRange: "41-50", count: 10 },
-  { ageRange: "51-60", count: 8 },
-  { ageRange: "61-70", count: 12 },
-  { ageRange: "71-80", count: 6 },
-  { ageRange: "81+", count: 3 },
-];
+// const ageData = [
+//   { ageRange: "0-10", count: 5 },
+//   { ageRange: "11-20", count: 15 },
+//   { ageRange: "21-30", count: 25 },
+//   { ageRange: "31-40", count: 20 },
+//   { ageRange: "41-50", count: 10 },
+//   { ageRange: "51-60", count: 8 },
+//   { ageRange: "61-70", count: 12 },
+//   { ageRange: "71-80", count: 6 },
+//   { ageRange: "81+", count: 3 },
+// ];
 
-const HistogramChart = () => {
+const HistogramChart = ({ data }: { data: { ageRange: string; count: number }[] }) => {
   return (
     <BarChart
       width={600}
       height={300}
-      data={ageData}
+      data={data}
       margin={{
         top: 20,
         right: 30,

@@ -83,19 +83,6 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                 />
                 <FormField
                   control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tiêu đề</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Nhập tiêu đề bài nghiên cứu" required />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="type"
                   render={({ field }) => (
                     <FormItem>
@@ -113,6 +100,64 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                             <SelectItem value="specialize">Khoa học chuyên sâu</SelectItem>
                           </SelectContent>
                         </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tiêu đề</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Nhập tiêu đề bài nghiên cứu" required />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ngày đăng</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Nhập ngày đăng bài nghiên cứu" required />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="author"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nhóm tác giả</FormLabel>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          placeholder="Nhập nhóm tác giả"
+                          required
+                          rows={5}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="link"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đường dẫn</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Nhập đường dẫn đến bài viết gốc" required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -9,13 +9,15 @@ import axios from "axios";
 // import research3 from "../assets/research3.png";
 
 interface ResearchItem {
-  _id: string;
+  research_id: string;
   type: string;
   title: string;
-  description: string;
-  image?: string;
-  detail: string;
   date: string;
+  author: string;
+  link:string;
+  description: string;
+  image: string;
+  detail: string;
 }
 
 const ResearchDetail = () => {
@@ -54,7 +56,7 @@ const ResearchDetail = () => {
         <span className="align-middle">Trở về</span>
       </Button>
 
-      <h1 className="text-4xl font-bold mb-4">{data.title}</h1>
+      <h2 className="text-4xl font-bold mb-4">{data.title}</h2>
       <p className="text-sm text-gray-500 mb-4 text-right">📅 {data.date}</p>
       {/* {data.image && (
         <img
@@ -64,6 +66,19 @@ const ResearchDetail = () => {
         />
       )} */}
       <p className="text-gray-700 whitespace-pre-line text-justify mt-6">{data.detail}</p>
+      <p className="text-gray-700 whitespace-pre-line text-left mt-6">
+        Đường dẫn tới bài viết gốc:{" "}
+        <a
+          href={data.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline text-blue-600 hover:text-blue-800"
+        >
+          {data.link}
+        </a>
+      </p>
+
+      <p className="text-sm text-gray-700 font-bold mt-8 text-right">{data.author}</p>
     </div>
   );
 };

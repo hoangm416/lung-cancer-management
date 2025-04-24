@@ -120,6 +120,38 @@ const ResearchForm = ({
                 />
                 <FormField
                   control={form.control}
+                  name="author"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nhóm tác giả</FormLabel>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          placeholder="Nhập nhóm tác giả"
+                          required
+                          rows={5}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="link"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đường dẫn</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Nhập đường dẫn đến bài viết gốc" required />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>

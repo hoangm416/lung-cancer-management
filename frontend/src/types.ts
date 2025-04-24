@@ -122,7 +122,6 @@ export type MultiOmics = {
   files: FileData[];
 }
 
-
 export type Research = {
   _id: string;
   submitter_id: string;
@@ -131,6 +130,8 @@ export type Research = {
   title: string;
   slug: string;
   date: string;
+  author: string;
+  link: string;
   description: string;
   image: string;
   detail: string;

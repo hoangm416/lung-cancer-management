@@ -1,5 +1,6 @@
 import PieChartComponent from "@/components/PieChartComponent";
 import HistogramChart from "@/components/HistogramChart";
+import BarChartComponent from "@/components/BarChartComponent";
 import { useGetRecord } from "@/api/LungRecordApi";
 
 const HomePage = () => {
@@ -19,10 +20,10 @@ const HomePage = () => {
       }      
       return acc;
     },
-    { male: 0, female: 0, undefined:0 }
+    { male: 0, female: 0, undefined: 0 }
   );
   
-  const gendertData = [
+  const genderData = [
     { name: "Nam", value: genderCounts.male },
     { name: "Nữ", value: genderCounts.female },
     { name: "Không xác định", value: genderCounts.undefined },
@@ -39,13 +40,75 @@ const HomePage = () => {
   }
 
   const ageData = Array.from(ageGroups.entries())
-    .map(([ageRange, count]) => ({ ageRange, count }))
+    .map(([name, count]) => ({ name, count }))
     .sort((a, b) => {
       // Sắp xếp theo độ tuổi tăng dần
-      const aStart = parseInt(a.ageRange.split("-")[0]);
-      const bStart = parseInt(b.ageRange.split("-")[0]);
+      const aStart = parseInt(a.name.split("-")[0]);
+      const bStart = parseInt(b.name.split("-")[0]);
       return aStart - bStart;
     });
+
+  // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
+  const vitalStatusCounts = records.reduce(
+    (acc, record) => {
+      const vitalStatus = record.vital_status?.toLowerCase();
+      if (vitalStatus === "alive" || vitalStatus === "còn sống") {
+        acc.alive++;
+      } else if (vitalStatus === "dead" || vitalStatus === "tử vong") {
+        acc.dead++;
+      } else {
+        acc.undefined++;
+      }      
+      return acc;
+    },
+    { alive: 0, dead: 0, undefined: 0 }
+  );
+  
+  const vitalStatusData = [
+    { name: "Còn sống", value: vitalStatusCounts.alive },
+    { name: "Tử vong", value: vitalStatusCounts.dead },
+    { name: "Không xác định", value: vitalStatusCounts.undefined },
+  ];
+  
+  const ajccStageCounts = records.reduce(
+    (acc, record) => {
+      const ajccStage = record.ajcc_pathologic_stage?.toLowerCase();
+      if (ajccStage === "stage ia") {
+        acc.ia++;
+      } else if (ajccStage === "stage ib") {
+        acc.ib++;
+      } else if (ajccStage === "stage iia") {
+        acc.iia++;
+      }
+      else if (ajccStage === "stage iib") {
+        acc.iib++;
+      }
+      else if (ajccStage === "stage iiia") {
+        acc.iiia++;
+      }
+      else if (ajccStage === "stage iiib") {
+        acc.iiib++;
+      }
+      else if (ajccStage === "stage iv") {
+        acc.iv++;
+      } else {
+        acc.undefined++;
+      }      
+      return acc;
+    },
+    { ia: 0, ib: 0, iia: 0, iib: 0, iiia: 0, iiib: 0, iv: 0, undefined: 0 }
+  );
+  
+  const ajccStageData = [
+    { name: "IA", count: ajccStageCounts.ia },
+    { name: "IB", count: ajccStageCounts.ib }, 
+    { name: "IIA", count: ajccStageCounts.iia },
+    { name: "IIB", count: ajccStageCounts.iib },
+    { name: "IIIA", count: ajccStageCounts.iiia },
+    { name: "IIIB", count: ajccStageCounts.iiib },
+    { name: "IV", count: ajccStageCounts.iv },
+    // { name: "Không xác định", count: ajccStageCounts.undefined },
+  ];
 
   // const genderData = records.reduce((acc, record) => {
   //   const genderGroup = getGenderGroup(record.gender); 
@@ -80,13 +143,26 @@ const HomePage = () => {
         {/* Cột 1: Biểu đồ PieChart */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4">Tỷ lệ giới tính</h2>
-          <PieChartComponent data={gendertData}/>
+          <PieChartComponent data={genderData}/>
         </div>
 
         {/* Cột 2: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4">Phân bố độ tuổi</h2>
           <HistogramChart data={ageData}/>
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 gap-10">
+        {/* Cột 1: Biểu đồ PieChart */}
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4">Tình trạng sống</h2>
+          <PieChartComponent data={vitalStatusData}/>
+        </div>
+
+        {/* Cột 2: Biểu đồ HistogramChart */}
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4">Giai đoạn bệnh theo AJCC</h2>
+          <HistogramChart data={ajccStageData} />
         </div>
       </div>
     </div>

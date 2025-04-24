@@ -12,7 +12,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "rec
 //   { ageRange: "81+", count: 3 },
 // ];
 
-const HistogramChart = ({ data }: { data: { ageRange: string; count: number }[] }) => {
+// const HistogramChart = ({ data }: { data: { ageRange: string; count: number }[] }) => {
+  const HistogramChart = ({ data }: { data: { name: string; count: number }[] }) => {  
   return (
     <BarChart
       width={600}
@@ -26,7 +27,8 @@ const HistogramChart = ({ data }: { data: { ageRange: string; count: number }[] 
       }}
     >
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="ageRange" label={{ value: "Độ tuổi", position: "insideBottom", offset: -5 }} />
+      {/* <XAxis dataKey="ageRange" label={{ value: "Độ tuổi", position: "insideBottom", offset: -5 }} /> */}
+      <XAxis dataKey="name" label={{ position: "insideBottom", offset: -5 }} />
       <YAxis label={{ value: "Số lượng", angle: -90, position: "insideLeft" }} />
       <Tooltip />
       <Legend />

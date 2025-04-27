@@ -6,32 +6,31 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Analytics = () => {
   return (
-    // nếu header đang fixed cao h-16 thì để pt-16, hoặc pt-10 nếu header của bạn cao 40px
     <div className="w-full min-h-0">
-      <Tabs defaultValue="gene-expression" className="flex flex-col w-full">
+      <Tabs defaultValue="gene-expression" className="flex flex-col">
         {/* tabs ngang trên cùng */}
-        <TabsList className="flex space-x-2 bg-white p-2 rounded-t-md shadow justify-end">
+        <TabsList className="flex gap-1 bg-white rounded-t-md shadow max-w-fit">
           <TabsTrigger
             value="gene-expression"
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white rounded"
+            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
           >
             Biểu hiện gen
           </TabsTrigger>
           <TabsTrigger
             value="cnv"
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white rounded"
+            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
           >
             Số lượng bản sao (CNV)
           </TabsTrigger>
           <TabsTrigger
             value="dna-methyl"
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white rounded"
+            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
           >
             Methyl hóa DNA
           </TabsTrigger>
           <TabsTrigger
             value="miRNA"
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white rounded"
+            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
           >
             RNA nhỏ (miRNA)
           </TabsTrigger>

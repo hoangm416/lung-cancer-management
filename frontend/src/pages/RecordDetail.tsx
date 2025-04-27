@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { LucideMoveLeft } from 'lucide-react';
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from '@/components/dropzone';
+import { useSupabaseUpload } from '@/hooks/use-supabase-upload'
+
 // import { useState } from 'react';
 // import FileManagement from '@/components/FileManagement';
 
@@ -9,6 +12,13 @@ const RecordDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const record = location.state?.record;  
+
+  const props = useSupabaseUpload({
+    bucketName: 'medical',
+    path: `${sample_id}`,
+    maxFiles: 100,
+    maxFileSize: 1000 * 1000 * 20, // 20MB,
+  })
   
   return (
     <div>
@@ -134,15 +144,20 @@ const RecordDetail = () => {
         </div>
       </div>
 
-      {/* <div className="mt-4 gap-7 p-4">
+      <div className="mt-4 gap-7 p-4">
         <div className="col-span-1 border-2">
           <p className=" bg-[#F2F1F1] px-2 py-2 text-lg font-semibold">
             Thông tin chuyên ngành 
           </p>
-          <FileManagement case_submitter_id={record.case_submitter_id} />
+          <div className="w-[500px]">
+            <Dropzone {...props}>
+              <DropzoneEmptyState />
+              <DropzoneContent />
+            </Dropzone>
+          </div>
         </div>
 
-      </div> */}
+      </div>
     </div>
   );
 };

@@ -47,28 +47,6 @@ const HomePage = () => {
       const bStart = parseInt(b.name.split("-")[0]);
       return aStart - bStart;
     });
-
-  // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
-  const vitalStatusCounts = records.reduce(
-    (acc, record) => {
-      const vitalStatus = record.vital_status?.toLowerCase();
-      if (vitalStatus === "alive" || vitalStatus === "còn sống") {
-        acc.alive++;
-      } else if (vitalStatus === "dead" || vitalStatus === "tử vong") {
-        acc.dead++;
-      } else {
-        acc.undefined++;
-      }      
-      return acc;
-    },
-    { alive: 0, dead: 0, undefined: 0 }
-  );
-  
-  const vitalStatusData = [
-    { name: "Còn sống", value: vitalStatusCounts.alive },
-    { name: "Tử vong", value: vitalStatusCounts.dead },
-    { name: "Không xác định", value: vitalStatusCounts.undefined },
-  ];
   
   const ajccStageCounts = records.reduce(
     (acc, record) => {
@@ -139,7 +117,7 @@ const HomePage = () => {
           Thống kê tổng quan
         </span>
       </div>
-      <div className="grid md:grid-cols-2 gap-10">
+      <div className="grid md:grid-cols-2 gap-10 mb-20">
         {/* Cột 1: Biểu đồ PieChart */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4">Tỷ lệ giới tính</h2>
@@ -153,12 +131,6 @@ const HomePage = () => {
         </div>
       </div>
       <div className="grid md:grid-cols-2 gap-10">
-        {/* Cột 1: Biểu đồ PieChart */}
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4">Tình trạng sống</h2>
-          <PieChartComponent data={vitalStatusData}/>
-        </div>
-
         {/* Cột 2: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4">Giai đoạn bệnh theo AJCC</h2>

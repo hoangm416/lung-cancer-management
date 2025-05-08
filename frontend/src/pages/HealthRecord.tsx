@@ -3,12 +3,14 @@ import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
 import { BaseTable } from '@/components/BaseTable';
 import { Button } from '@/components/ui/button';
-import { LucidePlus, LucidePencil, LucideTrash } from 'lucide-react';
+import { LucidePlus, LucidePencil, LucideTrash, LucideSearch } from 'lucide-react';
 import RecordForm from '@/forms/lung-record-form/RecordForm';
 import EditRecordForm from '@/forms/lung-record-form/EditRecordForm';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { useGetRecord, useAddRecord, useEditRecord, useDeleteRecord } from '@/api/LungRecordApi';
+import { useGetRecord, useAddRecord, useEditRecord, useDeleteRecord, useSearchRecord } from '@/api/LungRecordApi';
 import { Record } from '@/types';
+// import { FormControl, FormField, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 const HealthRecord = () => {
   const navigate = useNavigate();
@@ -79,6 +81,18 @@ const HealthRecord = () => {
     navigate(`/record/${record.case_submitter_id}`, { state: { record } });
   };
 
+  const [searchParams, setSearchParams] = useState<{ [key: string]: string }>({});
+  const { data: searchResults, isLoading: isSearching } = useSearchRecord(searchParams);
+
+  // Hàm xử lý tìm kiếm
+  const handleSearch = (searchKey: string) => {
+    if (searchKey.trim() === "") {
+      setSearchParams({}); // Xóa tham số tìm kiếm nếu input rỗng
+    } else {
+      setSearchParams({ case_submitter_id: searchKey });
+    }
+  };
+
   const [offset, setOffset] = useState<number>(0);
   const [rowSelection, setRowSelection] = useState({});
   const rowSelectionKey = Object.keys(rowSelection);
@@ -93,7 +107,7 @@ const HealthRecord = () => {
         const temp = {
           "STT": index + 1,
           "Mã bệnh án": curr.case_id,
-          "Mã bệnh nhân (submitter)": curr.case_submitter_id,
+          "Mã mẫu bệnh phẩm": curr.case_submitter_id,
           "Mã dự án": curr.project_id,
           "Tên bệnh nhân": curr.patient_name || "",
           "Tuổi tại thời điểm chẩn đoán": curr.age_at_index ?? "",
@@ -237,6 +251,15 @@ const HealthRecord = () => {
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px]">
         <span className="text-2xl font-medium text-text">Bảng dữ liệu bệnh phẩm</span>
+        <div className="relative">
+          <LucideSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <Input
+            type="text"
+            placeholder="Nhập mã mẫu bệnh phẩm"
+            className="w-64 border-border pl-10"
+            onChange={(e) => handleSearch(e.target.value)} // Gọi hàm tìm kiếm khi nhập
+          />
+        </div>
         <Button
           className="flex items-center gap-2 border font-normal"
           onClick={openAddDialog}
@@ -248,7 +271,7 @@ const HealthRecord = () => {
 
       <div className="mt-5 w-full">
         <BaseTable
-          data={records ?? []}
+          data={Object.keys(searchParams).length > 0 ? searchResults ?? [] : records ?? []}
           columns={columns}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}

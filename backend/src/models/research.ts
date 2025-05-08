@@ -8,6 +8,8 @@ const researchSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, required: false },
   date: { type: String, required: true },
+  author: { type: String, required: true },
+  link: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String },
   detail: { type: String, required: true },

@@ -177,7 +177,7 @@ const ResearchPage = () => {
             />
             <div className="p-4 w-2/3 flex flex-col justify-between">
               <div>
-                <h2 className="text-lg font-semibold">{article.title}</h2>
+                <h1 className="text-lg font-semibold">{article.title}</h1>
                 <p className="text-gray-500 text-sm">📅 {article.date}</p>
                 <p className="text-gray-600">{article.description}</p>
               </div>

@@ -9,7 +9,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FF8042", "#FFBB28"];
 
 const PieChartComponent = ({ data }: { data: { name: string; value: number }[] }) => {
   return (
-    <PieChart width={600} height={500}>
+    <PieChart width={600} height={400}>
       <Pie
         data={data}
         cx="50%"

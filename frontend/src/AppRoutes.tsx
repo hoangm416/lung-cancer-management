@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 // import UserProfilePage from "./pages/UserProfilePage";
 // import ProtectedRoute from "./auth/ProtectedRoute";
 import Research from "./pages/ResearchPage";
+import SearchResearchPage from "./pages/SearchResearchPage";
 import ResearchDetail from "./pages/ResearchDetail";
 import Analytics from "./pages/Analytics";
 import HealthRecord from "./pages/HealthRecord";
@@ -22,12 +23,27 @@ const AppRoutes = () => {
         }
       />
       {/* <Route path="/auth-callback" element={<AuthCallbackPage />} /> */}
-
+      <Route
+        path="/signup"
+        element={
+          <Layout>
+            <HomePage />
+          </Layout>
+        }
+      />
       <Route
         path="/research"
         element={
           <Layout>
             <Research />
+          </Layout>
+        }
+      />
+      <Route
+        path="/research/search"
+        element={
+          <Layout>
+            <SearchResearchPage />
           </Layout>
         }
       />

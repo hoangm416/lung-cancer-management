@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { LucidePlus, LucidePencil, LucideTrash } from 'lucide-react';
@@ -14,6 +14,12 @@ import research1 from "../assets/research1.png";
 import research2 from "../assets/research2.png";
 import research3 from "../assets/research3.png";
 
+const imageMap: Record<string, string> = {
+  "research1.png": research1,
+  "research2.png": research2,
+  "research3.png": research3,
+};
+
 const toSlug = (title: string) => {
   return title
     .toLowerCase()
@@ -25,22 +31,13 @@ const toSlug = (title: string) => {
     .replace(/\s+/g, "-");
 };
 
-const imageMap: Record<string, string> = {
-  "research1.png": research1,
-  "research2.png": research2,
-  "research3.png": research3,
-};
-
-const categories = [
-  { id: "popular", label: "Khoa học thường thức" },
-  { id: "specialize", label: "Khoa học chuyên sâu" }
-];
-
-const ResearchPage = () => {
-  const { type } = useParams<{ type: string }>();
+const SearchResearchPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [articles, setArticles] = useState<Research[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = new URLSearchParams(location.search);
+  const keyword = searchParams.get("detail") || "";
 
   // State quản lý dialog và nghiên cứu được chọn
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -101,38 +98,21 @@ const ResearchPage = () => {
     }
   };
 
-  const activeTab = type || "popular";
-
   useEffect(() => {
-    axios
-      .get<Research[]>("http://localhost:5000/api/research")
-      .then((res) => {
-        setArticles(res.data);
-      })
-      .catch((err) => {
-        console.error("Error loading research:", err);
-      });
+    axios.get<Research[]>("http://localhost:5000/api/research")
+      .then(res => setArticles(res.data))
+      .catch(err => console.error("Lỗi khi tải bài viết:", err));
   }, []);
 
-  // Lọc bài nghiên cứu theo thể loại và tìm kiếm
-  const filtered = articles
-    .filter((item) => item.type === activeTab)
-    .filter((item) => 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filtered = articles.filter((item) =>
+    item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+    item.description.toLowerCase().includes(keyword.toLowerCase())
+  );
 
   return (
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px] mb-4">
-        <span className="text-2xl font-medium text-text">Danh sách bài báo nghiên cứu khoa học</span>
-        
-        {/* Ô tìm kiếm */}
-        <SearchResearchForm
-          query={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-
+        <span className="text-2xl font-medium text-text">Kết quả tìm kiếm cho: "{keyword}"</span>
         <Button
           className="flex items-center gap-2 border font-normal"
           onClick={openAddDialog}
@@ -141,42 +121,32 @@ const ResearchPage = () => {
           Thêm nghiên cứu
         </Button>
       </div>
-      
-      {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => navigate(`/research/${cat.id}`)}
-            className={`py-2 px-4 rounded-md font-medium ${
-              activeTab === cat.id
-                ? "bg-green-500 text-white"
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+      <div className="mb-4">
+        <SearchResearchForm
+          query={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
-
-      {/* Articles */}
-      <div className="space-y-4">
-        {filtered.map((article) => (
-          <div
-            key={article._id}
-            className="flex border rounded-lg shadow-md overflow-hidden cursor-pointer hover:bg-gray-100 transition duration-200"
-            onClick={() => navigate(`/research/${article.type}/${toSlug(article.title)}`)}
-          >
-            <img
-              src={
-                article.image && imageMap[article.image]
-                  ? imageMap[article.image]
-                  : "https://via.placeholder.com/300x200.png?text=No+Image"
-              }
-              alt={article.title}
-              className="w-1/4 h-48 object-cover"
-            />
-            <div className="p-4 w-2/3 flex flex-col justify-between">
+      {filtered.length === 0 ? (
+        <p className="text-gray-600">Không tìm thấy kết quả nào.</p>
+      ) : (
+        <div className="space-y-4">
+          {filtered.map(article => (
+            <div
+              key={article._id}
+              className="flex border rounded-lg shadow-md overflow-hidden cursor-pointer hover:bg-gray-100 transition duration-200"
+              onClick={() => navigate(`/research/${article.type}/${toSlug(article.title)}`)}
+            >
+              <img
+                src={
+                  article.image && imageMap[article.image]
+                    ? imageMap[article.image]
+                    : "https://via.placeholder.com/300x200.png?text=No+Image"
+                }
+                alt={article.title}
+                className="w-1/4 h-48 object-cover"
+              />
+              <div className="p-4 w-2/3 flex flex-col justify-between">
               <div>
                 <h1 className="text-lg font-semibold">{article.title}</h1>
                 <p className="text-gray-500 text-sm">📅 {article.date}</p>
@@ -208,57 +178,12 @@ const ResearchPage = () => {
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-
-        {/* Dialog thêm nghiên cứu */}
-        <ResearchForm
-          isOpen={isAddDialogOpen}
-          onClose={closeAddDialog}
-          onSubmit={(data) => {
-            addResearch(data, {
-              onSuccess: () => {
-                closeAddDialog();
-              },
-              onError: () => {
-                alert('Thêm nghiên cứu thất bại!');
-              },
-            });
-          }}
-        />
-
-        {/* Dialog chỉnh sửa nghiên cứu */}
-        <EditResearchForm
-          isOpen={isEditDialogOpen}
-          onClose={closeEditDialog}
-          defaultValues={selectedResearch ?? {} as Research}
-          onSubmit={(data) => {
-            editResearch(
-              { _id: data._id, submitter_id: selectedResearch?.submitter_id, updatedResearch: data },
-              {
-                onSuccess: () => {
-                  closeEditDialog();
-                },
-                onError: (error) => {
-                  console.error('Lỗi khi cập nhật nghiên cứu:', error);
-                },
-              }
-            );
-          }}
-        />
-
-        {/* ConfirmDialog xóa nghiên cứu */}
-        <ConfirmDialog
-          isOpen={isConfirmOpen}
-          close={closeConfirmDialog}
-          isLoading={isDeleting}
-          handleSubmit={handleDelete}
-          title="Xác nhận xóa"
-          body={`Bạn có chắc chắn muốn xóa nghiên cứu: ${selectedResearch?._id}?`}
-        />
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-export default ResearchPage;
+export default SearchResearchPage;

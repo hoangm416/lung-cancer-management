@@ -128,3 +128,34 @@ export const useDeleteRecord = () => {
     },
   });
 };
+
+// Hàm tìm kiếm bản ghi
+export const useSearchRecord = (searchParams: { [key: string]: string }) => {
+  return useQuery<Record[]>(
+    ["searchRecords", searchParams],
+    async () => {
+      const query = new URLSearchParams(searchParams).toString();
+      const response = await fetch(`${API_BASE_URL}/api/record/search?${query}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Tìm kiếm bản ghi thất bại");
+      }
+
+      const result = await response.json();
+      return result.data; // Trả về danh sách bản ghi
+    },
+    {
+      enabled: !!Object.keys(searchParams).length, // Chỉ gọi API khi có tham số tìm kiếm
+      onError: (err: unknown) => {
+        const error = err as Error;
+        console.error("Search error:", error); // Debug lỗi
+        toast.error(`Lỗi tìm kiếm: ${error.message}`);
+      },
+    }
+  );
+};

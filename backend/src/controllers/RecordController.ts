@@ -146,9 +146,38 @@ const removeRecord = async (req: Request, res: Response) => {
   }
 };
 
+// Tìm kiếm Record
+const searchRecord = async (req: Request, res: Response) => {
+  try {
+    const searchCriteria: any = {};
+
+    // Lấy các tham số tìm kiếm từ query
+    const { case_submitter_id } = req.query;
+
+    // Thêm các điều kiện tìm kiếm nếu có
+    if (case_submitter_id) {
+      searchCriteria.case_submitter_id = { $regex: case_submitter_id, $options: 'i' };
+    }
+
+    // Tìm kiếm Record dựa trên các tiêu chí
+    const records = await Record.find(searchCriteria).lean();
+
+    if (records.length === 0) {
+      res.status(404).json({ message: "Không tìm thấy bản ghi nào phù hợp" });
+      return;
+    }
+
+    res.status(200).json({ data: records });
+  } catch (error: any) {
+    console.error("Lỗi tìm kiếm bản ghi:", error);
+    res.status(500).json({ message: error.message || "Lỗi máy chủ nội bộ" });
+  }
+};
+
 export default {
   getRecord,
   addRecord,
   editRecord,
   removeRecord,
+  searchRecord,
 };

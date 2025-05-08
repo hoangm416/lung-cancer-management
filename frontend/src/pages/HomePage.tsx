@@ -1,6 +1,7 @@
 import PieChartComponent from "@/components/PieChartComponent";
 import HistogramChart from "@/components/HistogramChart";
 import BarChartComponent from "@/components/BarChartComponent";
+import KaplanMeierChart from "@/components/KaplanMeierChart";
 import { useGetRecord } from "@/api/LungRecordApi";
 
 const HomePage = () => {
@@ -39,6 +40,7 @@ const HomePage = () => {
     ageGroups.set(bucket, (ageGroups.get(bucket) || 0) + 1);
   }
 
+  // Xử lý dữ liệu biểu đồ giai đoạn AJCC
   const ageData = Array.from(ageGroups.entries())
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => {
@@ -88,6 +90,55 @@ const HomePage = () => {
     // { name: "Không xác định", count: ajccStageCounts.undefined },
   ];
 
+  // Xử lý dữ liệu biểu đồ Kaplan-Meier
+  const sampleData = [
+    { day: 0, survival: 1.0 },
+    { day: 30, survival: 0.95 },
+    { day: 60, survival: 0.88 },
+    { day: 120, survival: 0.8 },
+    { day: 200, survival: 0.75 },
+    { day: 300, survival: 0.6 },
+    { day: 365, survival: 0.55 },
+  ];
+  
+  type RecordType = {
+    days_to_death?: number | string | null;
+  };
+  
+  function getKaplanMeierData(records: RecordType[]) {
+    // Lọc những mẫu có days_to_death là số
+    const validRecords = records
+      .map((r) => Number(r.days_to_death))
+      .filter((d) => !isNaN(d) && d > 0)
+      .sort((a, b) => a - b);
+  
+    const total = validRecords.length;
+    if (total === 0) return [];
+  
+    // Đếm số người chết tại từng ngày
+    const deathCounts = new Map<number, number>();
+    for (const day of validRecords) {
+      deathCounts.set(day, (deathCounts.get(day) || 0) + 1);
+    }
+  
+    // Tính tỷ lệ sống sót
+    const result: { day: number; survival: number }[] = [];
+    let survival = 1.0;
+    let atRisk = total;
+  
+    const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
+    for (const day of sortedDays) {
+      const deaths = deathCounts.get(day)!;
+      survival *= 1 - deaths / atRisk;
+      result.push({ day, survival: parseFloat(survival.toFixed(4)) });
+      atRisk -= deaths;
+    }
+  
+    return result;
+  }
+
+  const kmData = getKaplanMeierData(records);
+
   // const genderData = records.reduce((acc, record) => {
   //   const genderGroup = getGenderGroup(record.gender); 
   //   const existingGroup = acc.find((item) => item.name === genderGroup);
@@ -131,10 +182,16 @@ const HomePage = () => {
         </div>
       </div>
       <div className="grid md:grid-cols-2 gap-10">
-        {/* Cột 2: Biểu đồ HistogramChart */}
+        {/* Cột 1: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4">Giai đoạn bệnh theo AJCC</h2>
           <HistogramChart data={ajccStageData} />
+        </div>
+
+        {/* Cột 2: Biểu đồ HistogramChart */}
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4"></h2>
+          <KaplanMeierChart data={kmData} />
         </div>
       </div>
     </div>

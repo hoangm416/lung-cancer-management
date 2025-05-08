@@ -1,8 +1,29 @@
 import express from "express";
 import { param } from "express-validator";
 import ResearchController from "../controllers/ResearchController";
+import Research from "../models/research";
 
 const router = express.Router();
+
+router.get("/search", async (req, res) => {
+  const detail = req.query.detail as string;
+
+  const query: any = {};
+  if (detail) {
+    query.detail = { $regex: detail, $options: "i" };
+  }
+
+  try {
+    const results = await Research.find(query);
+    if (results.length === 0) {
+      res.status(404).json({ message: "❌ Không tìm thấy bài nghiên cứu!" });
+      return;
+    }
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server", error: err });
+  }
+});
 
 router.get(
     "/:id",

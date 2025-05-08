@@ -4,123 +4,6 @@ import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// export const useGetAllResearches = () => {
-//   const getAllResearchesRequest = async (): Promise<Research[]> => {
-//     const response = await fetch(`${API_BASE_URL}/api/research`);
-//     if (!response.ok) {
-//       throw new Error("Lấy danh sách nghiên cứu thất bại");
-//     }
-//     return response.json();
-//   };
-
-//   const { data: researches, isLoading } = useQuery(
-//     "fetchAllResearches",
-//     getAllResearchesRequest
-//   );
-
-//   return { researches, isLoading };
-// };
-
-// export const useAddResearch = () => {
-//   const { getAccessTokenSilently } = useAuth0();
-
-//   const addResearchRequest = async (researchData: Partial<Research>) => {
-//     const accessToken = await getAccessTokenSilently();
-
-//     const response = await fetch(`${API_BASE_URL}/api/research`, {
-//       method: "POST",
-//       headers: {
-//         Authorization: `Bearer ${accessToken}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(researchData),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error("Tạo nghiên cứu thất bại");
-//     }
-//     return response.json();
-//   };
-
-//   const {
-//     mutate: addResearch,
-//     isLoading,
-//     isSuccess,
-//     error,
-//   } = useMutation(addResearchRequest);
-
-//   if (isSuccess) toast.success("Tạo nghiên cứu thành công");
-//   if (error) toast.error("Tạo nghiên cứu thất bại");
-
-//   return { addResearch, isLoading };
-// };
-
-// export const useEditResearch = () => {
-//   const { getAccessTokenSilently } = useAuth0();
-
-//   const editResearchRequest = async ({ id, data }: { id: string; data: Partial<Research> }) => {
-//     const accessToken = await getAccessTokenSilently();
-
-//     const response = await fetch(`${API_BASE_URL}/api/research/${id}`, {
-//       method: "PUT",
-//       headers: {
-//         Authorization: `Bearer ${accessToken}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(data),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error("Cập nhật nghiên cứu thất bại");
-//     }
-//     return response.json();
-//   };
-
-//   const {
-//     mutate: editResearch,
-//     isLoading,
-//     isSuccess,
-//     error,
-//   } = useMutation(editResearchRequest);
-
-//   if (isSuccess) toast.success("Cập nhật nghiên cứu thành công");
-//   if (error) toast.error("Không thể cập nhật nghiên cứu");
-
-//   return { editResearch, isLoading };
-// };
-
-// export const useDeleteResearch = () => {
-//   const { getAccessTokenSilently } = useAuth0();
-
-//   const deleteResearchRequest = async (id: string) => {
-//     const accessToken = await getAccessTokenSilently();
-
-//     const response = await fetch(`${API_BASE_URL}/api/research/${id}`, {
-//       method: "DELETE",
-//       headers: {
-//         Authorization: `Bearer ${accessToken}`,
-//       },
-//     });
-
-//     if (!response.ok) {
-//       throw new Error("Xoá nghiên cứu thất bại");
-//     }
-//     return response.json();
-//   };
-
-//   const {
-//     mutate: deleteResearch,
-//     isLoading,
-//     isSuccess,
-//     error,
-//   } = useMutation(deleteResearchRequest);
-
-//   if (isSuccess) toast.success("Xoá nghiên cứu thành công");
-//   if (error) toast.error("Không thể xoá nghiên cứu");
-
-//   return { deleteResearch, isLoading };
-// };
-
 export const useGetAllResearches = () => {
   const getResearchesRequest = async (): Promise<Research[]> => {
     const response = await fetch(`${API_BASE_URL}/api/research`, {
@@ -161,6 +44,41 @@ export const useGetResearchById = (id: string) => {
   );
 
   return { research, isLoading };
+};
+
+export const useSearchResearch = (query: string) => {
+  const searchResearchesRequest = async (): Promise<Research[]> => {
+    const response = await fetch(`${API_BASE_URL}/api/research/search?query=${query}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Lấy thông tin thất bại");
+    }
+
+    const result = await response.json();
+    return result.data; // Trả về mảng Research[]
+  };
+
+  const { data: researches = [], isLoading, isError, error } = useQuery<Research[]>(
+    ["searchResearches", query],
+    searchResearchesRequest,
+    {
+      enabled: query.length > 0, // Chỉ gọi API khi có query
+      onError: (err: unknown) => {
+        if (err instanceof Error) {
+          toast.error(`Lỗi khi tìm kiếm: ${err.message}`);
+        } else {
+          toast.error("Đã xảy ra lỗi không xác định.");
+        }
+      },
+    }
+  );  
+
+  return { researches, isLoading, isError, error };
 };
 
 export const useAddResearch = () => {

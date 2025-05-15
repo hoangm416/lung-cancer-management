@@ -3,7 +3,7 @@ import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
 import { BaseTable } from '@/components/BaseTable';
 import { Button } from '@/components/ui/button';
-import { LucidePlus, LucidePencil, LucideTrash, LucideSearch } from 'lucide-react';
+import { LucidePlus, LucidePencil, LucideTrash, LucideSearch, LucideEye } from 'lucide-react';
 import RecordForm from '@/forms/lung-record-form/RecordForm';
 import EditRecordForm from '@/forms/lung-record-form/EditRecordForm';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -160,6 +160,10 @@ const HealthRecord = () => {
         header: () => <span>Hành động</span>,
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
+            <LucideEye
+              className="h-5 w-5 cursor-pointer text-green-500"
+              onClick={() => handleRowClick(row.original)} // Gọi hàm handleRowClick khi n
+            />
             <LucidePencil
               className="h-5 w-5 cursor-pointer text-blue-500"
               onClick={(event) => {
@@ -280,7 +284,6 @@ const HealthRecord = () => {
           isPreviousData={false}
           isLoading={isLoading}
           formatExcel={formatExcel}
-          onRowClick={handleRowClick}
         />
       </div>
 

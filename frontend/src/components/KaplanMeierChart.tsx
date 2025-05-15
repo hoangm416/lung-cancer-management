@@ -22,7 +22,7 @@ const KaplanMeierChart = ({ data }: Props) => {
   const xTicks = Array.from({ length: 10 }, (_, i) => Math.round((i + 1) * 73));
 
   return (
-    <div className="bg-gray-100 p-4 rounded-xl shadow w-[730px]">
+    <div className="bg-gray-100 p-4 rounded-xl shadow w-[750px]">
       <h2 className="text-lg font-semibold mb-4">Biểu đồ Kaplan-Meier</h2>
       <LineChart width={730} height={300} data={data} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
 
@@ -30,16 +30,16 @@ const KaplanMeierChart = ({ data }: Props) => {
         <XAxis
             type="number"
             dataKey="day"
-            domain={[0, 730]}
+            domain={[0, 7000]}
             tickCount={10}
-            ticks={[ 73, 146, 219, 292, 365, 438, 511, 584, 657, 730 ]}
+            ticks={[ 1000, 2000, 3000, 4000, 5000, 6000, 7000 ]}
             tickFormatter={(day) => (day / 365).toFixed(1)}
             label={{
-                value: 'Thời gian (năm)',
+                value: 'Thời gian (ngày)',
                 position: 'insideBottom',
                 offset: -10,
             }}
-            />
+        />
         <YAxis
           domain={[0, 1]}
           tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}

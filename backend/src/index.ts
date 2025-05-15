@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 import recordRoute from "./routes/RecordRoute";
 import researchRoute from "./routes/ResearchRoute";
 import fileRoute from "./routes/LungFileRoute"
+import path from 'path';
 
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING as string)
@@ -34,6 +35,8 @@ app.use("/api/my/user", myUserRoute);
 app.use("/api/record", recordRoute);
 app.use("/api/research", researchRoute);
 app.use("/api/multiomics", fileRoute);
+
+app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 
 app.listen(5000, () => {
   console.log("Server is starting on port 5000");

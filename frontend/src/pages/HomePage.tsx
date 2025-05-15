@@ -8,7 +8,29 @@ const HomePage = () => {
   const { records, isLoading } = useGetRecord();
   if (isLoading) return <div>Đang tải dữ liệu...</div>;
 
-// Xử lý dữ liệu biểu đồ tỷ lệ giới tính
+  // const genderData = records.reduce((acc, record) => {
+  //   const genderGroup = getGenderGroup(record.gender); 
+  //   const existingGroup = acc.find((item) => item.name === genderGroup);
+
+  //   if (existingGroup) {
+  //     existingGroup.value += 1; 
+  //   } else {
+  //     acc.push({ name: genderGroup ?? "Không xác định", value: 1 });
+  //   }
+
+  //   return acc;
+  // }, [] as { name: string; value: number }[]);
+
+  // const getGenderGroup = (gender: string | undefined) => {
+  //   if (!gender) return "Không xác định";
+  //   if (gender.toLowerCase() === "nam" || gender.toLowerCase() === "male") return "Nam";
+  //   if (gender.toLowerCase() === "nữ" || gender.toLowerCase() === "female") return "Nữ";
+  //   return "Không xác định"; 
+  // };
+
+  // console.log("Gender data:", genderData)
+
+  // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
   const genderCounts = records.reduce(
     (acc, record) => {
       const gender = record.gender?.toLowerCase();
@@ -89,17 +111,6 @@ const HomePage = () => {
     { name: "IV", count: ajccStageCounts.iv },
     // { name: "Không xác định", count: ajccStageCounts.undefined },
   ];
-
-  // Xử lý dữ liệu biểu đồ Kaplan-Meier
-  const sampleData = [
-    { day: 0, survival: 1.0 },
-    { day: 30, survival: 0.95 },
-    { day: 60, survival: 0.88 },
-    { day: 120, survival: 0.8 },
-    { day: 200, survival: 0.75 },
-    { day: 300, survival: 0.6 },
-    { day: 365, survival: 0.55 },
-  ];
   
   type RecordType = {
     days_to_death?: number | string | null;
@@ -112,7 +123,7 @@ const HomePage = () => {
       .filter((d) => !isNaN(d) && d > 0)
       .sort((a, b) => a - b);
   
-    const total = validRecords.length;
+    const total = records.length;
     if (total === 0) return [];
   
     // Đếm số người chết tại từng ngày
@@ -121,13 +132,17 @@ const HomePage = () => {
       deathCounts.set(day, (deathCounts.get(day) || 0) + 1);
     }
   
-    // Tính tỷ lệ sống sót
+    //Tính tỷ lệ sống sót
     const result: { day: number; survival: number }[] = [];
     let survival = 1.0;
     let atRisk = total;
   
     const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
     for (const day of sortedDays) {
+      if (day >= 365) {
+        result.push({ day: 365, survival: parseFloat(survival.toFixed(4)) });
+        break;
+      }
       const deaths = deathCounts.get(day)!;
       survival *= 1 - deaths / atRisk;
       result.push({ day, survival: parseFloat(survival.toFixed(4)) });
@@ -137,29 +152,53 @@ const HomePage = () => {
     return result;
   }
 
+  type PatientRecord = {
+    days_to_death: number;
+  };
+
+  type KaplanMeierDataPoint = {
+    day: number;
+    survival: number;
+  };
+
+  function calculateKaplanMeierCurve(records: PatientRecord[]): KaplanMeierDataPoint[] {
+    if (records.length === 0) return [];
+
+    // Đếm số ca tử vong theo từng ngày
+    const deathCounts = new Map<number, number>();
+    for (const record of records) {
+      const day = Math.floor(record.days_to_death);
+      if (!deathCounts.has(day)) {
+        deathCounts.set(day, 1);
+      } else {
+        deathCounts.set(day, deathCounts.get(day)! + 1);
+      }
+    }
+
+    // Sắp xếp các ngày tử vong tăng dần
+    const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
+
+    const result: KaplanMeierDataPoint[] = [];
+    let survival = 1.0;
+    let atRisk = records.length;
+
+    for (const day of sortedDays) {
+      const deaths = deathCounts.get(day)!;
+      survival *= 1 - deaths / atRisk;
+      result.push({ day, survival: parseFloat(survival.toFixed(4)) });
+      atRisk -= deaths;
+    }
+
+    // Bổ sung điểm tại mốc 2 năm nếu chưa có
+    const lastDay = result.length > 0 ? result[result.length - 1].day : 0;
+    if (lastDay < 730) {
+      result.push({ day: 730, survival: parseFloat(survival.toFixed(4)) });
+    }
+
+    return result;
+  }
+
   const kmData = getKaplanMeierData(records);
-
-  // const genderData = records.reduce((acc, record) => {
-  //   const genderGroup = getGenderGroup(record.gender); 
-  //   const existingGroup = acc.find((item) => item.name === genderGroup);
-
-  //   if (existingGroup) {
-  //     existingGroup.value += 1; 
-  //   } else {
-  //     acc.push({ name: genderGroup ?? "Không xác định", value: 1 });
-  //   }
-
-  //   return acc;
-  // }, [] as { name: string; value: number }[]);
-
-  // const getGenderGroup = (gender: string | undefined) => {
-  //   if (!gender) return "Không xác định";
-  //   if (gender.toLowerCase() === "nam" || gender.toLowerCase() === "male") return "Nam";
-  //   if (gender.toLowerCase() === "nữ" || gender.toLowerCase() === "female") return "Nữ";
-  //   return "Không xác định"; 
-  // };
-
-  // console.log("Gender data:", genderData)
 
   return (
     <div className="flex flex-col gap-10">
@@ -181,17 +220,67 @@ const HomePage = () => {
           <HistogramChart data={ageData}/>
         </div>
       </div>
-      <div className="grid md:grid-cols-2 gap-10">
+      <div className="grid md:grid-cols-2 gap-10 mb-20">
         {/* Cột 1: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4">Giai đoạn bệnh theo AJCC</h2>
           <HistogramChart data={ajccStageData} />
         </div>
 
-        {/* Cột 2: Biểu đồ HistogramChart */}
+        {/* Cột 2: Biểu đồ Kaplan-Meier */}
+        {/* <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4"></h2>
+          <KaplanMeierChart data={kmData} />
+        </div> */}
+      </div>
+      {/* Biểu đồ Kaplan-Meier */}
+      {/* <div className="grid gap-10">
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4"></h2>
           <KaplanMeierChart data={kmData} />
+        </div>
+      </div> */}
+      <div className="grid md:grid-cols-2 gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier với mô hình Cox-Hazard</h2>
+          <img
+            title ="Biểu đồ Kaplan-Meier với mô hình Cox-Hazard"
+            src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
+            alt="Kaplan-Meier from Cox"
+            // className="mx-auto max-w-3xl rounded-xl shadow-md"
+          />
+        </div>
+
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo giới tính</h2>
+          <img
+            title ="Biểu đồ Kaplan-Meier phân theo giới tính"
+            src="http://localhost:5000/static/plots/kaplan_meier_by_gender.png"
+            alt="Kaplan-Meier by gender"
+            // className="mx-auto max-w-3xl rounded-xl shadow-md"
+          />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo nhóm tuổi</h2>
+          <img
+            title ="Biểu đồ Kaplan-Meier phân theo nhóm tuổi"
+            src="http://localhost:5000/static/plots/kaplan_meier_by_age_group.png"
+            alt="Kaplan-Meier by age group"
+            // className="mx-auto max-w-3xl rounded-xl shadow-md"
+          />
+        </div>
+
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo giai đoạn AJCC</h2>
+          <img
+            title ="Biểu đồ Kaplan-Meier phân theo giai đoạn AJCC"
+            src="http://localhost:5000/static/plots/kaplan_meier_by_ajcc_stage.png"
+            alt="Kaplan-Meier by AJCC Stage"
+            // className="mx-auto max-w-3xl rounded-xl shadow-md"
+          />
         </div>
       </div>
     </div>

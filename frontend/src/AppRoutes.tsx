@@ -10,7 +10,7 @@ import ResearchDetail from "./pages/ResearchDetail";
 import Analytics from "./pages/Analytics";
 import HealthRecord from "./pages/HealthRecord";
 import RecordDetail from "./pages/RecordDetail";
-
+import Guide from "./pages/GuidePage";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -89,7 +89,16 @@ const AppRoutes = () => {
           </Layout>
         }
       />
-      
+
+      <Route
+        path="/guide"
+        element={
+          <Layout>
+            <Guide />
+          </Layout>
+        }
+      />
+
       {/* <Route element={<ProtectedRoute />}>
         <Route
           path="/user-profile"

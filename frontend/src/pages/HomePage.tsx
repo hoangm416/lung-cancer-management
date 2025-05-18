@@ -1,34 +1,36 @@
+import { useEffect, useState } from 'react';
 import PieChartComponent from "@/components/PieChartComponent";
 import HistogramChart from "@/components/HistogramChart";
 import BarChartComponent from "@/components/BarChartComponent";
 import KaplanMeierChart from "@/components/KaplanMeierChart";
+import KaplanMeierComparisonChart from "@/components/KaplanMeierComparisonChart";
 import { useGetRecord } from "@/api/LungRecordApi";
-
+import { Card, CardContent } from "@/components/ui/card";
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
+  const [kmcData, setKmcData] = useState([]);
+
+  useEffect(() => {
+    const fetchKMC = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/static/data/sample_kaplan_meier.json");
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+
+        const data = await res.json();
+        setKmcData(data);
+      } catch (err) {
+        console.error("Failed to fetch Kaplan-Meier data:", err);
+      }
+    };
+
+    fetchKMC();
+  }, []);
+  console.log("kmcData", kmcData);
+
   if (isLoading) return <div>Đang tải dữ liệu...</div>;
-
-  // const genderData = records.reduce((acc, record) => {
-  //   const genderGroup = getGenderGroup(record.gender); 
-  //   const existingGroup = acc.find((item) => item.name === genderGroup);
-
-  //   if (existingGroup) {
-  //     existingGroup.value += 1; 
-  //   } else {
-  //     acc.push({ name: genderGroup ?? "Không xác định", value: 1 });
-  //   }
-
-  //   return acc;
-  // }, [] as { name: string; value: number }[]);
-
-  // const getGenderGroup = (gender: string | undefined) => {
-  //   if (!gender) return "Không xác định";
-  //   if (gender.toLowerCase() === "nam" || gender.toLowerCase() === "male") return "Nam";
-  //   if (gender.toLowerCase() === "nữ" || gender.toLowerCase() === "female") return "Nữ";
-  //   return "Không xác định"; 
-  // };
-
-  // console.log("Gender data:", genderData)
 
   // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
   const genderCounts = records.reduce(
@@ -139,16 +141,12 @@ const HomePage = () => {
   
     const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
     for (const day of sortedDays) {
-      if (day >= 365) {
-        result.push({ day: 365, survival: parseFloat(survival.toFixed(4)) });
-        break;
-      }
       const deaths = deathCounts.get(day)!;
       survival *= 1 - deaths / atRisk;
       result.push({ day, survival: parseFloat(survival.toFixed(4)) });
       atRisk -= deaths;
     }
-  
+
     return result;
   }
 
@@ -200,6 +198,8 @@ const HomePage = () => {
 
   const kmData = getKaplanMeierData(records);
 
+  
+
   return (
     <div className="flex flex-col gap-10">
       <div className="text-left">
@@ -207,41 +207,50 @@ const HomePage = () => {
           Thống kê tổng quan
         </span>
       </div>
+
       <div className="grid md:grid-cols-2 gap-10 mb-20">
         {/* Cột 1: Biểu đồ PieChart */}
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4">Tỷ lệ giới tính</h2>
+        <div className="flex flex-col items-center justify-center border border-black rounded">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Tỷ lệ giới tính</h2>
           <PieChartComponent data={genderData}/>
         </div>
 
         {/* Cột 2: Biểu đồ HistogramChart */}
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4">Phân bố độ tuổi</h2>
+        <div className="flex flex-col items-center justify-center border border-black rounded">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Phân bố độ tuổi</h2>
           <HistogramChart data={ageData}/>
         </div>
       </div>
+
       <div className="grid md:grid-cols-2 gap-10 mb-20">
         {/* Cột 1: Biểu đồ HistogramChart */}
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4">Giai đoạn bệnh theo AJCC</h2>
+        <div className="flex flex-col items-center justify-center border border-black rounded">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Giai đoạn bệnh theo AJCC</h2>
           <HistogramChart data={ajccStageData} />
         </div>
-
-        {/* Cột 2: Biểu đồ Kaplan-Meier */}
-        {/* <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4"></h2>
-          <KaplanMeierChart data={kmData} />
-        </div> */}
       </div>
+
       {/* Biểu đồ Kaplan-Meier */}
-      {/* <div className="grid gap-10">
+      {/* <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4"></h2>
+          <h2 className="text-xl font-semibold mt-4">Biểu đồ Kaplan-Meier</h2>
           <KaplanMeierChart data={kmData} />
         </div>
       </div> */}
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
+
+      {kmcData.length === 0 ? (
+        <p className="text-red-500">Không có dữ liệu Kaplan-Meier!</p>
+      ) : (
+        <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier với mô hình Cox-Hazard</h2>
+          <KaplanMeierComparisonChart kmcData={kmcData} />
+        </div>
+      </div>
+      )}
+      
+      <div className="grid md:grid-cols-2 gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center border border-black rounded">
           <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier với mô hình Cox-Hazard</h2>
           <img
             title ="Biểu đồ Kaplan-Meier với mô hình Cox-Hazard"
@@ -251,7 +260,7 @@ const HomePage = () => {
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center border border-black rounded">
           <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo giới tính</h2>
           <img
             title ="Biểu đồ Kaplan-Meier phân theo giới tính"
@@ -263,7 +272,7 @@ const HomePage = () => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-10 mb-20">
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center border border-black rounded">
           <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo nhóm tuổi</h2>
           <img
             title ="Biểu đồ Kaplan-Meier phân theo nhóm tuổi"
@@ -273,14 +282,17 @@ const HomePage = () => {
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center border border-black rounded">
           <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo giai đoạn AJCC</h2>
-          <img
-            title ="Biểu đồ Kaplan-Meier phân theo giai đoạn AJCC"
-            src="http://localhost:5000/static/plots/kaplan_meier_by_ajcc_stage.png"
-            alt="Kaplan-Meier by AJCC Stage"
-            // className="mx-auto max-w-3xl rounded-xl shadow-md"
-          />
+          <Card>
+            <CardContent>
+              <img src="http://localhost:5000/static/plots/kaplan_meier_by_ajcc_stage.png" alt="Kaplan-Meier by AJCC Stage" />
+              <p className="text-sm text-muted-foreground text-center mt-2">
+                Kaplan-Meier Curve by AJCC Stage
+              </p>
+            </CardContent>
+          </Card>
+
         </div>
       </div>
     </div>

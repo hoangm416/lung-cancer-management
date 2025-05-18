@@ -48,434 +48,418 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
             </DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 gap-6">
                     {/* Cột 1 */}
                     <div className="space-y-4">
-                    <FormField
+                        <FormField
                         control={form.control}
-                        name="case_id"
+                        name="patient_id"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Mã hồ sơ</FormLabel>
+                            <FormItem>
+                            <FormLabel>Mã bệnh nhân</FormLabel>
                             <FormControl>
-                                <Input {...field} placeholder="Nhập mã hồ sơ" disabled />
+                                <Input {...field} placeholder="Nhập mã bệnh nhân" required />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="case_submitter_id"
+                        name="sample_id"
                         render={({ field }) => (
-                        <FormItem>
+                            <FormItem>
                             <FormLabel>Mã mẫu bệnh phẩm</FormLabel>
                             <FormControl>
-                                <Input {...field} placeholder="Nhập mã mẫu bệnh phẩm" disabled />
+                                <Input {...field} placeholder="Nhập mã mẫu bệnh phẩm" required />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="project_id"
+                        name="diagnosis_age"
                         render={({ field }) => (
-                        <FormItem>
+                            <FormItem>
+                            <FormLabel>Tuổi lúc chẩn đoán</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="biopsy_site"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Vị trí sinh thiết</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="cancer_type"
+                        render={({ field }) => (
+                            <FormItem>
                             <FormLabel>Loại ung thư</FormLabel>
                             <FormControl>
-                                <Input {...field} placeholder="Nhập loại ung thư" />
+                                <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+
+                        <FormField
                         control={form.control}
-                        name="patient_name"
+                        name="disease_free_months"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Họ và tên bệnh nhân</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập họ và tên bệnh nhân" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="age_at_index"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tuổi hiện tại</FormLabel>
-                            <FormControl>
-                            <Input {...field} 
-                                type="number" 
-                                placeholder="Nhập tuổi" 
-                                onChange={(e) => field.onChange(e.target.valueAsNumber)} 
-                            />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    {/* <FormField
-                        control={form.control}
-                        name="days_to_birth"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Số ngày đến ngày sinh</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập số ngày (giá trị âm)" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    /> */}
-                    <FormField
-                        control={form.control}
-                        name="days_to_death"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Số ngày đến khi tử vong</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập số ngày (giá trị dương)" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-    
-                    <FormField
-                        control={form.control}
-                        name="gender"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Giới tính</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập giới tính" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="vital_status"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tình trạng</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Còn sống/Đã mất" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="year_of_birth"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Năm sinh</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập năm sinh" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="year_of_death"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Năm mất</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập năm mất" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-    
-                    <FormField
-                        control={form.control}
-                        name="ajcc_pathologic_m"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>M (di căn xa) theo AJCC</FormLabel>
+                            <FormItem>
+                            <FormLabel>Số tháng không bệnh (sau điều trị)</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="ajcc_pathologic_n"
+                        name="disease_free_status"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>N (hạch bạch huyết vùng) theo AJCC</FormLabel>
+                            <FormItem>
+                            <FormLabel>Tình trạng không bệnh</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="ajcc_pathologic_stage"
+                        name="disease_type"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Giai đoạn bệnh theo AJCC</FormLabel>
+                            <FormItem>
+                            <FormLabel>Loại bệnh</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="ajcc_pathologic_t"
+                        name="ethnicity_category"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>T (khối u nguyên phát) theo AJCC</FormLabel>
+                            <FormItem>
+                            <FormLabel>Dân tộc</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+
+                        <FormField
                         control={form.control}
-                        name="ajcc_staging_system_edition"
+                        name="fraction_genome_altered"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Phiên bản hệ thống AJCC sử dụng</FormLabel>
+                            <FormItem>
+                            <FormLabel>Tỷ lệ bộ gen bị biến đổi</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    </div>
-    
-                    {/* Cột 2 */}
-                    <div className="space-y-4">       
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="classification_of_tumor"
+                        name="icd_10_classification"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Phân loại khối u</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập phân loại khối u" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="icd_10_code"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Mã bệnh theo ICD-10</FormLabel>
+                            <FormItem>
+                            <FormLabel>Phân loại theo mã ICD-10</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="last_known_disease_status"
+                        name="is_ffpe"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tình trạng bệnh gần nhất được biết</FormLabel>
+                            <FormItem>
+                            <FormLabel>Có phải mẫu FFPE không?</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
                         name="morphology"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Hình thái học</FormLabel>
+                            <FormItem>
+                            <FormLabel>Mô học (hình thái tế bào/bệnh lý học)</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
+                        control={form.control}
+                        name="mutation_count"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Số lượng đột biến</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="overall_survival_months"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Số tháng sống sót tổng thể</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    </div>
+
+                    {/* Cột 2 */}
+                    <div className="space-y-4">       
+                        <FormField
+                        control={form.control}
+                        name="ajcc_pathologic_m"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Mô tả di căn xa (M) theo AJCC</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="ajcc_pathologic_n"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Mô tả hạch (N) theo AJCC</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        
+                        <FormField
+                        control={form.control}
+                        name="ajcc_pathologic_stage"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Giai đoạn bệnh lý theo AJCC</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="ajcc_pathologic_t"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Mô tả khối u (T) theo AJCC</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
                         control={form.control}
                         name="primary_diagnosis"
                         render={({ field }) => (
-                        <FormItem>
+                            <FormItem>
                             <FormLabel>Chẩn đoán chính</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+
+                        <FormField
+                        control={form.control}
+                        name="primary_tumor_site"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Vị trí khối u chính</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
                         control={form.control}
                         name="prior_malignancy"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Có tiền sử ung thư không</FormLabel>
+                            <FormItem>
+                            <FormLabel>Có tiền sử ung thư ác tính trước đó</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-    
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
                         name="prior_treatment"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Đã từng điều trị chưa</FormLabel>
+                            <FormItem>
+                            <FormLabel>Đã từng điều trị trước đó</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+
+                        <FormField
                         control={form.control}
-                        name="progression_or_recurrence"
+                        name="sample_type"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tiến triển hoặc tái phát</FormLabel>
+                            <FormItem>
+                            <FormLabel>Loại mẫu</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="site_of_resection_or_biopsy"
+                        name="sex"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Vị trí phẫu thuật hoặc sinh thiết</FormLabel>
+                            <FormItem>
+                            <FormLabel>Giới tính</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-    
-                    <FormField
+                        />
+                        <FormField
                         control={form.control}
-                        name="synchronous_malignancy"
+                        name="years_smoked"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Có khối u ác tính đồng thời không</FormLabel>
-                            <FormControl>
-                            <Input {...field} placeholder="" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="tissue_or_organ_of_origin"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Mô hoặc cơ quan phát sinh khối u</FormLabel>
+                            <FormItem>
+                            <FormLabel>Số năm hút thuốc</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
+                        />
+
+                        <FormField
                         control={form.control}
-                        name="tumor_grade"
+                        name="cigarette_smoking_history_pack_year"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Độ ác tính của khối u</FormLabel>
+                            <FormItem>
+                            <FormLabel>Lịch sử hút thuốc tính theo “gói-năm”</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
+                        )} 
+                        />
+                        <FormField
+                        control={form.control}
+                        name="vital_status"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Tình trạng sống</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
                         )}
-                    />
-    
-                    <FormField
+                        />
+                        <FormField
+                        control={form.control}
+                        name="year_of_death"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Năm mất</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="" />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
                         control={form.control}
                         name="year_of_diagnosis"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Ngày/năm chẩn đoán</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="Nhập ngày hoặc năm" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )} 
-                    />
-                    <FormField
-                        control={form.control}
-                        name="treatment_or_therapy"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Điều trị hoặc liệu pháp chưa?</FormLabel>
+                            <FormItem>
+                            <FormLabel>Năm được chẩn đoán</FormLabel>
                             <FormControl>
                                 <Input {...field} placeholder="" />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="treatment_type"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Loại điều trị</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
+                        />
+                        
                     </div>
-                </div>
-                <DialogFooter className="flex justify-center">
+                    </div>
+                    <DialogFooter className="flex justify-center">
                     <Button type="button" variant="secondary" onClick={onClose}>
                         Hủy
                     </Button>
                     <Button type="submit">Cập nhật</Button>
-                </DialogFooter>
+                    </DialogFooter>
                 </form>
             </Form>
             </DialogContent>

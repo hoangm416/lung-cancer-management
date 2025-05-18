@@ -6,8 +6,8 @@ import myUserRoute from "./routes/MyUserRoute";
 import { v2 as cloudinary } from "cloudinary";
 import recordRoute from "./routes/RecordRoute";
 import researchRoute from "./routes/ResearchRoute";
-import fileRoute from "./routes/LungFileRoute"
 import path from 'path';
+import analyticsRoute from "./routes/AnalyticsRoute";
 
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING as string)
@@ -34,7 +34,7 @@ app.get("/health", async (req: Request, res: Response)=>{
 app.use("/api/my/user", myUserRoute);
 app.use("/api/record", recordRoute);
 app.use("/api/research", researchRoute);
-app.use("/api/multiomics", fileRoute);
+app.use("/api/analytics", analyticsRoute);
 
 app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 

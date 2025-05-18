@@ -3,7 +3,7 @@ import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
 import { BaseTable } from '@/components/BaseTable';
 import { Button } from '@/components/ui/button';
-import { LucidePlus, LucidePencil, LucideTrash, LucideSearch } from 'lucide-react';
+import { LucidePlus, LucidePencil, LucideTrash, LucideSearch, LucideEye } from 'lucide-react';
 import RecordForm from '@/forms/lung-record-form/RecordForm';
 import EditRecordForm from '@/forms/lung-record-form/EditRecordForm';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -63,7 +63,7 @@ const HealthRecord = () => {
   // Hàm xử lý xóa bản ghi
   const handleDelete = () => {
     if (selectedRecord) {
-      deleteRecord(selectedRecord.case_submitter_id, {
+      deleteRecord(selectedRecord.sample_id, {
         onSuccess: () => {
           // alert('Xóa bản ghi thành công!');
           closeConfirmDialog();
@@ -78,7 +78,7 @@ const HealthRecord = () => {
 
   // Hàm xử lý click vào dòng
   const handleRowClick = (record: Record) => {
-    navigate(`/record/${record.case_submitter_id}`, { state: { record } });
+    navigate(`/record/${record.sample_id}`, { state: { record } });
   };
 
   const [searchParams, setSearchParams] = useState<{ [key: string]: string }>({});
@@ -89,7 +89,7 @@ const HealthRecord = () => {
     if (searchKey.trim() === "") {
       setSearchParams({}); // Xóa tham số tìm kiếm nếu input rỗng
     } else {
-      setSearchParams({ case_submitter_id: searchKey });
+      setSearchParams({ sample_id: searchKey });
     }
   };
 
@@ -106,42 +106,36 @@ const HealthRecord = () => {
       if (isSelected) {
         const temp = {
           "STT": index + 1,
-          "Mã bệnh án": curr.case_id,
-          "Mã mẫu bệnh phẩm": curr.case_submitter_id,
-          "Mã dự án": curr.project_id,
-          "Tên bệnh nhân": curr.patient_name || "",
-          "Tuổi tại thời điểm chẩn đoán": curr.age_at_index ?? "",
-          "Số ngày trước sinh": curr.days_to_birth ?? "",
-          "Số ngày đến khi tử vong": curr.days_to_death ?? "",
-          "Dân tộc": curr.ethnicity || "",
-          "Giới tính": curr.gender || "",
-          "Chủng tộc": curr.race || "",
-          "Tình trạng sống": curr.vital_status || "",
-          "Năm sinh": curr.year_of_birth || "",
-          "Năm tử vong": curr.year_of_death || "",
-          "Tuổi khi được chẩn đoán": curr.age_at_diagnosis || "",
-          "M-TNM": curr.ajcc_pathologic_m || "",
-          "N-TNM": curr.ajcc_pathologic_n || "",
-          "Giai đoạn bệnh (AJCC)": curr.ajcc_pathologic_stage || "",
-          "T-TNM": curr.ajcc_pathologic_t || "",
-          "Phiên bản hệ AJCC": curr.ajcc_staging_system_edition || "",
-          "Phân loại khối u": curr.classification_of_tumor || "",
-          "Số ngày đến khi chẩn đoán": curr.days_to_diagnosis ?? "",
-          "Số ngày đến lần theo dõi gần nhất": curr.days_to_last_follow_up ?? "",
-          "Mã ICD-10": curr.icd_10_code || "",
-          "Tình trạng bệnh cuối cùng": curr.last_known_disease_status || "",
-          "Loại mô học": curr.morphology || "",
-          "Chẩn đoán chính": curr.primary_diagnosis || "",
-          "Tiền sử ung thư trước đó": curr.prior_malignancy || "",
-          "Tiền sử điều trị trước đó": curr.prior_treatment || "",
-          "Tái phát hoặc tiến triển": curr.progression_or_recurrence || "",
-          "Vị trí sinh thiết": curr.site_of_resection_or_biopsy || "",
-          "Tình trạng ung thư đồng thời": curr.synchronous_malignancy || "",
-          "Tổ chức hoặc cơ quan xuất phát": curr.tissue_or_organ_of_origin || "",
-          "Mức độ biệt hóa khối u": curr.tumor_grade || "",
-          "Năm chẩn đoán": curr.year_of_diagnosis || "",
-          "Có điều trị/hoặc liệu pháp": curr.treatment_or_therapy || "",
-          "Loại điều trị": curr.treatment_type || "",
+          "Mã bệnh nhân": curr.patient_id,
+          "Mã mẫu bệnh phẩm": curr.sample_id,
+          "Tuổi lúc chẩn đoán": curr.diagnosis_age,
+          "Vị trí sinh thiết": curr.biopsy_site,
+          "Loại ung thư": curr.cancer_type,
+          "Số tháng không bệnh (sau điều trị)": curr.disease_free_months,
+          "Tình trạng không bệnh": curr.disease_free_status,
+          "Loại bệnh": curr.disease_type,
+          "Dân tộc": curr.ethnicity_category,
+          "Tỷ lệ bộ gen bị biến đổi": curr.fraction_genome_altered,
+          "Phân loại theo mã ICD-10": curr.icd_10_classification,
+          "Có phải mẫu FFPE không?": curr.is_ffpe,
+          "Mô học": curr.morphology,
+          "Số lượng đột biến": curr.mutation_count,
+          "Số tháng sống sót tổng thể": curr.overall_survival_months,
+          "Mô tả di căn xa (M)": curr.ajcc_pathologic_m || "",
+          "Mô tả hạch (N)": curr.ajcc_pathologic_n || "",
+          "Giai đoạn bệnh lý": curr.ajcc_pathologic_stage || "",
+          "Mô tả khối u (T)": curr.ajcc_pathologic_t || "",
+          "Chẩn đoán chính": curr.primary_diagnosis,
+          "Vị trí khối u chính": curr.primary_tumor_site,
+          "Có tiền sử ung thư ác tính trước đó": curr.prior_malignancy,
+          "Đã từng điều trị trước đó": curr.prior_treatment,
+          "Loại mẫu": curr.sample_type,
+          "Giới tính": curr.sex,
+          "Số năm hút thuốc": curr.years_smoked,
+          "Lịch sử hút thuốc": curr.cigarette_smoking_history_pack_year,
+          "Tình trạng sống": curr.vital_status,
+          "Năm mất": curr.year_of_death,
+          "Năm được chẩn đoán": curr.year_of_diagnosis,
         };        
         acc.push(temp)
       }
@@ -160,6 +154,10 @@ const HealthRecord = () => {
         header: () => <span>Hành động</span>,
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
+            <LucideEye
+              className="h-5 w-5 cursor-pointer text-green-500"
+              onClick={() => handleRowClick(row.original)} // Gọi hàm handleRowClick khi n
+            />
             <LucidePencil
               className="h-5 w-5 cursor-pointer text-blue-500"
               onClick={(event) => {
@@ -183,32 +181,32 @@ const HealthRecord = () => {
         header: () => <span>STT</span>,
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('patient_name', {
-        id: 'patient_name',
-        header: () => <span>Tên bệnh nhân</span>,
+      columnHelper.accessor('patient_id', {
+        id: 'patient_id',
+        header: () => <span>Mã bệnh nhân</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('project_id', {
-        id: 'project_id',
+      columnHelper.accessor('cancer_type', {
+        id: 'cancer_type',
         header: () => <span>Loại ung thư</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('case_submitter_id', {
-        id: 'case_submitter_id',
+      columnHelper.accessor('sample_id', {
+        id: 'sample_id',
         header: () => <span>Mã mẫu bệnh phẩm</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('age_at_index', {
-        id: 'age_at_index',
-        header: () => <span>Tuổi</span>,
+      columnHelper.accessor('diagnosis_age', {
+        id: 'diagnosis_age',
+        header: () => <span>Tuổi chẩn đoán</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('gender', {
-        id: 'gender',
+      columnHelper.accessor('sex', {
+        id: 'sex',
         header: () => <span>Giới tính</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
@@ -225,21 +223,21 @@ const HealthRecord = () => {
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('tumor_grade', {
-        id: 'tumor_grade',
-        header: () => <span>Độ biệt hóa</span>,
+      columnHelper.accessor('biopsy_site', {
+        id: 'biopsy_site',
+        header: () => <span>Vị trí sinh thiết</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('treatment_or_therapy', {
-        id: 'treatment_or_therapy',
-        header: () => <span>Đã điều trị?</span>,
+      columnHelper.accessor('primary_diagnosis', {
+        id: 'primary_diagnosis',
+        header: () => <span>Chẩn đoán chính</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
-      columnHelper.accessor('treatment_type', {
-        id: 'treatment_type',
-        header: () => <span>Hình thức điều trị</span>,
+      columnHelper.accessor('year_of_diagnosis', {
+        id: 'year_of_diagnosis',
+        header: () => <span>Năm chẩn đoán</span>,
         cell: info => info.getValue() ?? 'N/A',
         footer: info => info.column.id,
       }),
@@ -280,7 +278,6 @@ const HealthRecord = () => {
           isPreviousData={false}
           isLoading={isLoading}
           formatExcel={formatExcel}
-          onRowClick={handleRowClick}
         />
       </div>
 
@@ -307,7 +304,7 @@ const HealthRecord = () => {
         defaultValues={selectedRecord ?? {} as Record}
         onSubmit={(data) => {
           editRecord(
-            { case_submitter_id: selectedRecord?.case_submitter_id, updatedRecord: data },
+            { sample_id: selectedRecord?.sample_id, updatedRecord: data },
             {
               onSuccess: () => {
                 // alert('Cập nhật bản ghi thành công!');
@@ -329,7 +326,7 @@ const HealthRecord = () => {
         isLoading={isDeleting}
         handleSubmit={handleDelete}
         title="Xác nhận xóa"
-        body={`Bạn có chắc chắn muốn xóa bản ghi: ${selectedRecord?.case_submitter_id}?`}
+        body={`Bạn có chắc chắn muốn xóa bản ghi: ${selectedRecord?.sample_id}?`}
       />
     </div>
   );

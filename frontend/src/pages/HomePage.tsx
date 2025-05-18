@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import PieChartComponent from "@/components/PieChartComponent";
 import HistogramChart from "@/components/HistogramChart";
 import BarChartComponent from "@/components/BarChartComponent";
-import KaplanMeierChart from "@/components/KaplanMeierChart";
+//import KaplanMeierChart from "@/components/KaplanMeierChart";
 import KaplanMeierComparisonChart from "@/components/KaplanMeierComparisonChart";
 import { useGetRecord } from "@/api/LungRecordApi";
 import { Card, CardContent } from "@/components/ui/card";
+import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
+
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
   const [kmcData, setKmcData] = useState([]);
@@ -35,7 +37,7 @@ const HomePage = () => {
   // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
   const genderCounts = records.reduce(
     (acc, record) => {
-      const gender = record.gender?.toLowerCase();
+      const gender = record.sex?.toLowerCase();
       if (gender === "male" || gender === "nam") {
         acc.male++;
       } else if (gender === "female" || gender === "nữ") {
@@ -57,7 +59,7 @@ const HomePage = () => {
   // Xử lý dữ liệu biểu đồ độ tuổi
   const ageGroups = new Map<string, number>();
   for (const record of records) {
-    const age = Number(record.age_at_index);
+    const age = Number(record.diagnosis_age);
     if (isNaN(age)) continue;
 
     const bucket = `${Math.floor(age / 10) * 10}-${Math.floor(age / 10) * 10 + 9}`;
@@ -115,13 +117,13 @@ const HomePage = () => {
   ];
   
   type RecordType = {
-    days_to_death?: number | string | null;
+    overall_survival_months?: number | string | null;
   };
   
   function getKaplanMeierData(records: RecordType[]) {
     // Lọc những mẫu có days_to_death là số
     const validRecords = records
-      .map((r) => Number(r.days_to_death))
+      .map((r) => Number(r.overall_survival_months))
       .filter((d) => !isNaN(d) && d > 0)
       .sort((a, b) => a - b);
   
@@ -229,14 +231,6 @@ const HomePage = () => {
           <HistogramChart data={ajccStageData} />
         </div>
       </div>
-
-      {/* Biểu đồ Kaplan-Meier */}
-      {/* <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mt-4">Biểu đồ Kaplan-Meier</h2>
-          <KaplanMeierChart data={kmData} />
-        </div>
-      </div> */}
 
       {kmcData.length === 0 ? (
         <p className="text-red-500">Không có dữ liệu Kaplan-Meier!</p>

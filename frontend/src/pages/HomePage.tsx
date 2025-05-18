@@ -3,6 +3,7 @@ import HistogramChart from "@/components/HistogramChart";
 import BarChartComponent from "@/components/BarChartComponent";
 import KaplanMeierChart from "@/components/KaplanMeierChart";
 import { useGetRecord } from "@/api/LungRecordApi";
+import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
 
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
@@ -237,7 +238,8 @@ const HomePage = () => {
       {/* <div className="grid gap-10">
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold mb-4"></h2>
-          <KaplanMeierChart data={kmData} />
+          <img src={KaplanMeierImage} alt="Biểu đồ Kaplan-Meier" className="w-[750px] h-auto rounded-xl shadow" />
+          {/* <KaplanMeierChart data={kmData} /> */}
         </div>
       </div> */}
       <div className="grid md:grid-cols-2 gap-10 mb-20">

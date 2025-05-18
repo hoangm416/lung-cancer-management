@@ -206,53 +206,50 @@ const RecordDetail = () => {
             Thông tin lâm sàng 
           </p>
           <div className="my-auto mt-3 grid grid-cols-2 px-2 text-base font-normal">
-            <span className="py-1.5">Mã hồ sơ</span>
-            <span className="py-1.5 text-right">{record.case_id}</span>
+            <span className="py-1.5">Mã bệnh nhân</span>
+            <span className="py-1.5 text-right">{record.patient_id}</span>
             
             <span className="py-1.5">Mã mẫu bệnh phẩm</span>
             <span className="py-1.5 text-right">{sample_id}</span>
 
+            <span className="py-1.5">Tuổi lúc chẩn đoán</span>
+            <span className="break-all py-1.5 text-right">{record.diagnosis_age}</span>
+
+            <span className="py-1.5">Vị trí sinh thiết</span>
+            <span className="py-1.5 text-right">{record.biopsy_site}</span>
+
             <span className="py-1.5">Loại ung thư</span>
-            <span className="break-all py-1.5 text-right">{record.project_id}</span>
-
-            <span className="py-1.5">Họ và tên bệnh nhân</span>
-            <span className="py-1.5 text-right">{record.patient_name}</span>
-
-            <span className="py-1.5">Tuổi hiện tại</span>
-            <span className="py-1.5 text-right">{record.age_at_index}</span>
+            <span className="py-1.5 text-right">{record.cancer_type}</span>
             
-            <span className="py-1.5">Số ngày đến ngày sinh</span>
-            <span className="py-1.5 text-right">{record.days_to_birth}</span>
+            <span className="py-1.5">Số tháng không bệnh (sau điều trị)</span>
+            <span className="py-1.5 text-right">{record.disease_free_months}</span>
 
-            <span className="py-1.5">Số ngày đến ngày tử vong</span>
-            <span className="py-1.5 text-right">{record.days_to_death}</span>
+            <span className="py-1.5">Tình trạng không bệnh</span>
+            <span className="py-1.5 text-right">{record.disease_free_status}</span>
 
-            <span className="py-1.5">Giới tính</span>
-            <span className="py-1.5 text-right">{record.gender}</span>
+            <span className="py-1.5">Loại bệnh</span>
+            <span className="py-1.5 text-right">{record.disease_type}</span>
 
-            <span className="py-1.5">Tình trạng</span>
-            <span className="py-1.5 text-right">{record.vital_status}</span>
+            <span className="py-1.5">Dân tộc</span>
+            <span className="py-1.5 text-right">{record.ethnicity_category}</span>
 
-            <span className="py-1.5">Năm sinh</span>
-            <span className="py-1.5 text-right">{record.year_of_birth}</span>
+            <span className="py-1.5">Tỷ lệ bộ gen bị biến đổi</span>
+            <span className="py-1.5 text-right">{record.fraction_genome_altered}</span>
 
-            <span className="py-1.5">Năm mất</span>
-            <span className="py-1.5 text-right">{record.year_of_death}</span>
+            <span className="py-1.5">Phân loại theo mã ICD-10</span>
+            <span className="py-1.5 text-right">{record.icd_10_classification}</span>
 
-            <span className="py-1.5">M (di căn xa) theo AJCC</span>
-            <span className="py-1.5 text-right">{record.ajcc_pathologic_m}</span>
+            <span className="py-1.5">Có phải mẫu FFPE không?</span>
+            <span className="py-1.5 text-right">{record.is_ffpe}</span>
 
-            <span className="py-1.5">N (hạch bạch huyết vùng) theo AJCC</span>
-            <span className="py-1.5 text-right">{record.ajcc_pathologic_n}</span>
+            <span className="py-1.5">Mô học (hình thái tế bào/bệnh lý học)</span>
+            <span className="py-1.5 text-right">{record.morphology}</span>
 
-            <span className="py-1.5">Giai đoạn bệnh theo AJCC</span>
-            <span className="py-1.5 text-right">{record.ajcc_pathologic_stage}</span>
+            <span className="py-1.5">Số lượng đột biến</span>
+            <span className="py-1.5 text-right">{record.mutation_count}</span>
 
-            <span className="py-1.5">T (khối u nguyên phát) theo AJCC</span>
-            <span className="py-1.5 text-right">{record.ajcc_pathologic_t}</span>
-
-            <span className="py-1.5">Phiên bản hệ thống AJCC sử dụng</span>
-            <span className="py-1.5 text-right">{record.ajcc_staging_system_edition}</span>
+            <span className="py-1.5">Số tháng sống sót tổng thể</span>
+            <span className="py-1.5 text-right">{record.overall_survival_months}</span>
           </div>
         </div>
 
@@ -261,50 +258,50 @@ const RecordDetail = () => {
             Thông tin lâm sàng
           </p>
           <div className="my-auto mt-3 grid grid-cols-2 px-2 text-base font-normal">
-            <span className="py-1.5">Phân loại khối u</span>
-            <span className="py-1.5 text-right">{record.classification_of_tumor}</span>
+            <span className="py-1.5">Mô tả di căn xa (M) theo AJCC</span>
+            <span className="py-1.5 text-right">{record.ajcc_pathologic_m}</span>
             
-            <span className="py-1.5">Mã bệnh theo ICD-10</span>
-            <span className="py-1.5 text-right">{record.icd_10_code}</span>
+            <span className="py-1.5">Mô tả hạch (N) theo AJCC</span>
+            <span className="py-1.5 text-right">{record.ajcc_pathologic_n}</span>
 
-            <span className="py-1.5">Tình trạng bệnh gần nhất được biết</span>
-            <span className="break-all py-1.5 text-right">{record.last_known_disease_status}</span>
+            <span className="py-1.5">Giai đoạn bệnh lý theo AJCC</span>
+            <span className="break-all py-1.5 text-right">{record.ajcc_pathologic_stage}</span>
 
-            <span className="py-1.5">Hình thái học</span>
-            <span className="py-1.5 text-right">{record.morphology}</span>
+            <span className="py-1.5">Mô tả khối u (T) theo AJCC</span>
+            <span className="py-1.5 text-right">{record.ajcc_pathologic_t}</span>
 
             <span className="py-1.5">Chẩn đoán chính</span>
             <span className="py-1.5 text-right">{record.primary_diagnosis}</span>
             
-            <span className="py-1.5">Có tiền sử ung thư không</span>
+            <span className="py-1.5">Vị trí khối u chính</span>
+            <span className="py-1.5 text-right">{record.primary_tumor_site}</span>
+
+            <span className="py-1.5">Có tiền sử ung thư ác tính trước đó</span>
             <span className="py-1.5 text-right">{record.prior_malignancy}</span>
 
-            <span className="py-1.5">Đã từng điều trị chưa</span>
+            <span className="py-1.5">Đã từng điều trị trước đó</span>
             <span className="py-1.5 text-right">{record.prior_treatment}</span>
 
-            <span className="py-1.5">Tiến triển hoặc tái phát</span>
-            <span className="py-1.5 text-right">{record.progression_or_recurrence}</span>
+            <span className="py-1.5">Loại mẫu</span>
+            <span className="py-1.5 text-right">{record.sample_type}</span>
 
-            <span className="py-1.5">Vị trí phẫu thuật hoặc sinh thiết</span>
-            <span className="py-1.5 text-right">{record.site_of_resection_or_biopsy}</span>
+            <span className="py-1.5">Giới tính</span>
+            <span className="py-1.5 text-right">{record.sex}</span>
 
-            <span className="py-1.5">Có khối u ác tính đồng thời không</span>
-            <span className="py-1.5 text-right">{record.synchronous_malignancy}</span>
+            <span className="py-1.5">Số năm hút thuốc</span>
+            <span className="py-1.5 text-right">{record.years_smoked}</span>
 
-            <span className="py-1.5">Mô hoặc cơ quan phát sinh khối u</span>
-            <span className="py-1.5 text-right">{record.tissue_or_organ_of_origin}</span>
+            <span className="py-1.5">Lịch sử hút thuốc tính theo "gói-năm"</span>
+            <span className="py-1.5 text-right">{record.cigarette_smoking_history_pack_year}</span>
 
-            <span className="py-1.5">Độ ác tính của khối u</span>
-            <span className="py-1.5 text-right">{record.tumor_grade}</span>
+            <span className="py-1.5">Tình trạng sống</span>
+            <span className="py-1.5 text-right">{record.vital_status}</span>
 
-            <span className="py-1.5">Ngày/năm chẩn đoán</span>
+            <span className="py-1.5">Năm mất</span>
+            <span className="py-1.5 text-right">{record.year_of_death}</span>
+
+            <span className="py-1.5">Năm được chẩn đoán</span>
             <span className="py-1.5 text-right">{record.year_of_diagnosis}</span>
-
-            <span className="py-1.5">Điều trị hoặc liệu pháp</span>
-            <span className="py-1.5 text-right">{record.treatment_or_therapy}</span>
-
-            <span className="py-1.5">Loại điều trị</span>
-            <span className="py-1.5 text-right">{record.treatment_type}</span>
 
           </div>
         </div>

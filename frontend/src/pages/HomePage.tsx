@@ -275,7 +275,6 @@ const HomePage = () => {
             title ="Biểu đồ Kaplan-Meier với mô hình Cox-Hazard"
             src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
             alt="Kaplan-Meier from Cox"
-            // className="mx-auto max-w-3xl rounded-xl shadow-md"
           />
         </div>
 
@@ -285,7 +284,6 @@ const HomePage = () => {
             title ="Biểu đồ Kaplan-Meier phân theo giới tính"
             src="http://localhost:5000/static/plots/kaplan_meier_by_gender.png"
             alt="Kaplan-Meier by gender"
-            // className="mx-auto max-w-3xl rounded-xl shadow-md"
           />
         </div>
       </div>
@@ -297,7 +295,6 @@ const HomePage = () => {
             title ="Biểu đồ Kaplan-Meier phân theo nhóm tuổi"
             src="http://localhost:5000/static/plots/kaplan_meier_by_age_group.png"
             alt="Kaplan-Meier by age group"
-            // className="mx-auto max-w-3xl rounded-xl shadow-md"
           />
         </div>
 

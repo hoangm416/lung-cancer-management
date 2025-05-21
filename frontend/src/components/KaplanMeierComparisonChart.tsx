@@ -16,19 +16,23 @@ const lineColors = [
 
 interface CustomDotProps extends DotProps {
   payload?: any;
-  color?: string; // nhận màu trực tiếp
+  color?: string;
+  dataKey?: string;
 }
 
-// Component dấu "+" cho censored event, hiện màu theo prop color
-const CensorDot: FC<CustomDotProps> = ({ cx, cy, payload, color }) => {
-  if (payload?.event === 0 && cx !== undefined && cy !== undefined) {
+const CensorDot: FC<CustomDotProps> = ({ cx, cy, payload, dataKey, color }) => {
+  const groupKey = dataKey as string;
+  const eventKey = `${groupKey}_event`;
+
+  if (payload?.[eventKey] === 0 && cx !== undefined && cy !== undefined) {
     return (
       <text
         x={cx}
         y={cy}
-        dy={7}
+        dy={6}
         textAnchor="middle"
-        fontSize={25}
+        fontSize={20}
+        fontWeight="900"
         fill={color || "black"}
         pointerEvents="none"
       >
@@ -40,10 +44,11 @@ const CensorDot: FC<CustomDotProps> = ({ cx, cy, payload, color }) => {
   return null;
 };
 
+
 interface KMPoint {
   time: number;
   survival: number;
-  event?: number; // event có thể có hoặc không
+  event?: number;
 }
 
 interface KMGroup {
@@ -59,22 +64,22 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
   if (!kmcData || kmcData.length === 0) {
     return <div>Loading...</div>;
   }
-
+  const filteredData = kmcData.filter(group => group.group !== "NA");
   // Tính max thời gian và ticks XAxis
-  const allTimes = kmcData.flatMap(group => group.data.map(point => point.time));
+  const allTimes = filteredData.flatMap(group => group.data.map(point => point.time));
   const maxTime = Math.max(...allTimes);
   const maxTick = Math.ceil(maxTime / 1000) * 1000;
   const tickValues = Array.from({ length: maxTick / 1000 + 1 }, (_, i) => i * 1000);
 
   // Map nhóm sang màu
   const groupColorMap = new Map<string, string>();
-  kmcData.forEach((group, index) => {
+  filteredData.forEach((group, index) => {
     const color = lineColors[index % lineColors.length];
     groupColorMap.set(group.group, color);
   });
 
   // Gom dữ liệu
-  const mergedData = mergeKMData(kmcData);
+  const mergedData = mergeKMData(filteredData);
 
   return (
     <div className="p-4 rounded-xl shadow w-full">
@@ -136,7 +141,7 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
             )}
           />
 
-          {kmcData.map((group) => {
+          {filteredData.map((group) => {
             const color = groupColorMap.get(group.group) || '#000';
             return (
               <Line
@@ -144,10 +149,12 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
                 type="stepAfter"
                 dataKey={group.group}
                 stroke={color}
-                strokeWidth={1}
+                strokeWidth={1.5}
                 connectNulls
                 isAnimationActive={false}
-                dot={(props) => <CensorDot {...props} color={color} />}
+                dot={(props) => (
+                  <CensorDot {...props} dataKey={group.group} color={color} />
+                )}
               />
             );
           })}

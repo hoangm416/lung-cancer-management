@@ -7,30 +7,37 @@ import KaplanMeierComparisonChart from "@/components/KaplanMeierComparisonChart"
 import { useGetRecord } from "@/api/LungRecordApi";
 import { Card, CardContent } from "@/components/ui/card";
 import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
+import { loadTSV } from "@/utils/loadTSV";
+import { prepareKaplanMeierData } from "@/utils/prepareKaplanMeierData.ts"
 
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
-  const [kmcData, setKmcData] = useState([]);
+  const [OSdata, setOSData] = useState<any[]>([]);
+  const [mergedData, setMergedData] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchKMC = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/static/data/sample_kaplan_meier.json");
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-
-        const data = await res.json();
-        setKmcData(data);
-      } catch (err) {
-        console.error("Failed to fetch Kaplan-Meier data:", err);
-      }
-    };
-
-    fetchKMC();
+    loadTSV('/data/TCGA-LUAD.survival.tsv')
+      .then(setOSData)
+      .catch((err) => console.error("❌ Failed to load TSV:", err));
   }, []);
-  console.log("kmcData", kmcData);
+
+  useEffect(() => {
+  if (OSdata.length > 0 && records.length > 0) {
+    const osMap = new Map(OSdata.map(os => [os._PATIENT, os]));
+    const merged = records
+      .map((rec) => {
+        const match = osMap.get(rec.patient_id);
+        if (match) {
+          return {...rec, ...match};
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    setMergedData(merged);
+    console.log("🔗 Merged filtered data:", merged);
+  }
+}, [OSdata, records]);
 
   if (isLoading) return <div>Đang tải dữ liệu...</div>;
 
@@ -200,7 +207,15 @@ const HomePage = () => {
 
   const kmData = getKaplanMeierData(records);
 
-  
+  // Theo giới tính
+  const KMCbySex = prepareKaplanMeierData(mergedData, "sex");
+  console.log("KMC by sex:", KMCbySex);
+  // Theo giai đoạn ung thư
+  const KMCbyStage = prepareKaplanMeierData(mergedData, "ajcc_pathologic_stage");
+  console.log("KMC by stage:", KMCbyStage);
+  // Theo nhóm tuổi
+  const KMCbyAgeGroup = prepareKaplanMeierData(mergedData, "diagnosis_age", [0, 15, 24, 44, 60, 100]);
+  console.log("KMC by age group:", KMCbyAgeGroup);
 
   return (
     <div className="flex flex-col gap-10">
@@ -232,16 +247,26 @@ const HomePage = () => {
         </div>
       </div>
 
-      {kmcData.length === 0 ? (
-        <p className="text-red-500">Không có dữ liệu Kaplan-Meier!</p>
-      ) : (
-        <div className="grid gap-10 border border-black rounded">
+      <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier với mô hình Cox-Hazard</h2>
-          <KaplanMeierComparisonChart kmcData={kmcData} />
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier theo giới tính</h2>
+          <KaplanMeierComparisonChart kmcData={KMCbySex} />
         </div>
       </div>
-      )}
+
+      <div className="grid gap-10 border border-black rounded">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier theo độ tuổi</h2>
+          <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
+        </div>
+      </div>
+
+      <div className="grid gap-10 border border-black rounded">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier theo giai đoạn AJCC</h2>
+          <KaplanMeierComparisonChart kmcData={KMCbyStage} />
+        </div>
+      </div>
       
       <div className="grid md:grid-cols-2 gap-10 mb-20">
         <div className="flex flex-col items-center justify-center border border-black rounded">

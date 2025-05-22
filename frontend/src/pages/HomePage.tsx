@@ -229,11 +229,11 @@ const HomePage = () => {
         </span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
+      <div className="grid md:grid-cols-3 gap-10 mb-20">
         {/* Cột 1: Biểu đồ PieChart */}
-        <div className="flex flex-col items-center justify-center border border-black rounded">
+        <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
           <h2 className="text-xl font-semibold mb-4 mt-4">Tỷ lệ giới tính</h2>
-          <PieChartComponent data={genderData}/>
+          <PieChartComponent data={genderData} />
         </div>
 
         {/* Cột 2: Biểu đồ HistogramChart */}
@@ -241,14 +241,15 @@ const HomePage = () => {
           <h2 className="text-xl font-semibold mb-4 mt-4">Phân bố độ tuổi</h2>
           <HistogramChart data={ageData}/>
         </div>
-      </div>
 
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
-        {/* Cột 1: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-center border border-black rounded">
           <h2 className="text-xl font-semibold mb-4 mt-4">Giai đoạn bệnh theo AJCC</h2>
           <HistogramChart data={ajccStageData} />
         </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-10 mb-20">
+        {/* Cột 1: Biểu đồ HistogramChart */}
       </div>
 
       <div className="grid gap-10 border border-black rounded">

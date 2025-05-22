@@ -1,4 +1,4 @@
-export function prepareKaplanMeierData(
+export function prepareOSGroupedData(
   data: any[],
   groupKey: string,
   ageBuckets?: number[]
@@ -18,12 +18,22 @@ export function prepareKaplanMeierData(
     if (groupKey === "diagnosis_age" && ageBuckets) {
       const age = parseFloat(rec["diagnosis_age"]);
       if (isNaN(age)) return;
-      for (let i = 0; i < ageBuckets.length - 1; i++) {
-        if (age >= ageBuckets[i] && age < ageBuckets[i + 1]) {
-          key = `${ageBuckets[i]}-${ageBuckets[i + 1]}`;
-          break;
-        }
-      }
+      let matched = false;
+for (let i = 0; i < ageBuckets.length - 1; i++) {
+  const start = ageBuckets[i];
+  const end = ageBuckets[i + 1];
+  if (age >= start && age < end) {
+    key = `${start}-${end}`;
+    matched = true;
+    break;
+  }
+}
+
+// Nếu không khớp bucket nào → gán vào nhóm "cuối cùng+"
+if (!matched && age >= ageBuckets[ageBuckets.length - 1]) {
+  key = `${ageBuckets[ageBuckets.length - 1]}+`;
+}
+
     }
 
     if (!key) return;
@@ -81,4 +91,69 @@ export function prepareKaplanMeierData(
     });
 
   return groups;
+}
+
+export function prepareOSUngroupedData(
+  data: any[]
+): { group: string; data: { time: number; event: number; survival: number }[] }[] {
+  const raw: { time: number; event: number }[] = [];
+
+  data.forEach((rec) => {
+    const time = parseFloat(rec["OS.time"]);
+    const event = parseInt(rec["OS"]); // 1 = tử vong, 0 = còn sống (censored)
+    if (isNaN(time) || isNaN(event)) return;
+    raw.push({ time, event });
+  });
+
+  // Sắp xếp thời gian tăng dần
+  const sorted = raw.sort((a, b) => a.time - b.time);
+
+  let atRisk = sorted.length;
+  let survival = 1;
+  const curve: { time: number; event: number; survival: number }[] = [];
+
+  sorted.forEach(({ time, event }) => {
+    if (event === 1) {
+      survival *= (atRisk - 1) / atRisk;
+    }
+    curve.push({ time, event, survival });
+    atRisk -= 1;
+  });
+
+  return [{ group: "Overall Survival", data: curve }];
+}
+
+export function prepareDFSData(
+  records: any[]
+): { group: string; data: { time: number; event: number; survival: number }[] }[] {
+  const raw: { time: number; event: number }[] = [];
+
+  records.forEach((rec) => {
+    const time = parseFloat(rec.disease_free_months ?? "");
+    const status = rec.disease_free_status?.toLowerCase();
+
+    if (isNaN(time) || !status) return;
+
+    // Quy đổi status → event: "Recurred/Progressed" → event = 1, còn lại = 0
+    const event = status.includes("recurred") || status.includes("progressed") ? 1 : 0;
+
+    raw.push({ time, event });
+  });
+
+  // Sắp xếp tăng dần theo thời gian
+  const sorted = raw.sort((a, b) => a.time - b.time);
+
+  let atRisk = sorted.length;
+  let survival = 1;
+  const curve: { time: number; event: number; survival: number }[] = [];
+
+  sorted.forEach(({ time, event }) => {
+    if (event === 1) {
+      survival *= (atRisk - 1) / atRisk;
+    }
+    curve.push({ time, event, survival });
+    atRisk -= 1;
+  });
+
+  return [{ group: "Disease-Free Survival", data: curve }];
 }

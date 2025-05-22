@@ -39,7 +39,7 @@ export function loadTSV(path: string): Promise<OSDataRow[]> {
         }, {} as Record<string, OSDataRow>)
       );
 
-      console.log(`✅ TSV loaded, unique patients: ${uniqueData.length}`);
+      console.log(`✅ TSV loaded, unique patients: `, uniqueData);
       return uniqueData;
     });
 }

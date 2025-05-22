@@ -100,9 +100,10 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
 
           <YAxis
             domain={[0, 1]}
-            label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft' }}
+            tickFormatter={(value) => `${(value * 100)}%`}
+            label={{ angle: -90, position: 'insideLeft' }}
           />
-          <Tooltip />
+          <Tooltip formatter={(value: number) => `${(value * 100).toFixed(2)}%`} />
           <Legend
             layout="horizontal"
             align="center"

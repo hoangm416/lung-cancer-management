@@ -8,7 +8,7 @@ import { useGetRecord } from "@/api/LungRecordApi";
 import { Card, CardContent } from "@/components/ui/card";
 import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
 import { loadTSV } from "@/utils/loadTSV";
-import { prepareKaplanMeierData } from "@/utils/prepareKaplanMeierData.ts"
+import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData.ts"
 
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
@@ -123,98 +123,102 @@ const HomePage = () => {
     // { name: "Không xác định", count: ajccStageCounts.undefined },
   ];
   
-  type RecordType = {
-    overall_survival_months?: number | string | null;
-  };
+  // type RecordType = {
+  //   overall_survival_months?: number | string | null;
+  // };
   
-  function getKaplanMeierData(records: RecordType[]) {
-    // Lọc những mẫu có days_to_death là số
-    const validRecords = records
-      .map((r) => Number(r.overall_survival_months))
-      .filter((d) => !isNaN(d) && d > 0)
-      .sort((a, b) => a - b);
+  // function getKaplanMeierData(records: RecordType[]) {
+  //   // Lọc những mẫu có days_to_death là số
+  //   const validRecords = records
+  //     .map((r) => Number(r.overall_survival_months))
+  //     .filter((d) => !isNaN(d) && d > 0)
+  //     .sort((a, b) => a - b);
   
-    const total = records.length;
-    if (total === 0) return [];
+  //   const total = records.length;
+  //   if (total === 0) return [];
   
-    // Đếm số người chết tại từng ngày
-    const deathCounts = new Map<number, number>();
-    for (const day of validRecords) {
-      deathCounts.set(day, (deathCounts.get(day) || 0) + 1);
-    }
+  //   // Đếm số người chết tại từng ngày
+  //   const deathCounts = new Map<number, number>();
+  //   for (const day of validRecords) {
+  //     deathCounts.set(day, (deathCounts.get(day) || 0) + 1);
+  //   }
   
-    //Tính tỷ lệ sống sót
-    const result: { day: number; survival: number }[] = [];
-    let survival = 1.0;
-    let atRisk = total;
+  //   //Tính tỷ lệ sống sót
+  //   const result: { day: number; survival: number }[] = [];
+  //   let survival = 1.0;
+  //   let atRisk = total;
   
-    const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
-    for (const day of sortedDays) {
-      const deaths = deathCounts.get(day)!;
-      survival *= 1 - deaths / atRisk;
-      result.push({ day, survival: parseFloat(survival.toFixed(4)) });
-      atRisk -= deaths;
-    }
+  //   const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
+  //   for (const day of sortedDays) {
+  //     const deaths = deathCounts.get(day)!;
+  //     survival *= 1 - deaths / atRisk;
+  //     result.push({ day, survival: parseFloat(survival.toFixed(4)) });
+  //     atRisk -= deaths;
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  type PatientRecord = {
-    days_to_death: number;
-  };
+  // type PatientRecord = {
+  //   days_to_death: number;
+  // };
 
-  type KaplanMeierDataPoint = {
-    day: number;
-    survival: number;
-  };
+  // type KaplanMeierDataPoint = {
+  //   day: number;
+  //   survival: number;
+  // };
 
-  function calculateKaplanMeierCurve(records: PatientRecord[]): KaplanMeierDataPoint[] {
-    if (records.length === 0) return [];
+  // function calculateKaplanMeierCurve(records: PatientRecord[]): KaplanMeierDataPoint[] {
+  //   if (records.length === 0) return [];
 
-    // Đếm số ca tử vong theo từng ngày
-    const deathCounts = new Map<number, number>();
-    for (const record of records) {
-      const day = Math.floor(record.days_to_death);
-      if (!deathCounts.has(day)) {
-        deathCounts.set(day, 1);
-      } else {
-        deathCounts.set(day, deathCounts.get(day)! + 1);
-      }
-    }
+  //   // Đếm số ca tử vong theo từng ngày
+  //   const deathCounts = new Map<number, number>();
+  //   for (const record of records) {
+  //     const day = Math.floor(record.days_to_death);
+  //     if (!deathCounts.has(day)) {
+  //       deathCounts.set(day, 1);
+  //     } else {
+  //       deathCounts.set(day, deathCounts.get(day)! + 1);
+  //     }
+  //   }
 
-    // Sắp xếp các ngày tử vong tăng dần
-    const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
+  //   // Sắp xếp các ngày tử vong tăng dần
+  //   const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
 
-    const result: KaplanMeierDataPoint[] = [];
-    let survival = 1.0;
-    let atRisk = records.length;
+  //   const result: KaplanMeierDataPoint[] = [];
+  //   let survival = 1.0;
+  //   let atRisk = records.length;
 
-    for (const day of sortedDays) {
-      const deaths = deathCounts.get(day)!;
-      survival *= 1 - deaths / atRisk;
-      result.push({ day, survival: parseFloat(survival.toFixed(4)) });
-      atRisk -= deaths;
-    }
+  //   for (const day of sortedDays) {
+  //     const deaths = deathCounts.get(day)!;
+  //     survival *= 1 - deaths / atRisk;
+  //     result.push({ day, survival: parseFloat(survival.toFixed(4)) });
+  //     atRisk -= deaths;
+  //   }
 
-    // Bổ sung điểm tại mốc 2 năm nếu chưa có
-    const lastDay = result.length > 0 ? result[result.length - 1].day : 0;
-    if (lastDay < 730) {
-      result.push({ day: 730, survival: parseFloat(survival.toFixed(4)) });
-    }
+  //   // Bổ sung điểm tại mốc 2 năm nếu chưa có
+  //   const lastDay = result.length > 0 ? result[result.length - 1].day : 0;
+  //   if (lastDay < 730) {
+  //     result.push({ day: 730, survival: parseFloat(survival.toFixed(4)) });
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  const kmData = getKaplanMeierData(records);
+  // const kmData = getKaplanMeierData(records);
 
-  // Theo giới tính
-  const KMCbySex = prepareKaplanMeierData(mergedData, "sex");
+  // Dữ liệu sống sót Kaplan-Meier tổng thể
+  const kmOverall = prepareOSUngroupedData(mergedData);
+  // Dữ liệu DFS
+  const kmDFS = prepareDFSData(records);
+  // OS Theo giới tính
+  const KMCbySex = prepareOSGroupedData(mergedData, "sex");
   console.log("KMC by sex:", KMCbySex);
-  // Theo giai đoạn ung thư
-  const KMCbyStage = prepareKaplanMeierData(mergedData, "ajcc_pathologic_stage");
+  // OS Theo giai đoạn ung thư
+  const KMCbyStage = prepareOSGroupedData(mergedData, "ajcc_pathologic_stage");
   console.log("KMC by stage:", KMCbyStage);
-  // Theo nhóm tuổi
-  const KMCbyAgeGroup = prepareKaplanMeierData(mergedData, "diagnosis_age", [0, 15, 24, 44, 60, 100]);
+  // OS Theo nhóm tuổi
+  const KMCbyAgeGroup = prepareOSGroupedData(mergedData, "diagnosis_age", [0, 15, 24, 44, 60]);
   console.log("KMC by age group:", KMCbyAgeGroup);
 
   return (
@@ -249,62 +253,76 @@ const HomePage = () => {
 
       <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier theo giới tính</h2>
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
+          <KaplanMeierComparisonChart kmcData={kmOverall} />
+        </div>
+      </div>
+      
+      <div className="grid gap-10 border border-black rounded">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
+          <KaplanMeierComparisonChart kmcData={kmDFS} />
+        </div>
+      </div>
+
+      <div className="grid gap-10 border border-black rounded">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giới tính</h2>
           <KaplanMeierComparisonChart kmcData={KMCbySex} />
         </div>
       </div>
 
       <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier theo độ tuổi</h2>
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo độ tuổi</h2>
           <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
         </div>
       </div>
 
       <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier theo giai đoạn AJCC</h2>
+          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giai đoạn AJCC</h2>
           <KaplanMeierComparisonChart kmcData={KMCbyStage} />
         </div>
       </div>
       
       <div className="grid md:grid-cols-2 gap-10 mb-20">
         <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier với mô hình Cox-Hazard</h2>
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard</h2>
           <img
-            title ="Biểu đồ Kaplan-Meier với mô hình Cox-Hazard"
+            title ="Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard"
             src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
-            alt="Kaplan-Meier from Cox"
+            alt="Kaplan-Meier: OS from Cox"
           />
         </div>
 
         <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo giới tính</h2>
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS phân theo giới tính</h2>
           <img
-            title ="Biểu đồ Kaplan-Meier phân theo giới tính"
+            title ="Biểu đồ Kaplan-Meier: OS phân theo giới tính"
             src="http://localhost:5000/static/plots/kaplan_meier_by_gender.png"
-            alt="Kaplan-Meier by gender"
+            alt="Kaplan-Meier: OS by gender"
           />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-10 mb-20">
         <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo nhóm tuổi</h2>
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS phân theo nhóm tuổi</h2>
           <img
-            title ="Biểu đồ Kaplan-Meier phân theo nhóm tuổi"
+            title ="Biểu đồ Kaplan-Meier: OS phân theo nhóm tuổi"
             src="http://localhost:5000/static/plots/kaplan_meier_by_age_group.png"
-            alt="Kaplan-Meier by age group"
+            alt="Kaplan-Meier: OS by age group"
           />
         </div>
 
         <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier phân theo giai đoạn AJCC</h2>
+          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS phân theo giai đoạn AJCC</h2>
           <Card>
             <CardContent>
-              <img src="http://localhost:5000/static/plots/kaplan_meier_by_ajcc_stage.png" alt="Kaplan-Meier by AJCC Stage" />
+              <img src="http://localhost:5000/static/plots/kaplan_meier_by_ajcc_stage.png" alt="Kaplan-Meier: OS by AJCC Stage" />
               <p className="text-sm text-muted-foreground text-center mt-2">
-                Kaplan-Meier Curve by AJCC Stage
+                Kaplan-Meier: OS Curve by AJCC Stage
               </p>
             </CardContent>
           </Card>

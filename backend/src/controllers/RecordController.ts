@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Record from "../models/record";
-import mongoose from "mongoose";
 
 // Lấy danh sách Record
 const getRecord = async (req: Request, res: Response) => {

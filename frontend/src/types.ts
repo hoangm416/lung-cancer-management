@@ -64,3 +64,9 @@ export type Research = {
   image: string;
   detail: string;
 };
+
+export type User = {
+  email: string;
+  password: string;
+  name: string;
+}

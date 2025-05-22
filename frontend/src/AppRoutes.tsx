@@ -10,6 +10,8 @@ import ResearchDetail from "./pages/ResearchDetail";
 import Analytics from "./pages/Analytics";
 import HealthRecord from "./pages/HealthRecord";
 import RecordDetail from "./pages/RecordDetail";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const AppRoutes = () => {
   return (
@@ -17,20 +19,25 @@ const AppRoutes = () => {
       <Route
         path="/"
         element={
-          <Layout showHero={false}>
+          <Layout>
             <HomePage />
           </Layout>
         }
       />
       {/* <Route path="/auth-callback" element={<AuthCallbackPage />} /> */}
       <Route
-        path="/signup"
+        path="/login"
         element={
-          <Layout>
-            <HomePage />
-          </Layout>
+          <Login />
         }
       />
+      <Route
+        path="/register"
+        element={
+          <Register />
+        }
+      />
+
       <Route
         path="/research"
         element={

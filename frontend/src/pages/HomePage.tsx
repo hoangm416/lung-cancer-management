@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
 import { loadTSV } from "@/utils/loadTSV";
 import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData.ts"
+import FullscreenContainer from '@/components/FullScreenContainer';
 
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
@@ -229,33 +230,38 @@ const HomePage = () => {
         </span>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-10 mb-20">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-10 mb-20">
         {/* Cột 1: Biểu đồ PieChart */}
         <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Tỷ lệ giới tính</h2>
-          <PieChartComponent data={genderData} />
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold text-center mb-4 mt-4">Tỷ lệ giới tính</h2>
+            <PieChartComponent data={genderData} />
+          </FullscreenContainer>
         </div>
 
         {/* Cột 2: Biểu đồ HistogramChart */}
-        <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Phân bố độ tuổi</h2>
-          <HistogramChart data={ageData}/>
+        <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold text-center mb-4 mt-4">Phân bố độ tuổi</h2>
+            <HistogramChart data={ageData}/>
+          </FullscreenContainer>
         </div>
 
-        <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Giai đoạn bệnh theo AJCC</h2>
-          <HistogramChart data={ajccStageData} />
+        {/* Cột 3: Biểu đồ HistogramChart */}
+        <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold text-center mb-4 mt-4">Giai đoạn bệnh theo AJCC</h2>
+            <HistogramChart data={ajccStageData} />
+          </FullscreenContainer>
         </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
-        {/* Cột 1: Biểu đồ HistogramChart */}
       </div>
 
       <div className="grid gap-10 border border-black rounded">
         <div className="flex flex-col items-center justify-center">
+          <FullscreenContainer>
           <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
           <KaplanMeierComparisonChart kmcData={kmOverall} />
+          </FullscreenContainer>
         </div>
       </div>
       

@@ -19,21 +19,20 @@ export function prepareOSGroupedData(
       const age = parseFloat(rec["diagnosis_age"]);
       if (isNaN(age)) return;
       let matched = false;
-for (let i = 0; i < ageBuckets.length - 1; i++) {
-  const start = ageBuckets[i];
-  const end = ageBuckets[i + 1];
-  if (age >= start && age < end) {
-    key = `${start}-${end}`;
-    matched = true;
-    break;
-  }
-}
+      for (let i = 0; i < ageBuckets.length - 1; i++) {
+        const start = ageBuckets[i];
+        const end = ageBuckets[i + 1];
+        if (age >= start && age < end) {
+          key = `${start}-${end}`;
+          matched = true;
+          break;
+        }
+      }
 
-// Nếu không khớp bucket nào → gán vào nhóm "cuối cùng+"
-if (!matched && age >= ageBuckets[ageBuckets.length - 1]) {
-  key = `${ageBuckets[ageBuckets.length - 1]}+`;
-}
-
+      // Nếu không khớp bucket nào → gán vào nhóm "cuối cùng+"
+      if (!matched && age >= ageBuckets[ageBuckets.length - 1]) {
+        key = `${ageBuckets[ageBuckets.length - 1]}+`;
+      }
     }
 
     if (!key) return;

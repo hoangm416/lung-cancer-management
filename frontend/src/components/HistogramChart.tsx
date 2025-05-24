@@ -27,15 +27,15 @@ const CustomizedTick = (props: any) => {
 
 const HistogramChart = ({ data }: { data: { name: string; count: number }[] }) => {
   return (
-    <div style={{ width: "100%", height: 250 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div style={{ width: "100%", maxWidth: 700, height: "100%", maxHeight: 350, margin: "0 auto", }}>
+      <ResponsiveContainer width="100%" height={350}>
         <BarChart
           data={data}
           margin={{
             top: 20,
             right: 30,
             left: 20,
-            bottom: 10,
+            bottom: 15, 
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />

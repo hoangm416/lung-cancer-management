@@ -68,5 +68,5 @@ export type Research = {
 export type User = {
   email: string;
   password: string;
-  name: string;
+  name?: string;
 }

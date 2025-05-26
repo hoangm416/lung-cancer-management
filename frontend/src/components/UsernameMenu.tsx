@@ -5,39 +5,35 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useAuth0 } from "@auth0/auth0-react";
-import { Link } from "react-router-dom";
-import { Separator } from "./ui/separator";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
 const UsernameMenu = () => {
-  const { user, logout } = useAuth0();
+  const navigate = useNavigate();
+  const [email] = useState(
+    () => localStorage.getItem("email") || sessionStorage.getItem("email")
+  );
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("email");
+    navigate("/login");
+  };
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center px-3 font-bold hover:text-accent gap-2">
+      <DropdownMenuTrigger className="flex items-center px-3 font-bold gap-2">
         <CircleUserRound className="text-accent" />
-        {user?.email}
+        {email}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {/* <DropdownMenuItem>
-          <Link
-            to="/manage-restaurant"
-            className="font-bold hover:text-hover"
-          >
-            Quản lý bệnh nhân
-          </Link>
-        </DropdownMenuItem> */}
-        <DropdownMenuItem>
-          <Link to="/user-profile" className="font-bold hover:text-hover">
-            Hồ sơ cá nhân
-          </Link>
-        </DropdownMenuItem>
-        <Separator />
         <DropdownMenuItem>
           <Button
-            onClick={() => logout()}
-            className="flex flex-1 font-bold bg-destructive"
+            onClick={handleLogout}
+            className="flex flex-1 font-bold"
           >
             Đăng xuất
           </Button>

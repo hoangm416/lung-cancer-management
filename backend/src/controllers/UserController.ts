@@ -63,9 +63,16 @@ const loginUser = async (req: Request, res: Response) => {
       return;
     }
 
+    const token = jwt.sign (
+      { userId: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "4h" }
+    )
+
     // Đăng nhập thành công
     res.status(200).json({
       message: "Đăng nhập thành công",
+      token,
       user: {
         id: user._id,
         email: user.email,

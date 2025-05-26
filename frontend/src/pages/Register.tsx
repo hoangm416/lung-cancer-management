@@ -21,7 +21,7 @@ const Register = () => {
     try {
       // gọi API đăng ký
       const data = await createUser({ name, email, password });
-      console.log('Register success:', data); 
+      console.log('Đăng ký thành công:', data); 
       setName('');
       setEmail('');
       setPassword('');

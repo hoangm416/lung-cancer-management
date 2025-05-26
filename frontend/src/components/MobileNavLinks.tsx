@@ -1,20 +1,21 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const MobileNavLinks = () => {
-  const { logout } = useAuth0();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("email");
+    navigate("/login");
+  };
+
   return (
     <>
-      <Link
-        to="/user-profile"
-        className="flex bg-white items-center font-bold hover:text-primary"
-      >
-        Hồ sơ cá nhân
-      </Link>
       <Button
-        onClick={() => logout()}
-        className="flex items-center px-3 font-bold hover:bg-gray-500"
+        onClick={handleLogout}
+        className="flex items-center px-3 font-bold hover:bg-hover"
       >
         Đăng xuất
       </Button>

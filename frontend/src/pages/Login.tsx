@@ -1,27 +1,51 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import LungImage from '@/assets/lung-cancer.png' 
 import { Label } from '@/components/ui/label'
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { useLoginUser } from '@/api/UserApi'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { loginUser, isLoading } = useLoginUser();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log({ email, password, rememberMe })
-    // Add your authentication logic here
+    
+    try {
+      const data = await loginUser({ email, password });
+      if (data?.token) {
+        if (rememberMe) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("email", data.user.email);
+        } else {
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("email", data.user.email);
+        }
+      }
+      setIsLoggedIn(true);
+    } catch (err) {
+      console.error('Đăng nhập thất bại:', err);
+    }
   }
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/"); // Điều hướng đến trang chủ
+    }
+  }, [isLoggedIn, navigate]);
+
   const handleRememberMeChange = () => {
-    setRememberMe(!rememberMe)
-    console.log("Remember me toggled:", !rememberMe)
+    setRememberMe(!rememberMe);
   }
 
   return (
@@ -106,8 +130,8 @@ const Login = () => {
                   Nhớ mật khẩu
                 </Label>
               </div>
-              <Button type="submit" className="w-full">
-                Đăng nhập
+              <Button type="submit" disabled={isLoading} className="w-full">
+                {isLoading ? "Đang xử lý" : "Đăng nhập"}
               </Button>
             </form>
           </CardContent>

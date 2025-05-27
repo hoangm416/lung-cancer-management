@@ -135,8 +135,8 @@ export function prepareDFSData(
 
     // Quy đổi status → event: "Recurred/Progressed" → event = 1, còn lại = 0
     const event = status.includes("recurred") || status.includes("progressed") ? 1 : 0;
-
-    raw.push({ time, event });
+    
+    raw.push({ time: parseInt((time * 30).toFixed(0)), event }); // Chuyển đổi tháng sang ngày
   });
 
   // Sắp xếp tăng dần theo thời gian

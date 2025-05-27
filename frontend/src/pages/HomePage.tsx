@@ -230,7 +230,7 @@ const HomePage = () => {
         </span>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-10 mb-20">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
         {/* Cột 1: Biểu đồ PieChart */}
         <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
           <FullscreenContainer>
@@ -256,44 +256,46 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
           <FullscreenContainer>
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
-          <KaplanMeierComparisonChart kmcData={kmOverall} />
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
+            <KaplanMeierComparisonChart kmcData={kmOverall} />
+          </FullscreenContainer>
+        </div>
+
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
+            <KaplanMeierComparisonChart kmcData={kmDFS} />
           </FullscreenContainer>
         </div>
       </div>
-      
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
-          <KaplanMeierComparisonChart kmcData={kmDFS} />
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giới tính</h2>
+            <KaplanMeierComparisonChart kmcData={KMCbySex} />
+          </FullscreenContainer>
+        </div>
+
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo độ tuổi</h2>
+            <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
+          </FullscreenContainer>
         </div>
       </div>
 
       <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giới tính</h2>
-          <KaplanMeierComparisonChart kmcData={KMCbySex} />
-        </div>
-      </div>
-
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo độ tuổi</h2>
-          <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
-        </div>
-      </div>
-
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
           <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giai đoạn AJCC</h2>
           <KaplanMeierComparisonChart kmcData={KMCbyStage} />
         </div>
       </div>
       
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
+      {/* <div className="grid md:grid-cols-2 gap-10 mb-20">
         <div className="flex flex-col items-center justify-center border border-black rounded">
           <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard</h2>
           <img
@@ -333,9 +335,8 @@ const HomePage = () => {
               </p>
             </CardContent>
           </Card>
-
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

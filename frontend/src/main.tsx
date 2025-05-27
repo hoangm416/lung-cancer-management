@@ -7,6 +7,8 @@ import AppRoutes from "./AppRoutes";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "sonner";
 
+import { FullscreenProvider } from "@/context/FullScreenContext";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -19,7 +21,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Router> 
       <QueryClientProvider client={queryClient}>
-        <AppRoutes />
+        <FullscreenProvider>
+          <AppRoutes />
+        </FullscreenProvider>
         <Toaster visibleToasts={1} position="top-right" richColors />
       </QueryClientProvider>
     </Router>

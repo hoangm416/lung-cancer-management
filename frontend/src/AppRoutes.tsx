@@ -12,6 +12,7 @@ import HealthRecord from "./pages/HealthRecord";
 import RecordDetail from "./pages/RecordDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+// import Guide from "./pages/GuidePage";
 
 const AppRoutes = () => {
   return (

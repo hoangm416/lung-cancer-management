@@ -5,6 +5,7 @@ import {
   LucideClipboardList as FileIcon,
   LucideBookOpen as BookIcon,
   LucideBrain as BrainIcon,
+  LucideHelpCircle as GuideIcon,
 } from 'lucide-react';
 import MobileNav from "./MobileNav";
 
@@ -27,6 +28,7 @@ const Header = () => {
             { path: "/research", label: "Nghiên cứu", Icon: BookIcon },
             { path: "/record", label: "Hồ sơ", Icon: FileIcon },
             { path: "/analytics", label: "Phân tích", Icon: BrainIcon },
+            { path: "/guide", label: "Hướng dẫn", Icon: GuideIcon },
           ].map(({ path, label, Icon }) => (
             <NavLink key={path} to={path} className={({ isActive }) =>
               `m-1 flex h-[40px] w-[135px] cursor-pointer items-center justify-center gap-x-2 rounded-md transition-colors

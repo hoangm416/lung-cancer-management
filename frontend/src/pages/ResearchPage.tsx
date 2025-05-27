@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { LucidePlus, LucidePencil, LucideTrash } from 'lucide-react';
 import ResearchForm from '@/forms/research-form/ResearchForm';
 import EditResearchForm from '@/forms/research-form/EditResearchForm';
+import SearchResearchForm from '@/forms/research-form/SearchResearchForm';
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { useAddResearch, useEditResearch, useDeleteResearch } from '@/api/ResearchApi';
-import { Research } from '@/types'; //no type -> erro
+import { useAddResearch, useSearchResearch, useEditResearch, useDeleteResearch } from '@/api/ResearchApi';
+import { Research } from '@/types';
 
 import research1 from "../assets/research1.png";
 import research2 from "../assets/research2.png";
@@ -35,84 +36,70 @@ const categories = [
   { id: "specialize", label: "Khoa học chuyên sâu" }
 ];
 
-// interface ResearchItem {
-//   _id: string;
-//   submitter_id: string;
-//   research_id: number;
-//   type: string;
-//   title: string;
-//   description: string;
-//   image: string;
-//   detail: string;
-//   date: string;
-// }
-
 const ResearchPage = () => {
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
   const [articles, setArticles] = useState<Research[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // State quản lý dialog và nghiên cứu được chọn
-    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [selectedResearch, setSelectedResearch] = useState<Research | null>(null);
-  
-    // API hooks
-    //const { isLoading } = useGetAllResearches();
-    const { mutate: addResearch } = useAddResearch();
-    const { mutate: editResearch } = useEditResearch();
-    const { mutate: deleteResearch, isLoading: isDeleting } = useDeleteResearch();
-  
-    // Hàm mở/đóng dialog thêm
-    const openAddDialog = () => {
-      setSelectedResearch(null);
-      setIsAddDialogOpen(true);
-    };
-  
-    const closeAddDialog = () => {
-      setSelectedResearch(null);
-      setIsAddDialogOpen(false);
-    };
-  
-    // Hàm mở/đóng dialog chỉnh sửa
-    const openEditDialog = (research: Research) => {
-      setSelectedResearch(research);
-      setIsEditDialogOpen(true);
-    };
-  
-    const closeEditDialog = () => {
-      setSelectedResearch(null);
-      setIsEditDialogOpen(false);
-    };
-  
-    // Hàm mở/đóng ConfirmDialog
-    const openConfirmDialog = (research: Research) => {
-      setSelectedResearch(research);
-      setIsConfirmOpen(true);
-    };
-  
-    const closeConfirmDialog = () => {
-      setSelectedResearch(null);
-      setIsConfirmOpen(false);
-    };
-  
-    // Hàm xử lý xóa nghiên cứu
-    const handleDelete = () => {
-      if (selectedResearch) {
-        deleteResearch(selectedResearch._id, {
-          onSuccess: () => {
-            //alert('Xóa nghiên cứu thành công!');
-            closeConfirmDialog();
-          },
-          onError: (error) => {
-            console.error('Lỗi khi xóa nghiên cứu:', error);
-            //alert('Xóa nghiên cứu thất bại!');
-          },
-        });
-      }
-    };
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedResearch, setSelectedResearch] = useState<Research | null>(null);
 
+  // API hooks
+  const { researches, isLoading, isError, error } = useSearchResearch(searchQuery);
+  const { mutate: addResearch } = useAddResearch();
+  const { mutate: editResearch } = useEditResearch();
+  const { mutate: deleteResearch, isLoading: isDeleting } = useDeleteResearch();
+
+  // Hàm mở/đóng dialog thêm
+  const openAddDialog = () => {
+    setSelectedResearch(null);
+    setIsAddDialogOpen(true);
+  };
+
+  const closeAddDialog = () => {
+    setSelectedResearch(null);
+    setIsAddDialogOpen(false);
+  };
+
+  // Hàm mở/đóng dialog chỉnh sửa
+  const openEditDialog = (research: Research) => {
+    setSelectedResearch(research);
+    setIsEditDialogOpen(true);
+  };
+
+  const closeEditDialog = () => {
+    setSelectedResearch(null);
+    setIsEditDialogOpen(false);
+  };
+
+  // Hàm mở/đóng ConfirmDialog
+  const openConfirmDialog = (research: Research) => {
+    setSelectedResearch(research);
+    setIsConfirmOpen(true);
+  };
+
+  const closeConfirmDialog = () => {
+    setSelectedResearch(null);
+    setIsConfirmOpen(false);
+  };
+
+  // Hàm xử lý xóa nghiên cứu
+  const handleDelete = () => {
+    if (selectedResearch) {
+      deleteResearch(selectedResearch._id, {
+        onSuccess: () => {
+          closeConfirmDialog();
+        },
+        onError: (error) => {
+          console.error('Lỗi khi xóa nghiên cứu:', error);
+        },
+      });
+    }
+  };
 
   const activeTab = type || "popular";
 
@@ -127,12 +114,25 @@ const ResearchPage = () => {
       });
   }, []);
 
-  const filtered = articles.filter((item) => item.type === activeTab);
+  // Lọc bài nghiên cứu theo thể loại và tìm kiếm
+  const filtered = articles
+    .filter((item) => item.type === activeTab)
+    .filter((item) => 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px] mb-4">
         <span className="text-2xl font-medium text-text">Danh sách bài báo nghiên cứu khoa học</span>
+        
+        {/* Ô tìm kiếm */}
+        <SearchResearchForm
+          query={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
         <Button
           className="flex items-center gap-2 border font-normal"
           onClick={openAddDialog}
@@ -141,6 +141,7 @@ const ResearchPage = () => {
           Thêm nghiên cứu
         </Button>
       </div>
+      
       {/* Tabs */}
       <div className="flex space-x-4 mb-6">
         {categories.map((cat) => (
@@ -173,7 +174,7 @@ const ResearchPage = () => {
                   : "https://via.placeholder.com/300x200.png?text=No+Image"
               }
               alt={article.title}
-              className="w-1/3 h-48 object-cover"
+              className="w-1/4 h-48 object-cover"
             />
             <div className="p-4 w-2/3 flex flex-col justify-between">
               <div>
@@ -210,53 +211,51 @@ const ResearchPage = () => {
           </div>
         ))}
 
-      {/* Dialog thêm nghiên cứu */}
-      <ResearchForm
-        isOpen={isAddDialogOpen}
-        onClose={closeAddDialog}
-        onSubmit={(data) => {
-          addResearch(data, {
-            onSuccess: () => {
-              closeAddDialog();
-            },
-            onError: () => {
-              alert('Thêm nghiên cứu thất bại!');
-            },
-          });
-        }}
-      />
-
-      {/* Dialog chỉnh sửa nghiên cứu */}
-      <EditResearchForm
-        isOpen={isEditDialogOpen}
-        onClose={closeEditDialog}
-        defaultValues={selectedResearch ?? {} as Research}
-        onSubmit={(data) => {
-          editResearch(
-            { _id: data._id, submitter_id: selectedResearch?.submitter_id, updatedResearch: data },
-            {
+        {/* Dialog thêm nghiên cứu */}
+        <ResearchForm
+          isOpen={isAddDialogOpen}
+          onClose={closeAddDialog}
+          onSubmit={(data) => {
+            addResearch(data, {
               onSuccess: () => {
-                // alert('Cập nhật nghiên cứu thành công!');
-                closeEditDialog();
+                closeAddDialog();
               },
-              onError: (error) => {
-                console.error('Lỗi khi cập nhật nghiên cứu:', error);
-                // alert('Cập nhật nghiên cứu thất bại!');
+              onError: () => {
+                alert('Thêm nghiên cứu thất bại!');
               },
-            }
-          );
-        }}
-      />
+            });
+          }}
+        />
 
-      {/* ConfirmDialog xóa nghiên cứu */}
-      <ConfirmDialog
-        isOpen={isConfirmOpen}
-        close={closeConfirmDialog}
-        isLoading={isDeleting}
-        handleSubmit={handleDelete}
-        title="Xác nhận xóa"
-        body={`Bạn có chắc chắn muốn xóa nghiên cứu: ${selectedResearch?._id}?`}
-      />
+        {/* Dialog chỉnh sửa nghiên cứu */}
+        <EditResearchForm
+          isOpen={isEditDialogOpen}
+          onClose={closeEditDialog}
+          defaultValues={selectedResearch ?? {} as Research}
+          onSubmit={(data) => {
+            editResearch(
+              { _id: data._id, submitter_id: selectedResearch?.submitter_id, updatedResearch: data },
+              {
+                onSuccess: () => {
+                  closeEditDialog();
+                },
+                onError: (error) => {
+                  console.error('Lỗi khi cập nhật nghiên cứu:', error);
+                },
+              }
+            );
+          }}
+        />
+
+        {/* ConfirmDialog xóa nghiên cứu */}
+        <ConfirmDialog
+          isOpen={isConfirmOpen}
+          close={closeConfirmDialog}
+          isLoading={isDeleting}
+          handleSubmit={handleDelete}
+          title="Xác nhận xóa"
+          body={`Bạn có chắc chắn muốn xóa nghiên cứu: ${selectedResearch?._id}?`}
+        />
       </div>
     </div>
   );

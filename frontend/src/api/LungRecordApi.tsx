@@ -65,13 +65,13 @@ export const useEditRecord = () => {
   const queryClient = useQueryClient();
 
   const editRecordRequest = async ({
-    case_submitter_id,
+    sample_id,
     updatedRecord,
   }: {
-    case_submitter_id?: string;
+    sample_id?: string;
     updatedRecord: Record;
   }): Promise<Record> => {
-    const response = await fetch(`${API_BASE_URL}/api/record/${case_submitter_id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/record/${sample_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -102,9 +102,9 @@ export const useEditRecord = () => {
 export const useDeleteRecord = () => {
   const queryClient = useQueryClient();
 
-  const deleteRecordRequest = async (case_submitter_id: string): Promise<void> => {
+  const deleteRecordRequest = async (sample_id: string): Promise<void> => {
 
-    const response = await fetch(`${API_BASE_URL}/api/record/${case_submitter_id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/record/${sample_id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

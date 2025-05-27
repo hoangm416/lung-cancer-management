@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Record from "../models/record";
-import mongoose from "mongoose";
 
 // Lấy danh sách Record
 const getRecord = async (req: Request, res: Response) => {
@@ -17,87 +16,75 @@ const getRecord = async (req: Request, res: Response) => {
 const addRecord = async (req: Request, res: Response) => {
   try {
     const {
-      case_id,
-      case_submitter_id,
-      project_id,
-      patient_name,
-      age_at_index,
-      days_to_birth,
-      days_to_death,
-      ethnicity,
-      gender,
-      race,
-      vital_status,
-      year_of_birth,
-      year_of_death,
-      age_at_diagnosis,
+      patient_id,
+      sample_id,
+      diagnosis_age,
+      biopsy_site,
+      cancer_type,
+      disease_free_months,
+      disease_free_status,
+      disease_type,
+      ethnicity_category,
+      fraction_genome_altered,
+      icd_10_classification,
+      is_ffpe,
+      morphology,
+      mutation_count,
+      overall_survival_months,
       ajcc_pathologic_m,
       ajcc_pathologic_n,
       ajcc_pathologic_stage,
       ajcc_pathologic_t,
-      ajcc_staging_system_edition,
-      classification_of_tumor,
-      days_to_diagnosis,
-      days_to_last_follow_up,
-      icd_10_code,
-      last_known_disease_status,
-      morphology,
       primary_diagnosis,
+      primary_tumor_site,
       prior_malignancy,
       prior_treatment,
-      progression_or_recurrence,
-      site_of_resection_or_biopsy,
-      synchronous_malignancy,
-      tissue_or_organ_of_origin,
-      tumor_grade,
-      year_of_diagnosis,
-      treatment_or_therapy,
-      treatment_type,
+      sample_type,
+      sex,
+      years_smoked,
+      cigarette_smoking_history_pack_year,
+      vital_status,
+      year_of_death,
+      year_of_diagnosis
     } = req.body;
 
     // Kiểm tra các trường bắt buộc
-    if (!case_id || !case_submitter_id || !project_id) {
+    if (!patient_id || !sample_id) {
       res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
       return;
     }
 
     const newRecord = new Record({
-      case_id,
-      case_submitter_id,
-      project_id,
-      patient_name,
-      age_at_index,
-      days_to_birth,
-      days_to_death,
-      ethnicity,
-      gender,
-      race,
-      vital_status,
-      year_of_birth,
-      year_of_death,
-      age_at_diagnosis,
+      patient_id,
+      sample_id,
+      diagnosis_age,
+      biopsy_site,
+      cancer_type,
+      disease_free_months,
+      disease_free_status,
+      disease_type,
+      ethnicity_category,
+      fraction_genome_altered,
+      icd_10_classification,
+      is_ffpe,
+      morphology,
+      mutation_count,
+      overall_survival_months,
       ajcc_pathologic_m,
       ajcc_pathologic_n,
       ajcc_pathologic_stage,
       ajcc_pathologic_t,
-      ajcc_staging_system_edition,
-      classification_of_tumor,
-      days_to_diagnosis,
-      days_to_last_follow_up,
-      icd_10_code,
-      last_known_disease_status,
-      morphology,
       primary_diagnosis,
+      primary_tumor_site,
       prior_malignancy,
       prior_treatment,
-      progression_or_recurrence,
-      site_of_resection_or_biopsy,
-      synchronous_malignancy,
-      tissue_or_organ_of_origin,
-      tumor_grade,
-      year_of_diagnosis,
-      treatment_or_therapy,
-      treatment_type,
+      sample_type,
+      sex,
+      years_smoked,
+      cigarette_smoking_history_pack_year,
+      vital_status,
+      year_of_death,
+      year_of_diagnosis
     });
 
     await newRecord.save();
@@ -110,11 +97,11 @@ const addRecord = async (req: Request, res: Response) => {
 
 const editRecord = async (req: Request, res: Response) => {
   try {
-    const { id: case_submitter_id } = req.params; // Lấy case_id từ params
+    const { id: sample_id } = req.params; 
     const updateData = req.body;
 
-    // Tìm và cập nhật Record dựa trên case_id
-    const record = await Record.findOneAndUpdate({ case_submitter_id }, updateData, { new: true });
+    // Tìm và cập nhật Record 
+    const record = await Record.findOneAndUpdate({ sample_id }, updateData, { new: true });
     if (!record) {
       res.status(404).json({ message: "Không tìm thấy Record" });
       return;
@@ -130,10 +117,10 @@ const editRecord = async (req: Request, res: Response) => {
 // Xóa Record
 const removeRecord = async (req: Request, res: Response) => {
   try {
-    const { id: case_submitter_id } = req.params; // Lấy case_id từ params
+    const { id: sample_id } = req.params; 
 
-    // Tìm và xóa Record dựa trên case_id
-    const record = await Record.findOneAndDelete({ case_submitter_id });
+    // Tìm và xóa Record 
+    const record = await Record.findOneAndDelete({ sample_id });
     if (!record) {
       res.status(404).json({ message: "Không tìm thấy Record để xóa" });
       return;
@@ -152,11 +139,11 @@ const searchRecord = async (req: Request, res: Response) => {
     const searchCriteria: any = {};
 
     // Lấy các tham số tìm kiếm từ query
-    const { case_submitter_id } = req.query;
+    const { sample_id } = req.query;
 
     // Thêm các điều kiện tìm kiếm nếu có
-    if (case_submitter_id) {
-      searchCriteria.case_submitter_id = { $regex: case_submitter_id, $options: 'i' };
+    if (sample_id) {
+      searchCriteria.sample_id = { $regex: sample_id, $options: 'i' };
     }
 
     // Tìm kiếm Record dựa trên các tiêu chí

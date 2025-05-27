@@ -93,11 +93,34 @@ const getResearchBySlug = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
+const searchResearches = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { search_key } = req.query;
+
+        const regex = search_key
+            ? { detail: { $regex: search_key, $options: 'i' } } // 'i' không phân biệt hoa thường
+            : {};
+
+        const researches = await Research.find(regex);
+
+        if (researches.length === 0) {
+            res.status(404).json({ message: "❌ Không tìm thấy bài nghiên cứu!" });
+            return;
+        }
+
+        res.json(researches);
+    } catch (error) {
+        console.error("Lỗi khi tìm kiếm bài nghiên cứu:", error);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};
+
 export default {
     getResearchById,
     getAllResearches,
     getResearchBySlug,
     createResearch,
     updateResearch,
-    deleteResearch
+    deleteResearch,
+    searchResearches,
 };

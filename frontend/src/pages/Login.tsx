@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import LungImage from '@/assets/lung-cancer.png' 
 import { Label } from '@/components/ui/label'
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from 'lucide-react'
@@ -14,39 +14,33 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPass, setShowPass] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
 
-  const { loginUser, isLoading } = useLoginUser();
+  const { loginUser } = useLoginUser();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     
     try {
       const data = await loginUser({ email, password });
       if (data?.token) {
-        if (rememberMe) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("email", data.user.email);
-        } else {
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("email", data.user.email);
-        }
+        const storage = rememberMe ? localStorage : sessionStorage
+        storage.setItem("token", data.token)
+        storage.setItem("email", data.user.email)
+        // Điều hướng ngay khi login thành công:
+        navigate("/")
       }
-      setIsLoggedIn(true);
     } catch (err) {
       console.error('Đăng nhập thất bại:', err);
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/"); // Điều hướng đến trang chủ
-    }
-  }, [isLoggedIn, navigate]);
-
-  const handleRememberMeChange = () => {
-    setRememberMe(!rememberMe);
-  }
+  // const handleRememberMeChange = () => {
+  //   setRememberMe(!rememberMe);
+  // }
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
@@ -122,11 +116,15 @@ const Login = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox id="remember" checked={rememberMe} onCheckedChange={handleRememberMeChange} />
-                <Label
-                  htmlFor="remember"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(val) => {
+                    // val có thể là true | false | "indeterminate"
+                    setRememberMe(val === true)
+                  }}
+                />
+                <Label htmlFor="remember" className="text-sm font-medium leading-none">
                   Nhớ mật khẩu
                 </Label>
               </div>

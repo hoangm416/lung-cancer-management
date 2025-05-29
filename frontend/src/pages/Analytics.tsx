@@ -1,7 +1,5 @@
-import CnvAnalytics from "@/components/CnvAnalytics";
 import GeneAnalytics from "@/components/GeneAnalytics";
 import DnaAnalytics from "@/components/DnaAnalytics";
-import RnaAnalytics from "@/components/RnaAnalytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Analytics = () => {
@@ -38,14 +36,8 @@ const Analytics = () => {
 
         {/* content bên dưới, full width */}
         <div className="flex-1 p-2 rounded-b-md overflow-auto mt-5">
-          <TabsContent value="cnv">
-            <CnvAnalytics />
-          </TabsContent>
           <TabsContent value="dna-methyl">
             <DnaAnalytics />
-          </TabsContent>
-          <TabsContent value="miRNA">
-            <RnaAnalytics />
           </TabsContent>
           <TabsContent value="gene-expression">
             <GeneAnalytics />

@@ -1,3 +1,5 @@
+import { get } from "axios";
+
 export function prepareOSGroupedData(
   data: any[],
   groupKey: string,
@@ -57,9 +59,9 @@ export function prepareOSGroupedData(
   const groups = Object.entries(raw)
     .sort(([keyA], [keyB]) => {
       // Nếu là nhóm tuổi dạng "xx-yy"
-      if (keyA.includes("-") && keyB.includes("-")) {
-        const startA = parseInt(keyA.split("-")[0]);
-        const startB = parseInt(keyB.split("-")[0]);
+      if (keyA.includes("-") && (keyB.includes("-") || keyB.endsWith("+"))) {
+        const startA = getStartAge(keyA);
+        const startB = getStartAge(keyB);
         return startA - startB;
       }
 
@@ -155,4 +157,13 @@ export function prepareDFSData(
   });
 
   return [{ group: "Disease-Free Survival", data: curve }];
+}
+
+function getStartAge(key: string): number {
+  if (key.includes("-")) {
+    return parseInt(key.split("-")[0]);
+  } else if (key.endsWith("+")) {
+    return parseInt(key.slice(0, -1));
+  }
+  return NaN;
 }

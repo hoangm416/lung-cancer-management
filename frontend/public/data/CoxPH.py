@@ -1,6 +1,7 @@
+from lifelines.datasets import load_rossi
 import pandas as pd
 import numpy as np
-from lifelines import CoxPHFitter, KaplanMeierFitter
+from lifelines import CoxPHFitter
 import matplotlib.pyplot as plt
 import logging
 
@@ -8,7 +9,6 @@ import logging
 logging.basicConfig(format="%(asctime)s %(levelname)s: %(message)s")
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
-
 
 def load_data():
     # Load the survival data
@@ -27,11 +27,9 @@ def load_data():
 
     return omics_mirna, survival_data
 
-
 def run():
-    # Load data
     multi_omics_data, survival_data = load_data()
-
+    
     # Merge the omics data with the survival data (matching patient IDs)
     merged_data = pd.merge(
         multi_omics_data.T,
@@ -44,7 +42,7 @@ def run():
     logger.info(f"Merged data shape: {merged_data.shape}")
 
     logger.info(merged_data["sample"])
-
+    
     # Drop non-numeric columns
     merged_data = merged_data.drop(columns=["sample"])
     logger.info(merged_data.head())
@@ -54,39 +52,18 @@ def run():
 
     # Display the summary of the Cox Proportional Hazards model
     cph.print_summary()
-
+    
     # Draw plots
-    final_df = merged_data.copy()
-    final_df["risk_score"] = cph.predict_partial_hazard(merged_data)
-    median_risk_score = final_df["risk_score"].median()
-    final_df["risk_group"] = np.where(
-        final_df["risk_score"] >= median_risk_score, "High-risk", "Low-risk"
-    )
+    cph.print_summary()  # Print the summary of the Cox model
+    cph.plot()
 
-    kmf = KaplanMeierFitter()
-    plt.figure(figsize=(8, 6))
-
-    for group in final_df['risk_group'].unique():
-        group_data = final_df[final_df['risk_group'] == group]
-        
-        # Fit the Kaplan-Meier estimator to the data for this group
-        kmf.fit(group_data['OS.time'], event_observed=group_data['OS'], label=group)
-        
-        # Plot the Kaplan-Meier curve
-        kmf.plot()
-
-    # Customize the plot
-    plt.title('Kaplan-Meier Curve Based on Risk Score from Cox Model')
-    plt.xlabel('Time (OS.time)')
-    plt.ylabel('Survival Probability')
-    plt.legend()
-    plt.xlim(left=0)
-    plt.ylim(bottom=0)
+    plt.title('Cox Model')
+    plt.xlabel('log(HR) (95% CI)')
+    plt.xlim(left=-1.4, right=1.4)
+    plt.ylim(bottom=-0.3)
 
     # Save the plot to a file (e.g., as a PNG)
-    plt.savefig('public/data/kaplan_meier_from_cox.png', format='png')  # You can change the file name and format here
+    plt.savefig('public/data/CoxPH.png', format='png')  # You can change the file name and format here
     plt.show()
-
-
 
 run()

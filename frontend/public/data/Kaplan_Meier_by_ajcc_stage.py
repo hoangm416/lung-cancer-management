@@ -22,7 +22,6 @@ def load_data():
     survival_data = pd.read_csv("../../data/survival.tsv", sep="\t")
     clinical_data = pd.read_csv("../../data/TCGA-LUAD.clinical.tsv", sep="\t")
 
-    # Kiểm tra sự tồn tại của cột AJCC stage
     stage_col = "ajcc_pathologic_stage.diagnoses"
     if stage_col not in clinical_data.columns:
         raise ValueError(f"Không tìm thấy cột '{stage_col}' trong clinical.tsv")

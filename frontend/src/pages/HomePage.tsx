@@ -10,11 +10,30 @@ import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
 import { loadTSV } from "@/utils/loadTSV";
 import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData.ts"
 import FullscreenContainer from '@/components/FullScreenContainer';
+import ChartDropdown, { ChartOption } from "@/components/ChartDropdown";
 
 const HomePage = () => {
   const { records, isLoading } = useGetRecord();
   const [OSdata, setOSData] = useState<any[]>([]);
   const [mergedData, setMergedData] = useState<any[]>([]);
+
+  const defaultCharts = [
+    { value: "gender", label: "Tỷ lệ giới tính" },
+    { value: "age", label: "Phân bố độ tuổi" },
+    { value: "ajcc", label: "Giai đoạn AJCC" },
+    { value: "km_overall", label: "Kaplan-Meier OS" },
+    { value: "km_dfs", label: "Kaplan-Meier DFS" },
+    { value: "km_sex", label: "Kaplan-Meier OS theo giới tính" },
+    { value: "km_age", label: "Kaplan-Meier OS theo độ tuổi" },
+    { value: "km_ajcc", label: "Kaplan-Meier OS theo giai đoạn AJCC" },
+    { value: "km_cox", label: "Kaplan-Meier OS với mô hình Cox-Hazard" },
+  ];
+  const [selectedCharts, setSelectedCharts] = useState(defaultCharts);
+  const smallChartKeys = ["gender", "age", "ajcc"];
+  const largeChartKeys = ["km_overall", "km_dfs", "km_sex", "km_age", "km_ajcc", "km_cox"];
+  const smallCharts = selectedCharts.filter((c) => smallChartKeys.includes(c.value));
+  const largeCharts = selectedCharts.filter((c) => largeChartKeys.includes(c.value));
+  
 
   useEffect(() => {
     loadTSV('/data/TCGA-LUAD.survival.tsv')
@@ -23,22 +42,22 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-  if (OSdata.length > 0 && records.length > 0) {
-    const osMap = new Map(OSdata.map(os => [os._PATIENT, os]));
-    const merged = records
-      .map((rec) => {
-        const match = osMap.get(rec.patient_id);
-        if (match) {
-          return {...rec, ...match};
-        }
-        return null;
-      })
-      .filter(Boolean);
+    if (OSdata.length > 0 && records.length > 0) {
+      const osMap = new Map(OSdata.map(os => [os._PATIENT, os]));
+      const merged = records
+        .map((rec) => {
+          const match = osMap.get(rec.patient_id);
+          if (match) {
+            return {...rec, ...match};
+          }
+          return null;
+        })
+        .filter(Boolean);
 
-    setMergedData(merged);
-    console.log("🔗 Merged filtered data:", merged);
-  }
-}, [OSdata, records]);
+      setMergedData(merged);
+      console.log("🔗 Merged filtered data:", merged);
+    }
+  }, [OSdata, records]);
 
   if (isLoading) return <div>Đang tải dữ liệu...</div>;
 
@@ -123,90 +142,6 @@ const HomePage = () => {
     { name: "IV", count: ajccStageCounts.iv },
     // { name: "Không xác định", count: ajccStageCounts.undefined },
   ];
-  
-  // type RecordType = {
-  //   overall_survival_months?: number | string | null;
-  // };
-  
-  // function getKaplanMeierData(records: RecordType[]) {
-  //   // Lọc những mẫu có days_to_death là số
-  //   const validRecords = records
-  //     .map((r) => Number(r.overall_survival_months))
-  //     .filter((d) => !isNaN(d) && d > 0)
-  //     .sort((a, b) => a - b);
-  
-  //   const total = records.length;
-  //   if (total === 0) return [];
-  
-  //   // Đếm số người chết tại từng ngày
-  //   const deathCounts = new Map<number, number>();
-  //   for (const day of validRecords) {
-  //     deathCounts.set(day, (deathCounts.get(day) || 0) + 1);
-  //   }
-  
-  //   //Tính tỷ lệ sống sót
-  //   const result: { day: number; survival: number }[] = [];
-  //   let survival = 1.0;
-  //   let atRisk = total;
-  
-  //   const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
-  //   for (const day of sortedDays) {
-  //     const deaths = deathCounts.get(day)!;
-  //     survival *= 1 - deaths / atRisk;
-  //     result.push({ day, survival: parseFloat(survival.toFixed(4)) });
-  //     atRisk -= deaths;
-  //   }
-
-  //   return result;
-  // }
-
-  // type PatientRecord = {
-  //   days_to_death: number;
-  // };
-
-  // type KaplanMeierDataPoint = {
-  //   day: number;
-  //   survival: number;
-  // };
-
-  // function calculateKaplanMeierCurve(records: PatientRecord[]): KaplanMeierDataPoint[] {
-  //   if (records.length === 0) return [];
-
-  //   // Đếm số ca tử vong theo từng ngày
-  //   const deathCounts = new Map<number, number>();
-  //   for (const record of records) {
-  //     const day = Math.floor(record.days_to_death);
-  //     if (!deathCounts.has(day)) {
-  //       deathCounts.set(day, 1);
-  //     } else {
-  //       deathCounts.set(day, deathCounts.get(day)! + 1);
-  //     }
-  //   }
-
-  //   // Sắp xếp các ngày tử vong tăng dần
-  //   const sortedDays = Array.from(deathCounts.keys()).sort((a, b) => a - b);
-
-  //   const result: KaplanMeierDataPoint[] = [];
-  //   let survival = 1.0;
-  //   let atRisk = records.length;
-
-  //   for (const day of sortedDays) {
-  //     const deaths = deathCounts.get(day)!;
-  //     survival *= 1 - deaths / atRisk;
-  //     result.push({ day, survival: parseFloat(survival.toFixed(4)) });
-  //     atRisk -= deaths;
-  //   }
-
-  //   // Bổ sung điểm tại mốc 2 năm nếu chưa có
-  //   const lastDay = result.length > 0 ? result[result.length - 1].day : 0;
-  //   if (lastDay < 730) {
-  //     result.push({ day: 730, survival: parseFloat(survival.toFixed(4)) });
-  //   }
-
-  //   return result;
-  // }
-
-  // const kmData = getKaplanMeierData(records);
 
   // Dữ liệu sống sót Kaplan-Meier tổng thể
   const kmOverall = prepareOSUngroupedData(mergedData);
@@ -230,8 +165,121 @@ const HomePage = () => {
         </span>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-10 mb-20">
-        {/* Cột 1: Biểu đồ PieChart */}
+      <ChartDropdown
+        selectedCharts={selectedCharts}
+        onChange={(selected) => setSelectedCharts(selected)}
+      />
+
+      {/* Nhóm biểu đồ nhỏ: 3 cột (Pie, Histogram) */}
+      {smallCharts.length > 0 && (
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
+          {smallCharts.map((chart) => {
+            switch (chart.value) {
+              case "gender":
+                return (
+                  <div key="gender" className="flex flex-col items-center justify-start border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold text-center mb-4 mt-4">Tỷ lệ giới tính</h2>
+                      <PieChartComponent data={genderData} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              case "age":
+                return (
+                  <div key="age" className="flex flex-col items-center justify-start border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold text-center mb-4 mt-4">Phân bố độ tuổi</h2>
+                      <HistogramChart data={ageData} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              case "ajcc":
+                return (
+                  <div key="ajcc" className="flex flex-col items-center justify-start border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold text-center mb-4 mt-4">Giai đoạn bệnh theo AJCC</h2>
+                      <HistogramChart data={ajccStageData} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              default:
+                return null;
+            }
+          })}
+        </div>
+      )}
+
+      {/* Nhóm biểu đồ lớn: 2 cột (Kaplan-Meier) */}
+      {largeCharts.length > 0 && (
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(600px,1fr))] gap-10 mb-20">
+          {largeCharts.map((chart) => {
+            switch (chart.value) {
+              case "km_overall":
+                return (
+                  <div key="km_overall" className="flex flex-col items-center justify-center border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
+                      <KaplanMeierComparisonChart kmcData={kmOverall} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              case "km_dfs":
+                return (
+                  <div key="km_dfs" className="flex flex-col items-center justify-center border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
+                      <KaplanMeierComparisonChart kmcData={kmDFS} />
+                    </FullscreenContainer>
+                  </div>
+                );
+                case "km_sex":
+                return (
+                  <div key="km_sex" className="flex flex-col items-center justify-center border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giới tính</h2>
+                      <KaplanMeierComparisonChart kmcData={KMCbySex} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              case "km_age":
+                return (
+                  <div key="km_age" className="flex flex-col items-center justify-center border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo độ tuổi</h2>
+                      <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              case "km_ajcc":
+                return (
+                  <div key="km_ajcc" className="flex flex-col items-center justify-center border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giai đoạn AJCC</h2>
+                      <KaplanMeierComparisonChart kmcData={KMCbyStage} />
+                    </FullscreenContainer>
+                  </div>
+                );
+              case "km_cox":
+                return (
+                  <div key="km_cox" className="flex flex-col items-center justify-center border border-black rounded pt-2">
+                    <FullscreenContainer>
+                      <h2 className="text-xl font-semibold items-center justify-center mb-4">Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard</h2>
+                      <img
+                        title ="Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard"
+                        src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
+                        alt="Kaplan-Meier: OS from Cox"
+                      />
+                    </FullscreenContainer>
+                  </div>
+                );
+              default:
+                return null;
+            }
+          })}
+        </div>
+      )}
+
+      {/* <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
         <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
           <FullscreenContainer>
             <h2 className="text-xl font-semibold text-center mb-4 mt-4">Tỷ lệ giới tính</h2>
@@ -239,7 +287,6 @@ const HomePage = () => {
           </FullscreenContainer>
         </div>
 
-        {/* Cột 2: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
           <FullscreenContainer>
             <h2 className="text-xl font-semibold text-center mb-4 mt-4">Phân bố độ tuổi</h2>
@@ -247,7 +294,6 @@ const HomePage = () => {
           </FullscreenContainer>
         </div>
 
-        {/* Cột 3: Biểu đồ HistogramChart */}
         <div className="flex flex-col items-center justify-start border border-black rounded pt-2">
           <FullscreenContainer>
             <h2 className="text-xl font-semibold text-center mb-4 mt-4">Giai đoạn bệnh theo AJCC</h2>
@@ -256,86 +302,60 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
           <FullscreenContainer>
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
-          <KaplanMeierComparisonChart kmcData={kmOverall} />
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót tổng thể (OS)</h2>
+            <KaplanMeierComparisonChart kmcData={kmOverall} />
+          </FullscreenContainer>
+        </div>
+
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
+            <KaplanMeierComparisonChart kmcData={kmDFS} />
+          </FullscreenContainer>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giới tính</h2>
+            <KaplanMeierComparisonChart kmcData={KMCbySex} />
+          </FullscreenContainer>
+        </div>
+
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo độ tuổi</h2>
+            <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
+          </FullscreenContainer>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
+        <div className="flex flex-col items-center justify-center border border-black rounded pt-2">
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giai đoạn AJCC</h2>
+            <KaplanMeierComparisonChart kmcData={KMCbyStage} />
           </FullscreenContainer>
         </div>
       </div>
       
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
-          <KaplanMeierComparisonChart kmcData={kmDFS} />
-        </div>
-      </div>
-
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giới tính</h2>
-          <KaplanMeierComparisonChart kmcData={KMCbySex} />
-        </div>
-      </div>
-
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo độ tuổi</h2>
-          <KaplanMeierComparisonChart kmcData={KMCbyAgeGroup} />
-        </div>
-      </div>
-
-      <div className="grid gap-10 border border-black rounded">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: OS theo giai đoạn AJCC</h2>
-          <KaplanMeierComparisonChart kmcData={KMCbyStage} />
-        </div>
-      </div>
-      
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-10 mb-20">
         <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard</h2>
-          <img
-            title ="Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard"
-            src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
-            alt="Kaplan-Meier: OS from Cox"
-          />
+          <FullscreenContainer>
+            <h2 className="text-xl font-semibold items-center justify-center mb-4">Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard</h2>
+            <img
+              title ="Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard"
+              src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
+              alt="Kaplan-Meier: OS from Cox"
+            />
+          </FullscreenContainer>
         </div>
+      </div> */}
 
-        <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS phân theo giới tính</h2>
-          <img
-            title ="Biểu đồ Kaplan-Meier: OS phân theo giới tính"
-            src="http://localhost:5000/static/plots/kaplan_meier_by_gender.png"
-            alt="Kaplan-Meier: OS by gender"
-          />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-10 mb-20">
-        <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS phân theo nhóm tuổi</h2>
-          <img
-            title ="Biểu đồ Kaplan-Meier: OS phân theo nhóm tuổi"
-            src="http://localhost:5000/static/plots/kaplan_meier_by_age_group.png"
-            alt="Kaplan-Meier: OS by age group"
-          />
-        </div>
-
-        <div className="flex flex-col items-center justify-center border border-black rounded">
-          <h2 className="text-xl font-semibold mb-4">Biểu đồ Kaplan-Meier: OS phân theo giai đoạn AJCC</h2>
-          <Card>
-            <CardContent>
-              <img src="http://localhost:5000/static/plots/kaplan_meier_by_ajcc_stage.png" alt="Kaplan-Meier: OS by AJCC Stage" />
-              <p className="text-sm text-muted-foreground text-center mt-2">
-                Kaplan-Meier: OS Curve by AJCC Stage
-              </p>
-            </CardContent>
-          </Card>
-
-        </div>
-      </div>
     </div>
   );
 };

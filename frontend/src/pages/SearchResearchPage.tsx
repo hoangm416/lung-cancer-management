@@ -10,16 +10,6 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAddResearch, useSearchResearch, useEditResearch, useDeleteResearch } from '@/api/ResearchApi';
 import { Research } from '@/types';
 
-import research1 from "../assets/research1.png";
-import research2 from "../assets/research2.png";
-import research3 from "../assets/research3.png";
-
-const imageMap: Record<string, string> = {
-  "research1.png": research1,
-  "research2.png": research2,
-  "research3.png": research3,
-};
-
 const toSlug = (title: string) => {
   return title
     .toLowerCase()
@@ -139,8 +129,8 @@ const SearchResearchPage = () => {
             >
               <img
                 src={
-                  article.image && imageMap[article.image]
-                    ? imageMap[article.image]
+                  article.image.startsWith("http")
+                    ? article.image 
                     : "https://via.placeholder.com/300x200.png?text=No+Image"
                 }
                 alt={article.title}

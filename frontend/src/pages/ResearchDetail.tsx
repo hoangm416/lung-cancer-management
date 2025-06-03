@@ -4,17 +4,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// import research1 from "../assets/research1.png";
-// import research2 from "../assets/research2.png";
-// import research3 from "../assets/research3.png";
-
 interface ResearchItem {
   research_id: string;
   type: string;
   title: string;
   date: string;
   author: string;
-  link:string;
+  link: string;
   description: string;
   image: string;
   detail: string;

@@ -93,7 +93,6 @@ const ResearchForm = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
-              
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -123,8 +122,12 @@ const ResearchForm = ({
                             <SelectValue placeholder="Chọn loại bài nghiên cứu" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="popular">Khoa học thường thức</SelectItem>
-                            <SelectItem value="specialize">Khoa học chuyên sâu</SelectItem>
+                            <SelectItem value="popular" className="cursor-pointer hover:bg-hover">
+                              Khoa học thường thức
+                            </SelectItem>
+                            <SelectItem value="specialize" className="cursor-pointer hover:bg-hover">
+                              Khoa học chuyên sâu
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>

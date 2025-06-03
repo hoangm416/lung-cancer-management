@@ -10,6 +10,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
 import { useEffect } from 'react';
 import { Record } from '@/types';
 
@@ -279,7 +286,7 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                         )}
                         />
                         
-                        <FormField
+                        {/* <FormField
                         control={form.control}
                         name="ajcc_pathologic_stage"
                         render={({ field }) => (
@@ -291,7 +298,36 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                             <FormMessage />
                             </FormItem>
                         )}
-                        />
+                        /> */}
+                        <FormField
+													control={form.control}
+													name="ajcc_pathologic_stage"
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Giai đoạn bệnh lý theo AJCC</FormLabel>
+															<FormControl>
+																<Select
+																	value={field.value}
+																	onValueChange={field.onChange}
+																>
+																	<SelectTrigger>
+																		<SelectValue placeholder="Chọn giai đoạn" />
+																	</SelectTrigger>
+																	<SelectContent>
+																		<SelectItem value="Stage IA">Stage IA</SelectItem>
+																		<SelectItem value="Stage IB">Stage IB</SelectItem>
+                                    <SelectItem value="Stage IIA">Stage IIA</SelectItem>
+                                    <SelectItem value="Stage IIB">Stage IIB</SelectItem>
+                                    <SelectItem value="Stage IIIA">Stage IIIA</SelectItem>
+                                    <SelectItem value="Stage IIIB">Stage IIIB</SelectItem>
+                                    <SelectItem value="Stage IV">Stage IV</SelectItem>
+																	</SelectContent>
+																</Select>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
                         <FormField
                         control={form.control}
                         name="ajcc_pathologic_t"
@@ -372,7 +408,7 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                             </FormItem>
                         )}
                         />
-                        <FormField
+                        {/* <FormField
                         control={form.control}
                         name="sex"
                         render={({ field }) => (
@@ -384,7 +420,31 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                             <FormMessage />
                             </FormItem>
                         )}
-                        />
+                        /> */}
+                        <FormField
+													control={form.control}
+													name="sex"
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Giới tính</FormLabel>
+															<FormControl>
+																<Select
+																	value={field.value}
+																	onValueChange={field.onChange}
+																>
+																	<SelectTrigger>
+																		<SelectValue placeholder="Chọn giới tính" />
+																	</SelectTrigger>
+																	<SelectContent>
+																		<SelectItem value="Male">Nam</SelectItem>
+																		<SelectItem value="Female">Nữ</SelectItem>
+																	</SelectContent>
+																</Select>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
                         <FormField
                         control={form.control}
                         name="years_smoked"

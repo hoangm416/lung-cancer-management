@@ -10,6 +10,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
 import { Record } from '@/types';
 
 type RecordFormProps = {
@@ -276,7 +283,7 @@ const RecordForm = ({
                   )}
                 />
                 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="ajcc_pathologic_stage"
                   render={({ field }) => (
@@ -284,6 +291,35 @@ const RecordForm = ({
                       <FormLabel>Giai đoạn bệnh lý theo AJCC</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="ajcc_pathologic_stage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Giai đoạn bệnh lý theo AJCC</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn giai đoạn" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Stage IA">Stage IA</SelectItem>
+                            <SelectItem value="Stage IB">Stage IB</SelectItem>
+                            <SelectItem value="Stage IIA">Stage IIA</SelectItem>
+                            <SelectItem value="Stage IIB">Stage IIB</SelectItem>
+                            <SelectItem value="Stage IIIA">Stage IIIA</SelectItem>
+                            <SelectItem value="Stage IIIB">Stage IIIB</SelectItem>
+                            <SelectItem value="Stage IV">Stage IV</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -369,7 +405,7 @@ const RecordForm = ({
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="sex"
                   render={({ field }) => (
@@ -381,7 +417,31 @@ const RecordForm = ({
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="sex"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Giới tính</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn giới tính" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Male">Nam</SelectItem>
+                            <SelectItem value="Female">Nữ</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />                
                 <FormField
                   control={form.control}
                   name="years_smoked"

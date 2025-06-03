@@ -4,7 +4,6 @@ import LungImage from '@/assets/lung-cancer.png'
 import { Label } from '@/components/ui/label'
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { useLoginUser } from '@/api/UserApi'
 import { useNavigate } from 'react-router-dom'
@@ -12,7 +11,6 @@ import { useNavigate } from 'react-router-dom'
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
@@ -23,24 +21,31 @@ const Login = () => {
     setIsLoading(true)
     
     try {
+      // Kiểm tra dữ liệu đầu vào
+      console.log('Đang đăng nhập với email:', email);
       const data = await loginUser({ email, password });
+      
+      // Kiểm tra dữ liệu trả về từ server
+      console.log('Nhận được data:', data);
+      
       if (data?.token) {
-        const storage = rememberMe ? localStorage : sessionStorage
-        storage.setItem("token", data.token)
-        storage.setItem("email", data.user.email)
-        // Điều hướng ngay khi login thành công:
-        navigate("/")
+        const expireTime = Date.now() + 60 * 60 * 1000; // 1 giờ
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("email", data.user.email);
+        sessionStorage.setItem("expireTime", expireTime.toString());
+        
+        // Chuyển hướng sang trang chủ
+        console.log('Chuyển hướng sang trang chủ');
+        navigate("/");
+      } else {
+        console.error('Không nhận được token từ server');
       }
     } catch (err) {
       console.error('Đăng nhập thất bại:', err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
-  // const handleRememberMeChange = () => {
-  //   setRememberMe(!rememberMe);
-  // }
+  };
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
@@ -115,19 +120,18 @@ const Login = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Checkbox
                   id="remember"
                   checked={rememberMe}
                   onCheckedChange={(val) => {
-                    // val có thể là true | false | "indeterminate"
                     setRememberMe(val === true)
                   }}
                 />
                 <Label htmlFor="remember" className="text-sm font-medium leading-none">
                   Nhớ mật khẩu
                 </Label>
-              </div>
+              </div> */}
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? "Đang xử lý" : "Đăng nhập"}
               </Button>

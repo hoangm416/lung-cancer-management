@@ -10,10 +10,6 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAddResearch, useSearchResearch, useEditResearch, useDeleteResearch } from '@/api/ResearchApi';
 import { Research } from '@/types';
 
-import research1 from "../assets/research1.png";
-import research2 from "../assets/research2.png";
-import research3 from "../assets/research3.png";
-
 const toSlug = (title: string) => {
   return title
     .toLowerCase()
@@ -23,12 +19,6 @@ const toSlug = (title: string) => {
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-");
-};
-
-const imageMap: Record<string, string> = {
-  "research1.png": research1,
-  "research2.png": research2,
-  "research3.png": research3,
 };
 
 const categories = [
@@ -42,7 +32,7 @@ const ResearchPage = () => {
   const [articles, setArticles] = useState<Research[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // State quản lý dialog và nghiên cứu được chọn
+  // State quản lý dialog và bài báo được chọn
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -87,7 +77,7 @@ const ResearchPage = () => {
     setIsConfirmOpen(false);
   };
 
-  // Hàm xử lý xóa nghiên cứu
+  // Hàm xử lý xóa bài báo
   const handleDelete = () => {
     if (selectedResearch) {
       deleteResearch(selectedResearch._id, {
@@ -95,7 +85,7 @@ const ResearchPage = () => {
           closeConfirmDialog();
         },
         onError: (error) => {
-          console.error('Lỗi khi xóa nghiên cứu:', error);
+          console.error('Lỗi khi xóa bài báo:', error);
         },
       });
     }
@@ -114,7 +104,7 @@ const ResearchPage = () => {
       });
   }, []);
 
-  // Lọc bài nghiên cứu theo thể loại và tìm kiếm
+  // Lọc bài báo theo thể loại và tìm kiếm
   const filtered = articles
     .filter((item) => item.type === activeTab)
     .filter((item) => 
@@ -125,7 +115,7 @@ const ResearchPage = () => {
   return (
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px] mb-4">
-        <span className="text-2xl font-medium text-text">Danh sách bài báo nghiên cứu khoa học</span>
+        <span className="text-2xl font-medium text-text">Danh sách bài báo khoa học</span>
         
         {/* Ô tìm kiếm */}
         <SearchResearchForm
@@ -138,7 +128,7 @@ const ResearchPage = () => {
           onClick={openAddDialog}
         >
           <LucidePlus className="inline-block h-4 w-4" />
-          Thêm nghiên cứu
+          Thêm bài báo
         </Button>
       </div>
       
@@ -169,8 +159,8 @@ const ResearchPage = () => {
           >
             <img
               src={
-                article.image && imageMap[article.image]
-                  ? imageMap[article.image]
+                article.image.startsWith("http")
+                  ? article.image 
                   : "https://via.placeholder.com/300x200.png?text=No+Image"
               }
               alt={article.title}
@@ -179,11 +169,17 @@ const ResearchPage = () => {
             <div className="p-4 w-2/3 flex flex-col justify-between">
               <div>
                 <h1 className="text-lg font-semibold">{article.title}</h1>
-                <p className="text-gray-500 text-sm">📅 {article.date}</p>
+                <p className="text-gray-500 text-sm">
+                  📅{new Date(article.date).toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}
+                </p>
                 <p className="text-gray-600">{article.description}</p>
               </div>
               <div className="mt-3 flex items-center gap-3">
-                {/* Sửa nghiên cứu */}
+                {/* Sửa bài báo */}
                 <div
                   className="flex items-center cursor-pointer text-blue-500 hover:underline"
                   onClick={(e) => {
@@ -192,10 +188,10 @@ const ResearchPage = () => {
                   }}
                 >
                   <LucidePencil className="h-5 w-5 mr-1" />
-                  <span>Sửa nghiên cứu</span>
+                  <span>Sửa bài báo</span>
                 </div>
 
-                {/* Xóa nghiên cứu */}
+                {/* Xóa bài báo */}
                 <div
                   className="flex items-center cursor-pointer text-red-500 hover:underline"
                   onClick={(e) => {
@@ -204,14 +200,14 @@ const ResearchPage = () => {
                   }}  
                 >
                   <LucideTrash className="h-5 w-5 mr-1" />
-                  <span>Xóa nghiên cứu</span>
+                  <span>Xóa bài báo</span>
                 </div>
               </div>
             </div>
           </div>
         ))}
 
-        {/* Dialog thêm nghiên cứu */}
+        {/* Dialog thêm bài báo */}
         <ResearchForm
           isOpen={isAddDialogOpen}
           onClose={closeAddDialog}
@@ -221,40 +217,40 @@ const ResearchPage = () => {
                 closeAddDialog();
               },
               onError: () => {
-                alert('Thêm nghiên cứu thất bại!');
+                alert('Thêm bài báo thất bại!');
               },
             });
           }}
         />
 
-        {/* Dialog chỉnh sửa nghiên cứu */}
+        {/* Dialog chỉnh sửa bài báo */}
         <EditResearchForm
           isOpen={isEditDialogOpen}
           onClose={closeEditDialog}
           defaultValues={selectedResearch ?? {} as Research}
           onSubmit={(data) => {
             editResearch(
-              { _id: data._id, submitter_id: selectedResearch?.submitter_id, updatedResearch: data },
+              { _id: data._id, research_id: selectedResearch?.research_id, updatedResearch: data },
               {
                 onSuccess: () => {
                   closeEditDialog();
                 },
                 onError: (error) => {
-                  console.error('Lỗi khi cập nhật nghiên cứu:', error);
+                  console.error('Lỗi khi cập nhật bài báo:', error);
                 },
               }
             );
           }}
         />
 
-        {/* ConfirmDialog xóa nghiên cứu */}
+        {/* ConfirmDialog xóa bài báo */}
         <ConfirmDialog
           isOpen={isConfirmOpen}
           close={closeConfirmDialog}
           isLoading={isDeleting}
           handleSubmit={handleDelete}
           title="Xác nhận xóa"
-          body={`Bạn có chắc chắn muốn xóa nghiên cứu: ${selectedResearch?._id}?`}
+          body={`Bạn có chắc chắn muốn xóa bài báo: ${selectedResearch?._id}?`}
         />
       </div>
     </div>

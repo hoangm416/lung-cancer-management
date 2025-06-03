@@ -1,4 +1,3 @@
-import { auth } from "express-oauth2-jwt-bearer";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/user";
@@ -6,17 +5,11 @@ import User from "../models/user";
 declare global {
   namespace Express {
     interface Request {
-      userId: string;
-      auth0Id: string;
+      userId?: string;
+      userEmail?: string;
     }
   }
 }
-
-export const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-  tokenSigningAlg: "RS256",
-});
 
 export const jwtParse = async (
   req: Request,
@@ -26,29 +19,24 @@ export const jwtParse = async (
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    res.sendStatus(401);
-    return;
+    return res.status(401).json({ message: "Không có token xác thực" });
   }
 
-  // Bearer lshdflshdjkhvjkshdjkvh34h5k3h54jkh
   const token = authorization.split(" ")[1];
 
   try {
-    const decoded = jwt.decode(token) as jwt.JwtPayload;
-    const auth0Id = decoded.sub;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
 
-    const user = await User.findOne({ auth0Id });
+    // Lấy userId và email từ token
+    req.userId = decoded.userId;
+    req.userEmail = decoded.email;
 
-    if (!user) {
-      res.sendStatus(401);
-      return;
-    }
+    // Có thể kiểm tra user tồn tại trong DB nếu muốn
+    // const user = await User.findById(decoded.userId);
+    // if (!user) return res.status(401).json({ message: "User không tồn tại" });
 
-    req.auth0Id = auth0Id as string;
-    req.userId = user._id.toString();
     next();
   } catch (error) {
-    res.sendStatus(401);
-    return;
+    return res.status(401).json({ message: "Token không hợp lệ" });
   }
 };

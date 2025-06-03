@@ -35,8 +35,6 @@ const createUser = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: "Đã xảy ra lỗi khi đăng ký" });
   }
-
-  console.log(req.body)
 };
 
 const loginUser = async (req: Request, res: Response) => {
@@ -66,7 +64,7 @@ const loginUser = async (req: Request, res: Response) => {
     const token = jwt.sign (
       { userId: user._id, email: user.email },
       JWT_SECRET,
-      { expiresIn: "4h" }
+      { expiresIn: "1h" }
     )
 
     // Đăng nhập thành công

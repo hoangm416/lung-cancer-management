@@ -7,7 +7,7 @@ const researchSchema = new mongoose.Schema({
   type: { type: String, required: true },
   title: { type: String, required: true },
   slug: { type: String, required: false },
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
   author: { type: String, required: true },
   link: { type: String, required: true },
   description: { type: String, required: true },

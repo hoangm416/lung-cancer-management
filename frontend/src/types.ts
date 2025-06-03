@@ -52,7 +52,6 @@ export type Record = {
 
 export type Research = {
   _id: string;
-  submitter_id: string;
   research_id: string;
   type: string;
   title: string;

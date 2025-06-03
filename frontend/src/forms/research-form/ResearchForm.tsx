@@ -18,6 +18,8 @@ import {
   SelectItem
 } from "@/components/ui/select";
 import { Research } from '@/types';
+import { createClient } from "@supabase/supabase-js";
+import { useState } from "react";
 
 type ResearchFormProps = {
   isOpen: boolean;
@@ -26,6 +28,13 @@ type ResearchFormProps = {
   onSubmit: (data: Research) => void;
 };
 
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
+
+const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+
 const ResearchForm = ({
   isOpen,
   onClose,
@@ -33,8 +42,39 @@ const ResearchForm = ({
   onSubmit,
 }: ResearchFormProps) => {
   const form = useForm<Research>({
-    defaultValues: {},
+    defaultValues: {
+      date: today,
+    },
   });
+
+  const [uploading, setUploading] = useState(false);
+
+  // Hàm upload ảnh lên Supabase
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const researchId = form.getValues("research_id");
+      if (!researchId) {
+        alert("Vui lòng nhập mã nghiên cứu trước khi chọn ảnh!");
+        setUploading(false);
+        return;
+      }
+      const filePath = `${researchId}/${file.name}`;
+      const { error } = await supabase.storage.from("research").upload(filePath, file);
+      if (error) throw error;
+      const { data } = supabase.storage.from("research").getPublicUrl(filePath);
+      if (data?.publicUrl) {
+        form.setValue("image", data.publicUrl);
+      }
+    } catch (err) {
+      alert("Lỗi upload ảnh!");
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (data: Research) => {
     onSubmit(data);
@@ -47,7 +87,7 @@ const ResearchForm = ({
       <DialogContent className="max-w-5xl max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl text-primary">
-            Thêm bài nghiên cứu
+            Thêm bài báo khoa học
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -60,7 +100,7 @@ const ResearchForm = ({
                   name="research_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mã nghiên cứu</FormLabel>
+                      <FormLabel>Mã bài báo</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Nhập mã bài nghiên cứu" required />
                       </FormControl>
@@ -112,7 +152,13 @@ const ResearchForm = ({
                     <FormItem>
                       <FormLabel>Ngày đăng</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập ngày đăng bài nghiên cứu" required />
+                        <Input
+                          {...field}
+                          value={field.value ? (typeof field.value === "string" ? field.value : (field.value as Date).toISOString().slice(0, 10)) : ""}
+                          type="date"
+                          disabled
+                          required
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -170,7 +216,24 @@ const ResearchForm = ({
                     <FormItem>
                       <FormLabel>Ảnh minh họa</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập ảnh minh họa" required />
+                        <>
+                          <Input
+                            {...field}
+                            placeholder="Đường dẫn ảnh minh họa"
+                            readOnly
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploading}
+                            className="mt-2"
+                          />
+                          {uploading && <span className="text-xs text-gray-500">Đang tải ảnh...</span>}
+                          {field.value && (
+                            <img src={field.value} alt="preview" className="mt-2 max-h-32 rounded" />
+                          )}
+                        </>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

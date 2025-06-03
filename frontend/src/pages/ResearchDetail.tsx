@@ -57,7 +57,13 @@ const ResearchDetail = () => {
       </Button>
 
       <h2 className="text-4xl font-bold mb-4">{data.title}</h2>
-      <p className="text-sm text-gray-500 mb-4 text-right">📅 {data.date}</p>
+      <p className="text-sm text-gray-500 mb-4 text-right">
+        📅{new Date(data.date).toLocaleDateString('vi-VN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })}
+      </p>
       {/* {data.image && (
         <img
           src={`/images/${data.image}`}

@@ -103,11 +103,11 @@ export const useAddResearch = () => {
 
   return useMutation(addResearchRequest, {
     onSuccess: () => {
-      toast.success("Thêm nghiên cứu thành công!"); // Hiển thị thông báo thành công
+      toast.success("Thêm bài báo thành công!"); // Hiển thị thông báo thành công
       queryClient.invalidateQueries("fetchResearches"); // Làm mới danh sách Research
     },
     onError: (error: Error) => {
-      toast.error(`Thêm nghiên cứu thất bại: ${error.message}`); // Hiển thị thông báo lỗi
+      toast.error(`Thêm bài báo thất bại: ${error.message}`); // Hiển thị thông báo lỗi
     },
   });
 };
@@ -120,7 +120,7 @@ export const useEditResearch = () => {
     updatedResearch,
   }: {
     _id: string,
-    submitter_id?: string;
+    research_id?: string;
     updatedResearch: Research;
   }): Promise<Research> => {
 

@@ -149,7 +149,13 @@ const SearchResearchPage = () => {
               <div className="p-4 w-2/3 flex flex-col justify-between">
               <div>
                 <h1 className="text-lg font-semibold">{article.title}</h1>
-                <p className="text-gray-500 text-sm">📅 {article.date}</p>
+                <p className="text-gray-500 text-sm">
+                  📅{new Date(article.date).toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}
+                </p>
                 <p className="text-gray-600">{article.description}</p>
               </div>
               <div className="mt-3 flex items-center gap-3">

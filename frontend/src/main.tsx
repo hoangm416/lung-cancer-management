@@ -6,7 +6,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import AppRoutes from "./AppRoutes";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "sonner";
-
 import { FullscreenProvider } from "@/context/FullScreenContext";
 
 const queryClient = new QueryClient({

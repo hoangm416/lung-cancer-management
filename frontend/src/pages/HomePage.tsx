@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from "react";
 import PieChartComponent from "@/components/PieChartComponent";
 import HistogramChart from "@/components/HistogramChart";
 import BarChartComponent from "@/components/BarChartComponent";
@@ -8,12 +8,12 @@ import { useGetRecord } from "@/api/LungRecordApi";
 import { Card, CardContent } from "@/components/ui/card";
 import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
 import { loadTSV } from "@/utils/loadTSV";
-import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData.ts"
-import FullscreenContainer from '@/components/FullScreenContainer';
+import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData";
+import FullscreenContainer from "@/components/FullScreenContainer";
 import ChartDropdown, { ChartOption } from "@/components/ChartDropdown";
 
 const HomePage = () => {
-  const { records, isLoading } = useGetRecord();
+  const { records = [], isLoading } = useGetRecord();
   const [OSdata, setOSData] = useState<any[]>([]);
   const [mergedData, setMergedData] = useState<any[]>([]);
 
@@ -36,7 +36,7 @@ const HomePage = () => {
   
 
   useEffect(() => {
-    loadTSV('/data/TCGA-LUAD.survival.tsv')
+    loadTSV("/data/TCGA-LUAD.survival.tsv")
       .then(setOSData)
       .catch((err) => console.error("❌ Failed to load TSV:", err));
   }, []);
@@ -48,18 +48,15 @@ const HomePage = () => {
         .map((rec) => {
           const match = osMap.get(rec.patient_id);
           if (match) {
-            return {...rec, ...match};
-          }
+            return { ...rec, ...match };          }
           return null;
         })
         .filter(Boolean);
 
-      setMergedData(merged);
-      console.log("🔗 Merged filtered data:", merged);
+      setMergedData(merged as any[]);
+      //console.log("🔗 Merged filtered data:", merged);
     }
   }, [OSdata, records]);
-
-  if (isLoading) return <div>Đang tải dữ liệu...</div>;
 
   // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
   const genderCounts = records.reduce(
@@ -144,18 +141,21 @@ const HomePage = () => {
   ];
 
   // Dữ liệu sống sót Kaplan-Meier tổng thể
-  const kmOverall = prepareOSUngroupedData(mergedData);
+  const kmOverall = useMemo(() => mergedData.length > 0 ? prepareOSUngroupedData(mergedData) : [], [mergedData]);
+
   // Dữ liệu DFS
-  const kmDFS = prepareDFSData(records);
-  // OS Theo giới tính
-  const KMCbySex = prepareOSGroupedData(mergedData, "sex");
-  console.log("KMC by sex:", KMCbySex);
-  // OS Theo giai đoạn ung thư
-  const KMCbyStage = prepareOSGroupedData(mergedData, "ajcc_pathologic_stage");
-  console.log("KMC by stage:", KMCbyStage);
-  // OS Theo nhóm tuổi
-  const KMCbyAgeGroup = prepareOSGroupedData(mergedData, "diagnosis_age", [0, 15, 24, 44, 60]);
-  console.log("KMC by age group:", KMCbyAgeGroup);
+  const kmDFS = useMemo(() => records.length > 0 ? prepareDFSData(records) : [], [records]);
+
+  // OS theo giới tính
+  const KMCbySex = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "sex") : [], [mergedData]);
+
+  // OS theo giai đoạn
+  const KMCbyStage = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "ajcc_pathologic_stage") : [], [mergedData]);
+
+  // OS theo nhóm tuổi
+  const KMCbyAgeGroup = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "diagnosis_age", [0, 15, 24, 44, 60]) : [], [mergedData]);
+
+  if (isLoading) return <div>Đang tải dữ liệu...</div>;
 
   return (
     <div className="flex flex-col gap-10">

@@ -120,7 +120,7 @@ export function prepareOSUngroupedData(
     curve.push({ time, event, survival });
     atRisk -= 1;
   });
-
+  console.log("OS Ungrouped Data:", curve);
   return [{ group: "Overall Survival", data: curve }];
 }
 

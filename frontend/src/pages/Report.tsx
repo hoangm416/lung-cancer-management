@@ -30,6 +30,15 @@ const Report = () => {
     import.meta.env.VITE_SUPABASE_ANON_KEY!
   );
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
+    return `${size} ${sizes[i]}`;
+  };
+
   useEffect(() => {
     if (sample_id) {
       loadFiles();
@@ -40,9 +49,18 @@ const Report = () => {
     try {
       setLoading(true);
       setError('');
-      const {data, error} = await supabase.storage.from('report').list(`${sample_id}`);
+      // Gọi Supabase để lấy danh sách file trong thư mục sample_id
+      const { data, error } = await supabase
+        .storage
+        .from('report')
+        .list(`${sample_id}`, { 
+          limit: 100, 
+          offset: 0, 
+          sortBy: { column: 'name', order: 'asc' } 
+        });
 
       if (error) throw error;
+      // data là mảng các object: { name, id, updated_at, created_at, last_accessed_at, metadata: { size, ... } }
       setFiles(data || []);
     } catch (err) {
       setError('Lấy danh sách file thất bại');
@@ -269,10 +287,24 @@ const Report = () => {
                       className="flex items-center justify-between p-4 bg-white rounded-lg border"
                     >
                       <div className="flex items-center space-x-3">
-                        <FileIcon className="h-6 w-6 text-gray-400"/>
+                        <FileIcon className="h-6 w-6 text-gray-400" />
+                        {/* Tên file */}
                         <span className="font-medium">{file.name.split('/').pop()}</span>
+                        {/* Dung lượng file */}
+                        <span className="text-sm text-gray-500">
+                          {file.metadata?.size != null
+                            ? formatFileSize(file.metadata.size)
+                            : '-'}
+                        </span>
+                        {/* Thời gian cập nhật cuối */}
+                        <span className="text-sm text-gray-500">
+                          {file.updated_at
+                            ? new Date(file.updated_at).toLocaleString()
+                            : '-'}
+                        </span>
                       </div>
-                      <div className="flex items-center space-x-2">
+
+                      <div className="flex items-center space-x-1">
                         <button
                           onClick={() => handleView(file.name)}
                           className="p-2 text-orange-500 hover:bg-orange-50 rounded-full transition-colors"

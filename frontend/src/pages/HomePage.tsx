@@ -159,16 +159,17 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="text-left">
-        <span className="font-bold text-3xl">
-          Thống kê tổng quan
+      <div className="flex flex-row justify-between">
+        <span className="font-medium text-2xl">
+          Trực quan hóa dữ liệu
         </span>
+        <ChartDropdown
+          selectedCharts={selectedCharts}
+          onChange={(selected) => setSelectedCharts(selected)}
+        />
       </div>
 
-      <ChartDropdown
-        selectedCharts={selectedCharts}
-        onChange={(selected) => setSelectedCharts(selected)}
-      />
+      
 
       {/* Nhóm biểu đồ nhỏ: 3 cột (Pie, Histogram) */}
       {smallCharts.length > 0 && (

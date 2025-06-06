@@ -115,7 +115,7 @@ const ResearchPage = () => {
   return (
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px] mb-4">
-        <span className="text-2xl font-medium text-text">Danh sách bài báo khoa học</span>
+        <span className="text-2xl font-medium">Danh sách bài báo khoa học</span>
         
         {/* Ô tìm kiếm */}
         <SearchResearchForm

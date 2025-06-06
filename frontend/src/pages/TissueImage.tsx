@@ -31,6 +31,15 @@ const TissueImage = () => {
     import.meta.env.VITE_SUPABASE_ANON_KEY!
   );
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
+    return `${size} ${sizes[i]}`;
+  };
+
   useEffect(() => {
     if (sample_id) {
       loadFiles();
@@ -55,6 +64,12 @@ const TissueImage = () => {
 
   // Hàm upload file
   const handleFileUpload = async (file: File) => {
+    const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+    if (file.size > MAX_SIZE) {
+      setError('Kích thước tệp vượt quá 50MB');
+      return;
+    }
+
     try {
       setUploading(true);
       setError('');
@@ -400,8 +415,21 @@ const TissueImage = () => {
                       className="flex items-center justify-between p-4 bg-white rounded-lg border"
                     >
                       <div className="flex items-center space-x-3">
-                        <FileIcon className="h-6 w-6 text-gray-400"/>
+                        <FileIcon className="h-6 w-6 text-gray-400" />
+                        {/* Tên file */}
                         <span className="font-medium">{file.name.split('/').pop()}</span>
+                        {/* Dung lượng file */}
+                        <span className="text-sm text-gray-500">
+                          {file.metadata?.size != null
+                            ? formatFileSize(file.metadata.size)
+                            : '-'}
+                        </span>
+                        {/* Thời gian cập nhật cuối */}
+                        <span className="text-sm text-gray-500">
+                          {file.updated_at
+                            ? new Date(file.updated_at).toLocaleString()
+                            : '-'}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <button

@@ -1,12 +1,16 @@
 import { useParams } from 'react-router-dom';
-import { AlertCircle, CheckCircle, Copy, Download, FileIcon, Loader2, Share2, Trash2, Upload } from 'lucide-react';
+import { AlertCircle, CheckCircle, Copy, Download, Eye, FileIcon, Loader2, Share2, Trash2, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { FileObject } from '@supabase/storage-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+
+const ROW_HEIGHT = 30;
+const MIN_WIDTH = 200;
 
 const MultiOmics = () => {
   const { sample_id } = useParams();
@@ -22,11 +26,30 @@ const MultiOmics = () => {
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  
+  // States phục vụ cho việc xem file
+  const [showViewer, setShowViewer] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState('');
+  const [viewerFilename, setViewerFilename] = useState(''); // Lưu tên gốc của file
+  const [tsvData, setTsvData] = useState<string[][]>([]); // Dùng cho .tsv
+  const [viewerLoading, setViewerLoading] = useState(false);
+  const [viewerError, setViewerError] = useState('');
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [columnWidth, setColumnWidth] = useState<number>(MIN_WIDTH);
 
   const supabase = createClient(
     import.meta.env.VITE_SUPABASE_URL!,
     import.meta.env.VITE_SUPABASE_ANON_KEY!
   );
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
+    return `${size} ${sizes[i]}`;
+  };
 
   useEffect(() => {
     if (sample_id) {
@@ -38,9 +61,18 @@ const MultiOmics = () => {
     try {
       setLoading(true);
       setError('');
-      const {data, error} = await supabase.storage.from('medical').list(`${sample_id}`);
+      // Gọi Supabase để lấy danh sách file trong thư mục sample_id
+      const { data, error } = await supabase
+        .storage
+        .from('medical')
+        .list(`${sample_id}`, { 
+          limit: 100, 
+          offset: 0, 
+          sortBy: { column: 'name', order: 'asc' } 
+        });
 
       if (error) throw error;
+      // data là mảng các object: { name, id, updated_at, created_at, last_accessed_at, metadata: { size, ... } }
       setFiles(data || []);
     } catch (err) {
       setError('Lấy danh sách file thất bại');
@@ -175,6 +207,108 @@ const MultiOmics = () => {
     }
   };
 
+  // Hàm view file: tạo signed URL, lưu viewerUrl và viewerFilename
+  const handleView = async (filename: string) => {
+    try {
+      setError('');
+      const { data, error } = await supabase.storage
+        .from('medical')
+        .createSignedUrl(`${sample_id}/${filename}`, 60 * 60);
+
+      if (error) throw error;
+
+      setViewerUrl(data.signedUrl);
+      setViewerFilename(filename);
+      setShowViewer(true);
+    } catch (err) {
+      setError('Không thể xem tệp');
+      console.error('Lỗi xem tệp:', err);
+    }
+  };
+
+  // Khi mở Dialog xem file, fetch nội dung nếu là .tsv hoặc .txt
+  useEffect(() => {
+    if (!showViewer) {
+      // Reset state khi đóng Dialog
+      setTsvData([]);
+      setViewerError('');
+      setViewerLoading(false);
+      return;
+    }
+
+    const lowerName = viewerFilename.toLowerCase();
+    const isTsv = lowerName.endsWith('.tsv');
+    const isTxt = lowerName.endsWith('.txt');
+
+    if (!isTsv && !isTxt) {
+      setViewerError('Chỉ hỗ trợ xem file .txt hoặc .tsv dưới dạng bảng');
+      return;
+    }
+
+    setViewerLoading(true);
+    setViewerError('');
+
+    fetch(viewerUrl)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Không thể tải file (status ${res.status})`);
+        }
+        return res.text();
+      })
+      .then((rawText) => {
+        // Với .tsv: tách theo '\t'
+        // Với .txt: tách cột theo bất kỳ khoảng trắng (tab hoặc space)
+        const rows = rawText.trim().split('\n').map((line) => {
+          if (isTsv) {
+            return line.split('\t');
+          } else {
+            // với .txt: split bất kỳ khoảng trắng (1 hoặc nhiều) thành cột
+            return line.trim().split(/\s+/);
+          }
+        });
+        setTsvData(rows);
+
+        // Tính chiều rộng mỗi cột theo chiều rộng thực tế của Dialog
+        const dialogEl = dialogRef.current;
+        if (dialogEl && rows.length > 0) {
+          const dialogWidth = dialogEl.clientWidth;
+          const columnCount = rows[0].length;
+          const calculatedWidth = Math.floor(dialogWidth / columnCount);
+          setColumnWidth(Math.max(MIN_WIDTH, Math.min(calculatedWidth, 490))); // giới hạn min-max
+        }
+      })
+      .catch((err) => {
+        console.error('Lỗi khi tải hoặc parse file:', err);
+        setViewerError('Không thể tải hoặc phân tích file.');
+        setTsvData([]);
+      })
+      .finally(() => {
+        setViewerLoading(false);
+      });
+  }, [showViewer, viewerUrl, viewerFilename]);
+
+  // Component render 1 dòng TSV (dùng react-window)
+  const Row = ({ index, style, data }: ListChildComponentProps) => {
+    const row: string[] = data[index];
+    return (
+      <div
+        style={style}
+        className={`flex ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+      >
+        {row.map((cell, colIdx) => (
+          <div
+            key={colIdx}
+            className="flex-shrink-0 border px-2 py-1 text-sm truncate whitespace-nowrap overflow-hidden"
+            style={{ width: columnWidth }}
+            title={cell}
+          >
+            {cell}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="mt-2 gap-7 p-4">
       <div className="col-span-1 border-2">
@@ -185,7 +319,7 @@ const MultiOmics = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold">
-                Quản lý dữ liệu Multi-omics (miRNA, Biểu hiện gen, Biến đổi số lượng bản sao, Methyl hóa DNA)
+                Quản lý dữ liệu thô (miRNA, Biểu hiện gen, Biến đổi số lượng bản sao, Methyl hóa DNA, ...)
               </CardTitle>
             </CardHeader>
 
@@ -225,10 +359,11 @@ const MultiOmics = () => {
                         : 'Kéo thả hoặc nhấp để chọn tệp (tối đa 50MB)'}
                   </span>
                   <input
-                      type="file"
-                      className="hidden"
-                      onChange={handleInputChange}
-                      disabled={uploading}
+                    type="file"
+                    accept=".tsv, .txt"
+                    className="hidden"
+                    onChange={handleInputChange}
+                    disabled={uploading}
                   />
                 </label>
               </div>
@@ -249,10 +384,30 @@ const MultiOmics = () => {
                       className="flex items-center justify-between p-4 bg-white rounded-lg border"
                     >
                       <div className="flex items-center space-x-3">
-                        <FileIcon className="h-6 w-6 text-gray-400"/>
+                        <FileIcon className="h-6 w-6 text-gray-400" />
+                        {/* Tên file */}
                         <span className="font-medium">{file.name.split('/').pop()}</span>
+                        {/* Dung lượng file */}
+                        <span className="text-sm text-gray-500">
+                          {file.metadata?.size != null
+                            ? formatFileSize(file.metadata.size)
+                            : '-'}
+                        </span>
+                        {/* Thời gian cập nhật cuối */}
+                        <span className="text-sm text-gray-500">
+                          {file.updated_at
+                            ? new Date(file.updated_at).toLocaleString()
+                            : '-'}
+                        </span>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <button
+                          onClick={() => handleView(file.name)}
+                          className="p-2 text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
+                          title="Xem"
+                        >
+                          <Eye className="h-5 w-5" />
+                        </button>
                         <button
                           onClick={() => handleDownload(file.name)}
                           className="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
@@ -335,11 +490,95 @@ const MultiOmics = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+
+              {/* Viewer Dialog (Virtualized): hiển thị .tsv hoặc .txt dạng bảng */}
+              <Dialog open={showViewer} onOpenChange={setShowViewer}>
+                <DialogContent className="max-w-5xl h-[90vh] p-0 flex flex-col">
+                  {/* Header Dialog */}
+                  <div className="px-4 py-2 border-b flex justify-between items-center">
+                    <h3 className="text-lg font-medium">Xem tệp: {viewerFilename}</h3>
+                  </div>
+
+                  {/* Nội dung chính */}
+                  <div className="flex-1 bg-white p-4">
+                    {viewerLoading && (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500">
+                        Đang tải…
+                      </div>
+                    )}
+
+                    {viewerError && !viewerLoading && (
+                      <div className="w-full h-full flex items-center justify-center text-red-500">
+                        {viewerError}
+                      </div>
+                    )}
+
+                    {/* Khi đã parse xong (tsvData.length > 0) */}
+                    {!viewerLoading &&
+                      !viewerError &&
+                      tsvData.length > 0 &&
+                      (viewerFilename.toLowerCase().endsWith('.tsv') ||
+                        viewerFilename.toLowerCase().endsWith('.txt')) && (
+                        <div
+                          className="overflow-x-auto"
+                          style={{ height: '100%' }} // Chiếm toàn bộ chiều cao còn lại
+                        >
+                          {/* Header row: width = số cột × columnWidth */}
+                          <div
+                            className="flex bg-secondary sticky top-0 z-10"
+                            style={{ width: tsvData[0].length * columnWidth }}
+                          >
+                            {tsvData[0].map((headerCell, idx) => (
+                              <div
+                                key={idx}
+                                className="flex-shrink-0 border px-2 py-1 font-semibold text-sm truncate whitespace-nowrap overflow-hidden"
+                                style={{ width: columnWidth }}
+                                title={headerCell} // để hiển thị full text khi hover
+                              >
+                                {headerCell}
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Virtualized List */}
+                          <List
+                            height={window.innerHeight * 0.8 - ROW_HEIGHT}
+                            itemCount={tsvData.length - 1}
+                            itemSize={ROW_HEIGHT}
+                            width={tsvData[0].length * columnWidth}
+                            itemData={tsvData.slice(1)}
+                            className="outline-none"
+                          >
+                            {Row}
+                          </List>
+                        </div>
+                      )}
+
+                    {/* Nếu bảng rỗng */}
+                    {!viewerLoading &&
+                      !viewerError &&
+                      (viewerFilename.toLowerCase().endsWith('.tsv') ||
+                        viewerFilename.toLowerCase().endsWith('.txt')) &&
+                      tsvData.length === 0 && (
+                        <div className="text-gray-500 text-center">Không có dữ liệu</div>
+                      )}
+
+                    {/* Nếu không phải .tsv hoặc .txt */}
+                    {!viewerLoading &&
+                      !viewerError &&
+                      !viewerFilename.toLowerCase().endsWith('.tsv') &&
+                      !viewerFilename.toLowerCase().endsWith('.txt') && (
+                        <div className="text-red-500 text-center">
+                          Chỉ hỗ trợ xem file .txt hoặc .tsv dưới dạng bảng
+                        </div>
+                      )}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         </div>
       </div>
-
     </div>
   )
 }

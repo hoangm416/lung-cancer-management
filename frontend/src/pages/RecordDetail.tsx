@@ -43,6 +43,7 @@ const RecordDetail = () => {
               <LucideMoveLeft className="h-6 w-8" />
               <span className="align-middle">Trở về</span>
             </Button>
+            <span className="ml-3 text-xl font-bold">{sample_id}</span>
           </div>
 
           <TabsList className='flex ml-auto mr-4 bg-white rounded-t-md shadow'>

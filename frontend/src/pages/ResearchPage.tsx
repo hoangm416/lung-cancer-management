@@ -9,17 +9,18 @@ import SearchResearchForm from '@/forms/research-form/SearchResearchForm';
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAddResearch, useSearchResearch, useEditResearch, useDeleteResearch } from '@/api/ResearchApi';
 import { Research } from '@/types';
+import { toSlug } from '@/utils/toSlug';
 
-const toSlug = (title: string) => {
-  return title
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-};
+// const toSlug = (title: string) => {
+//   return title
+//     .toLowerCase()
+//     .normalize("NFD")
+//     .replace(/[\u0300-\u036f]/g, "")
+//     .replace(/đ/g, "d")
+//     .replace(/[^a-z0-9\s-]/g, "")
+//     .trim()
+//     .replace(/\s+/g, "-");
+// };
 
 const categories = [
   { id: "popular", label: "Khoa học thường thức" },

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Research from "../models/research";
 import slugify from "slugify";
+import { toSlug } from "../utils/toSlug";
 
 const getResearchById = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -48,7 +49,8 @@ const updateResearch = async (req: Request, res: Response): Promise<void> => {
         // Nếu có trường 'title' thì cập nhật 'slug'
         if (title) {
             updateData.title = title;
-            updateData.slug = slugify(title, { lower: true, strict: true });
+            // updateData.slug = slugify(title, { lower: true, strict: true });
+            updateData.slug = toSlug(title);
         }
 
         const updatedResearch = await Research.findByIdAndUpdate(req.params.id, updateData, { new: true });

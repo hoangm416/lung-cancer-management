@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
-
+import { toSlug } from '../utils/toSlug';
 
 const researchSchema = new mongoose.Schema({
   research_id: { type: String, required: true, unique: true },
@@ -17,7 +17,8 @@ const researchSchema = new mongoose.Schema({
 
 researchSchema.pre('save', function (this: any, next: () => void) {
   if (this.isModified('title') || !this.slug) {
-    this.slug = slugify(this.title, { lower: true, strict: true });
+    // this.slug = slugify(this.title, { lower: true, strict: true });
+    this.slug = toSlug(this.title);
   }
   next();
 });

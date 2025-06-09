@@ -55,6 +55,34 @@ export function prepareOSGroupedData(
     "Stage IV",
   ];
 
+  const stageMOrder = [
+    "M0",
+    "M1",
+    "M1a",
+    "M1b",
+    "MX",
+  ];
+
+  const stageNOrder = [
+    "N0",
+    "N1",
+    "N2",
+    "N3",
+    "NX",
+  ];
+
+const stageTOrder = [
+    "T1",
+    "T1a",
+    "T1b",
+    "T2",
+    "T2a",
+    "T2b",
+    "T3",
+    "T4",
+    "TX",
+];
+
   /* Sắp xếp nhóm đúng thứ tự */
   const groups = Object.entries(raw)
     .sort(([keyA], [keyB]) => {

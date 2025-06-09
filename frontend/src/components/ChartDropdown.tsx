@@ -10,11 +10,18 @@ const chartOptions: ChartOption[] = [
   { label: "Tỷ lệ giới tính", value: "gender" },
   { label: "Phân bố độ tuổi", value: "age" },
   { label: "Giai đoạn bệnh theo AJCC", value: "ajcc" },
+  { label: "Mô tả di căn xa (M) theo AJCC", value: "ajcc_m" },
+  { label: "Mô tả hạch (N) theo AJCC", value: "ajcc_n" },
+  { label: "Mô tả khối u (T) theo AJCC", value: "ajcc_t" },
+  { label: "Mutation Count", value: "mutation_count" },
   { label: "Kaplan-Meier: Sống sót tổng thể (OS)", value: "km_overall" },
   { label: "Kaplan-Meier: DFS", value: "km_dfs" },
   { label: "Kaplan-Meier: OS theo giới tính", value: "km_sex"},
   { label: "Kaplan-Meier: OS theo độ tuổi", value: "km_age" },
   { label: "Kaplan-Meier: OS theo giai đoạn AJCC", value: "km_ajcc" },
+  { label: "Kaplan-Meier: OS theo giai đoạn AJCC-M", value: "km_ajcc_m" },
+  { label: "Kaplan-Meier: OS theo giai đoạn AJCC-N", value: "km_ajcc_n" },
+  { label: "Kaplan-Meier: OS theo giai đoạn AJCC-T", value: "km_ajcc_t" },
   { label: "Kaplan-Meier: OS với mô hình Cox-Hazard", value: "km_cox" },
 ];
 

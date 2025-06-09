@@ -274,11 +274,11 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                                   <SelectValue placeholder="Chọn giai đoạn" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Stage M0">Stage M0</SelectItem>
-                                  <SelectItem value="Stage M1">Stage M1</SelectItem>
-                                  <SelectItem value="Stage M1a">Stage M1a</SelectItem>
-                                  <SelectItem value="Stage M1b">Stage M1b</SelectItem>
-                                  <SelectItem value="Stage MX">Stage MX</SelectItem>
+                                  <SelectItem value="M0">Stage M0</SelectItem>
+                                  <SelectItem value="M1">Stage M1</SelectItem>
+                                  <SelectItem value="M1a">Stage M1a</SelectItem>
+                                  <SelectItem value="M1b">Stage M1b</SelectItem>
+                                  <SelectItem value="MX">Stage MX</SelectItem>
                                   <SelectItem value="NA">NA</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -302,11 +302,11 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                                   <SelectValue placeholder="Chọn giai đoạn" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Stage N0">Stage N0</SelectItem>
-                                  <SelectItem value="Stage N1">Stage N1</SelectItem>
-                                  <SelectItem value="Stage N2">Stage N2</SelectItem>
-                                  <SelectItem value="Stage N3">Stage N3</SelectItem>
-                                  <SelectItem value="Stage NX">Stage NX</SelectItem>
+                                  <SelectItem value="N0">Stage N0</SelectItem>
+                                  <SelectItem value="N1">Stage N1</SelectItem>
+                                  <SelectItem value="N2">Stage N2</SelectItem>
+                                  <SelectItem value="N3">Stage N3</SelectItem>
+                                  <SelectItem value="NX">Stage NX</SelectItem>
                                   <SelectItem value="NA">NA</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -360,15 +360,15 @@ const EditRecordForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRecord
                                   <SelectValue placeholder="Chọn giai đoạn" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Stage T1">Stage T1</SelectItem>
-                                  <SelectItem value="Stage T1a">Stage T1a</SelectItem>
-                                  <SelectItem value="Stage T1b">Stage T1b</SelectItem>
-                                  <SelectItem value="Stage T2">Stage T2</SelectItem>
-                                  <SelectItem value="Stage T2a">Stage T2a</SelectItem>
-                                  <SelectItem value="Stage T2b">Stage T2b</SelectItem>
-                                  <SelectItem value="Stage T3">Stage T3</SelectItem>
-                                  <SelectItem value="Stage T4">Stage T4</SelectItem>
-                                  <SelectItem value="Stage TX">Stage TX</SelectItem>
+                                  <SelectItem value="T1">Stage T1</SelectItem>
+                                  <SelectItem value="T1a">Stage T1a</SelectItem>
+                                  <SelectItem value="T1b">Stage T1b</SelectItem>
+                                  <SelectItem value="T2">Stage T2</SelectItem>
+                                  <SelectItem value="T2a">Stage T2a</SelectItem>
+                                  <SelectItem value="T2b">Stage T2b</SelectItem>
+                                  <SelectItem value="T3">Stage T3</SelectItem>
+                                  <SelectItem value="T4">Stage T4</SelectItem>
+                                  <SelectItem value="TX">Stage TX</SelectItem>
                                   <SelectItem value="NA">NA</SelectItem>
                                 </SelectContent>
                               </Select>

@@ -55,33 +55,11 @@ export function prepareOSGroupedData(
     "Stage IV",
   ];
 
-  const stageMOrder = [
-    "M0",
-    "M1",
-    "M1a",
-    "M1b",
-    "MX",
-  ];
+  const stageMOrder = ["M0", "M1", "M1a", "M1b", "MX"];
 
-  const stageNOrder = [
-    "N0",
-    "N1",
-    "N2",
-    "N3",
-    "NX",
-  ];
+  const stageNOrder = ["N0", "N1", "N2", "N3", "NX"];
 
-const stageTOrder = [
-    "T1",
-    "T1a",
-    "T1b",
-    "T2",
-    "T2a",
-    "T2b",
-    "T3",
-    "T4",
-    "TX",
-];
+  const stageTOrder = ["T1", "T1a", "T1b", "T2", "T2a", "T2b", "T3", "T4", "TX"];
 
   /* Sắp xếp nhóm đúng thứ tự */
   const groups = Object.entries(raw)
@@ -96,9 +74,41 @@ const stageTOrder = [
       // Nếu là nhóm Stage, sắp xếp theo thứ tự stageOrder
       const indexA = stageOrder.indexOf(keyA);
       const indexB = stageOrder.indexOf(keyB);
-      const orderA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
-      const orderB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;
-      return orderA - orderB;
+      if (indexA !== -1 || indexB !== -1) {
+        const orderA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
+        const orderB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;
+        return orderA - orderB;
+      }
+
+      // Nếu là nhóm M, sắp xếp theo thứ tự stageMOrder
+      const mA = stageMOrder.indexOf(keyA);
+      const mB = stageMOrder.indexOf(keyB);
+      if (mA !== -1 || mB !== -1) {
+        const orderA = mA === -1 ? Number.MAX_SAFE_INTEGER : mA;
+        const orderB = mB === -1 ? Number.MAX_SAFE_INTEGER : mB;
+        return orderA - orderB;
+      }
+
+      // Nhóm theo Stage N
+      const nA = stageNOrder.indexOf(keyA);
+      const nB = stageNOrder.indexOf(keyB);
+      if (nA !== -1 || nB !== -1) {
+        const orderA = nA === -1 ? Number.MAX_SAFE_INTEGER : nA;
+        const orderB = nB === -1 ? Number.MAX_SAFE_INTEGER : nB;
+        return orderA - orderB;
+      }
+
+      // Nhóm theo Stage T
+      const tA = stageTOrder.indexOf(keyA);
+      const tB = stageTOrder.indexOf(keyB);
+      if (tA !== -1 || tB !== -1) {
+        const orderA = tA === -1 ? Number.MAX_SAFE_INTEGER : tA;
+        const orderB = tB === -1 ? Number.MAX_SAFE_INTEGER : tB;
+        return orderA - orderB;
+      }
+
+      // Mặc định: sắp xếp theo chữ cái
+      return keyA.localeCompare(keyB);
     })
     .map(([group, rows]) => {
       // Sắp xếp các bản ghi trong nhóm theo thời gian tăng dần

@@ -144,7 +144,7 @@ const HomePage = () => {
     { name: "IIIA", count: ajccStageCounts.iiia },
     { name: "IIIB", count: ajccStageCounts.iiib },
     { name: "IV", count: ajccStageCounts.iv },
-    // { name: "Không xác định", count: ajccStageCounts.na },
+    { name: "NA", count: ajccStageCounts.na },
   ];
 
   const ajccMCounts = records.reduce(
@@ -174,7 +174,7 @@ const HomePage = () => {
     { name: "M1a", count: ajccMCounts.m1a },
     { name: "M1b", count: ajccMCounts.m1b },
     { name: "MX", count: ajccMCounts.mx },
-    // { name: "Không xác định", count: ajccMCounts.na },
+    { name: "NA", count: ajccMCounts.na },
   ];
 
   const ajccNCounts = records.reduce(
@@ -205,7 +205,7 @@ const HomePage = () => {
     { name: "N2", count: ajccNCounts.n2 },
     { name: "N3", count: ajccNCounts.n3 },
     { name: "NX", count: ajccNCounts.nx },
-    // { name: "Không xác định", count: ajccNCounts.na },
+    { name: "NA", count: ajccNCounts.na },
   ];
 
   const ajccTCounts = records.reduce(
@@ -248,7 +248,7 @@ const HomePage = () => {
     { name: "T3", count: ajccTCounts.t3 },
     { name: "T4", count: ajccTCounts.t4 },
     { name: "TX", count: ajccTCounts.tx },
-    // { name: "Không xác định", count: ajccTCounts.na },
+    { name: "NA", count: ajccTCounts.na },
   ];
 
   const mutationCountGroups = new Map<string, number>();

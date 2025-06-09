@@ -6,6 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useGetAllResearches = () => {
   const getResearchesRequest = async (): Promise<Research[]> => {
+
     const response = await fetch(`${API_BASE_URL}/api/research`, {
       method: "GET",
       headers: {

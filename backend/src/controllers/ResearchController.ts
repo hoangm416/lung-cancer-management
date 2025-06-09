@@ -10,7 +10,7 @@ const getResearchById = async (req: Request, res: Response): Promise<void> => {
             res.status(404).json({ message: "Nghiên cứu không tồn tại" });
             return;
         }
-        res.json(research);
+        res.json({ data: research });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Lỗi server" });
@@ -20,7 +20,7 @@ const getResearchById = async (req: Request, res: Response): Promise<void> => {
 const getAllResearches = async (req: Request, res: Response): Promise<void> => {
     try {
         const researches = await Research.find();
-        res.json(researches);
+        res.json({ data: researches });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Lỗi server" });

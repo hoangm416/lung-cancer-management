@@ -12,7 +12,7 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 const ROW_HEIGHT = 30;
 const MIN_WIDTH = 200;
 
-const MultiOmics = () => {
+const ProcessedData = () => {
   const { sample_id } = useParams();
   const role = sessionStorage.getItem("role") ?? "user";
 
@@ -65,7 +65,7 @@ const MultiOmics = () => {
       // Gọi Supabase để lấy danh sách file trong thư mục sample_id
       const { data, error } = await supabase
         .storage
-        .from('medical')
+        .from('processed')
         .list(`${sample_id}`, { 
           limit: 100, 
           offset: 0, 
@@ -90,7 +90,7 @@ const MultiOmics = () => {
       setError('');
 
       const { error } = await supabase.storage
-        .from('medical')
+        .from('processed')
         .upload(`${sample_id}/${file.name}`, file);
 
       if (error) throw error;
@@ -146,7 +146,7 @@ const MultiOmics = () => {
     try {
       setError('');
       const { data, error } = await supabase.storage
-        .from('medical')
+        .from('processed')
         .createSignedUrl(`${sample_id}/${filename}`, 60, { download: true });
   
       if (error) throw error;
@@ -162,7 +162,7 @@ const MultiOmics = () => {
     try {
       setError('');
       const { data, error } = await supabase.storage
-        .from('medical')
+        .from('processed')
         .createSignedUrl(`${sample_id}/${filename}`, 6 * 60 * 60);
   
       if (error) throw error;
@@ -181,7 +181,7 @@ const MultiOmics = () => {
     try {
       setError('');
       const { error } = await supabase.storage
-        .from('medical')
+        .from('processed')
         .remove([`${sample_id}/${fileToDelete}`]);
   
       if (error) throw error;
@@ -213,7 +213,7 @@ const MultiOmics = () => {
     try {
       setError('');
       const { data, error } = await supabase.storage
-        .from('medical')
+        .from('processed')
         .createSignedUrl(`${sample_id}/${filename}`, 60 * 60);
 
       if (error) throw error;
@@ -315,7 +315,7 @@ const MultiOmics = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            Quản lý dữ liệu thô (miRNA, Biểu hiện gen, Biến đổi số lượng bản sao, Methyl hóa DNA, ...)
+            Quản lý dữ liệu đã xử lý (miRNA, Biểu hiện gen, Biến đổi số lượng bản sao, Methyl hóa DNA, ...)
           </CardTitle>
         </CardHeader>
 
@@ -581,4 +581,4 @@ const MultiOmics = () => {
   )
 }
 
-export default MultiOmics;
+export default ProcessedData;

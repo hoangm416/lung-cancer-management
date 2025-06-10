@@ -7,6 +7,7 @@ import { TabsList } from '@radix-ui/react-tabs';
 import Report from '@/pages/Report';
 import TissueImage from '@/pages/TissueImage';
 import MultiOmics from '@/pages/MultiOmics';
+import ProcessedData from './ProcessedData';
 
 const RecordDetail = () => {
   const { sample_id } = useParams();
@@ -73,7 +74,14 @@ const RecordDetail = () => {
               className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
               onClick={() => handleTabChange('d')}
             >
-              Dữ liệu đa omics
+              Dữ liệu thô
+            </TabsTrigger>
+            <TabsTrigger
+              value="e"
+              className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
+              onClick={() => handleTabChange('e')}
+            >
+              Dữ liệu đã xử lý
             </TabsTrigger>
           </TabsList>
         </div>
@@ -196,6 +204,10 @@ const RecordDetail = () => {
           </TabsContent>
           <TabsContent value='d'>
             <MultiOmics />
+          </TabsContent>
+
+          <TabsContent value='e'>
+            <ProcessedData />
           </TabsContent>
         </div>
       </Tabs>

@@ -1,12 +1,10 @@
-import GeneAnalytics from "@/components/GeneAnalytics";
-import DnaAnalytics from "@/components/DnaAnalytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Analytics = () => {
   return (
     <div className="w-full min-h-0">
-      <Tabs defaultValue="gene-expression" className="flex flex-col">
-        {/* tabs ngang trên cùng */}
+      <span className="text-2xl font-medium">Phân tích dữ liệu</span>
+      {/* <Tabs defaultValue="gene-expression" className="flex flex-col">
         <TabsList className="flex gap-1 bg-white rounded-t-md shadow max-w-fit">
           <TabsTrigger
             value="gene-expression"
@@ -34,7 +32,6 @@ const Analytics = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* content bên dưới, full width */}
         <div className="flex-1 p-2 rounded-b-md overflow-auto mt-5">
           <TabsContent value="dna-methyl">
             <DnaAnalytics />
@@ -43,7 +40,7 @@ const Analytics = () => {
             <GeneAnalytics />
           </TabsContent>
         </div>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 };

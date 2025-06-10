@@ -27,6 +27,7 @@ const categories = [
 ];
 
 const ResearchPage = () => {
+  const role = sessionStorage.getItem("role") ?? "user";
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
   const [articles, setArticles] = useState<Research[]>([]);
@@ -123,13 +124,15 @@ const ResearchPage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Button
-          className="flex items-center gap-2 border font-normal"
-          onClick={openAddDialog}
-        >
-          <LucidePlus className="inline-block h-4 w-4" />
-          Thêm bài báo
-        </Button>
+        {role === "admin" && (
+          <Button
+            className="flex items-center gap-2 border font-normal"
+            onClick={openAddDialog}
+          >
+            <LucidePlus className="inline-block h-4 w-4" />
+            Thêm bài báo
+          </Button>
+        )}
       </div>
       
       {/* Tabs */}
@@ -179,29 +182,31 @@ const ResearchPage = () => {
                 <p className="text-gray-600">{article.description}</p>
               </div>
               <div className="mt-3 flex items-center gap-3">
-                {/* Sửa bài báo */}
-                <div
-                  className="flex items-center cursor-pointer text-blue-500 hover:underline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openEditDialog(article);
-                  }}
-                >
-                  <LucidePencil className="h-5 w-5 mr-1" />
-                  <span>Sửa bài báo</span>
-                </div>
+                {role === "admin" && (
+                  <>
+                    <div
+                      className="flex items-center cursor-pointer text-blue-500 hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditDialog(article);
+                      }}
+                    >
+                      <LucidePencil className="h-5 w-5 mr-1" />
+                      <span>Sửa bài báo</span>
+                    </div>
 
-                {/* Xóa bài báo */}
-                <div
-                  className="flex items-center cursor-pointer text-red-500 hover:underline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openConfirmDialog(article);
-                  }}  
-                >
-                  <LucideTrash className="h-5 w-5 mr-1" />
-                  <span>Xóa bài báo</span>
-                </div>
+                    <div
+                      className="flex items-center cursor-pointer text-red-500 hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openConfirmDialog(article);
+                      }}  
+                    >
+                      <LucideTrash className="h-5 w-5 mr-1" />
+                      <span>Xóa bài báo</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

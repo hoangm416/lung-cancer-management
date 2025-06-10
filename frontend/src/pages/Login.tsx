@@ -32,6 +32,7 @@ const Login = () => {
         const expireTime = Date.now() + 60 * 60 * 1000; // 1 giờ
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("email", data.user.email);
+        sessionStorage.setItem("role", data.user.role);
         sessionStorage.setItem("expireTime", expireTime.toString());
         
         // Chuyển hướng sang trang chủ

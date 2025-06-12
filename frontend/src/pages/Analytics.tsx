@@ -1,49 +1,54 @@
-import GeneAnalytics from "@/components/GeneAnalytics";
-import DnaAnalytics from "@/components/DnaAnalytics";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const Analytics = () => {
+  // const [userInput, setUserInput] = useState('');
+  // const [botChoice, setBotChoice] = useState('Ollama Chatbot');
+  // const [response, setResponse] = useState('');
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await axios.post<{ response: string }>('http://localhost:8500/chatbot', {
+  //       user_input: userInput,
+  //       bot_choice: botChoice
+  //     });
+  //     setResponse(res.data.response);
+  //   } catch (error) {
+  //     console.error('Error calling chatbot API:', error);
+  //     setResponse('Error: Could not get response from chatbot');
+  //   }
+  // };
   return (
     <div className="w-full min-h-0">
-      <Tabs defaultValue="gene-expression" className="flex flex-col">
-        {/* tabs ngang trên cùng */}
-        <TabsList className="flex gap-1 bg-white rounded-t-md shadow max-w-fit">
-          <TabsTrigger
-            value="gene-expression"
-            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
-          >
-            Biểu hiện gen
-          </TabsTrigger>
-          <TabsTrigger
-            value="cnv"
-            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
-          >
-            Số lượng bản sao (CNV)
-          </TabsTrigger>
-          <TabsTrigger
-            value="dna-methyl"
-            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
-          >
-            Methyl hóa DNA
-          </TabsTrigger>
-          <TabsTrigger
-            value="miRNA"
-            className="data-[state=active]:bg-accent data-[state=active]:text-white rounded"
-          >
-            RNA nhỏ (miRNA)
-          </TabsTrigger>
-        </TabsList>
-
-        {/* content bên dưới, full width */}
-        <div className="flex-1 p-2 rounded-b-md overflow-auto mt-5">
-          <TabsContent value="dna-methyl">
-            <DnaAnalytics />
-          </TabsContent>
-          <TabsContent value="gene-expression">
-            <GeneAnalytics />
-          </TabsContent>
-        </div>
-      </Tabs>
+      {/* <h2>Ollama Chatbot</h2>
+      <form onSubmit={handleSubmit}>
+          <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder="Nhập câu hỏi của bạn"
+          />
+          <select value={botChoice} onChange={(e) => setBotChoice(e.target.value)}>
+              <option value="Ollama Chatbot">Ollama Chatbot</option>
+              <option value="FAISS Bot">FAISS Bot</option>
+          </select>
+          <button type="submit">Gửi</button>
+      </form>
+      <div>
+        <h3>Phản hồi:</h3>
+        <p>{response}</p>
+      </div> */}
+      {/* <span className="text-2xl font-medium">Phân tích dữ liệu</span> */}
+      <div style={{ width: '100%', height: '600px' }}>
+        <iframe
+          src={`${process.env.CHATBOT_URL}`}
+          width="100%"
+          height="100%"
+          style={{ border: 'none' }}
+          title="Chatbot hỗ trợ các câu hỏi về bệnh ung thư phổi"
+        />
+      </div>
     </div>
   );
 };

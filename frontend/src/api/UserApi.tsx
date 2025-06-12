@@ -45,8 +45,19 @@ export const useCreateUser = () => {
   };
 };
 
+export interface LoginResponse {
+  message: string;
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    role: string;     
+  };
+}
+
 export const useLoginUser = () => {
-  const loginUserRequest = async (user: User) => {
+  const loginUserRequest = async (user: User): Promise<LoginResponse> => {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: "POST",
       headers: {
@@ -54,12 +65,10 @@ export const useLoginUser = () => {
       },
       body: JSON.stringify(user),
     });
-
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.message || "Đăng nhập thất bại");
     }
-
     return data;
   };
 
@@ -71,6 +80,8 @@ export const useLoginUser = () => {
     error,
   } = useMutation(loginUserRequest, {
     onSuccess: (data) => {
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("role", data.user.role);
       toast.success(data.message || "Đăng nhập thành công");
     },
     onError: (error: Error) => {

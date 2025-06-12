@@ -28,6 +28,7 @@ const createUser = async (req: Request, res: Response) => {
       email,
       password: hashedPassword,
       name,
+      role: "user"
     });
 
     await newUser.save();
@@ -62,7 +63,7 @@ const loginUser = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign (
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: "1h" }
     )
@@ -75,6 +76,7 @@ const loginUser = async (req: Request, res: Response) => {
         id: user._id,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     });
   } catch (error) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LucidePlus, LucidePencil, LucideTrash } from 'lucide-react';
@@ -16,6 +16,7 @@ const categories = [
 ];
 
 const ResearchPage = () => {
+  const role = sessionStorage.getItem("role") ?? "user";
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,21 +46,23 @@ const ResearchPage = () => {
   return (
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px] mb-4">
-        <span className="text-2xl font-medium text-text">Danh sách bài báo khoa học</span>
-
+        <span className="text-2xl font-medium">Danh sách bài báo khoa học</span>
+        
         {/* Ô tìm kiếm */}
         <SearchResearchForm
           query={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Button
-          className="flex items-center gap-2 border font-normal"
-          onClick={() => setIsAddDialogOpen(true)}
-        >
-          <LucidePlus className="inline-block h-4 w-4" />
-          Thêm bài báo
-        </Button>
+        {role === "admin" && (
+          <Button
+            className="flex items-center gap-2 border font-normal"
+            onClick={() => setIsAddDialogOpen(true)}
+          >
+            <LucidePlus className="inline-block h-4 w-4" />
+            Thêm bài báo
+          </Button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -109,29 +112,33 @@ const ResearchPage = () => {
                 <p className="text-gray-600">{researches.description}</p>
               </div>
               <div className="mt-3 flex items-center gap-3">
-                <div
-                  className="flex items-center cursor-pointer text-blue-500 hover:underline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedResearch(researches);
-                    setIsEditDialogOpen(true);
-                  }}
-                >
-                  <LucidePencil className="h-5 w-5 mr-1" />
-                  <span>Sửa bài báo</span>
-                </div>
+                {role === "admin" && (
+                  <>
+                    <div
+                      className="flex items-center cursor-pointer text-blue-500 hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedResearch(researches);
+                        setIsEditDialogOpen(true);
+                      }}
+                    >
+                      <LucidePencil className="h-5 w-5 mr-1" />
+                      <span>Sửa bài báo</span>
+                    </div>
 
-                <div
-                  className="flex items-center cursor-pointer text-red-500 hover:underline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedResearch(researches);
-                    setIsConfirmOpen(true);
-                  }}  
-                >
-                  <LucideTrash className="h-5 w-5 mr-1" />
-                  <span>Xóa bài báo</span>
-                </div>
+                    <div
+                      className="flex items-center cursor-pointer text-red-500 hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedResearch(researches);
+                        setIsConfirmOpen(true);
+                      }}  
+                    >
+                      <LucideTrash className="h-5 w-5 mr-1" />
+                      <span>Xóa bài báo</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

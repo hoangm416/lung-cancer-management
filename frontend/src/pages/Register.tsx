@@ -6,6 +6,7 @@ import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useCreateUser } from '@/api/UserApi'
+import { toast } from "sonner"
 // import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
@@ -17,6 +18,19 @@ const Register = () => {
   const { createUser, isLoading } = useCreateUser();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự!");
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Mật khẩu phải chứa ít nhất 1 ký tự hoa!");
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      toast.error("Mật khẩu phải chứa ít nhất 1 số!");
+      return;
+    }
 
     try {
       // gọi API đăng ký
@@ -79,7 +93,7 @@ const Register = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="you@gmail.com"
                     className="pl-10"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

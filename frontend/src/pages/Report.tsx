@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const Report = () => {
   const { sample_id } = useParams();
+  const role = sessionStorage.getItem("role") ?? "user";
 
   const [files, setFiles] = useState<FileObject[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -30,6 +31,15 @@ const Report = () => {
     import.meta.env.VITE_SUPABASE_ANON_KEY!
   );
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
+    return `${size} ${sizes[i]}`;
+  };
+
   useEffect(() => {
     if (sample_id) {
       loadFiles();
@@ -40,9 +50,18 @@ const Report = () => {
     try {
       setLoading(true);
       setError('');
-      const {data, error} = await supabase.storage.from('report').list(`${sample_id}`);
+      // Gọi Supabase để lấy danh sách file trong thư mục sample_id
+      const { data, error } = await supabase
+        .storage
+        .from('report')
+        .list(`${sample_id}`, { 
+          limit: 100, 
+          offset: 0, 
+          sortBy: { column: 'name', order: 'asc' } 
+        });
 
       if (error) throw error;
+      // data là mảng các object: { name, id, updated_at, created_at, last_accessed_at, metadata: { size, ... } }
       setFiles(data || []);
     } catch (err) {
       setError('Lấy danh sách file thất bại');
@@ -195,98 +214,109 @@ const Report = () => {
   };
 
   return (
-    <div className="mt-2 gap-7 p-4">
-      <div className="col-span-1 border-2">
-        <p className=" bg-[#F2F1F1] px-2 py-2 text-lg font-semibold">
-          Thông tin chuyên ngành 
-        </p>
-        <div className="w-full space-y-5 p-5">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">
-                Quản lý file kết quả xét nghiệm
-              </CardTitle>
-            </CardHeader>
+    <div className="w-full space-y-5 p-5">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Quản lý file kết quả xét nghiệm
+          </CardTitle>
+        </CardHeader>
 
-            <CardContent className="space-y-5">
-              {error && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4"/>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+        <CardContent className="space-y-5">
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4"/>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-              {success && (
-                <Alert className="mb-4">
-                  <CheckCircle className="h-4 w-4"/>
-                  <AlertDescription>{success}</AlertDescription>
-                </Alert>
-              )}
+          {success && (
+            <Alert className="mb-4">
+              <CheckCircle className="h-4 w-4"/>
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
 
-              <div className="flex items-center justify-center w-full">
-                <label
-                  className={`w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg shadow-lg tracking-wide border-2 cursor-pointer transition-colors ${
-                    isDragging
-                      ? 'border-primary bg-secondary'
-                      : 'border-border hover:bg-hover'
-                  }`}
-                  onDragEnter={handleDragEnter}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <Upload className="w-8 h-8"/>
-                  <span className="mt-2 text-base">
-                    {uploading
-                      ? 'Đang tải...'
-                      : isDragging
-                        ? 'Thả tệp tại đây'
-                        : 'Kéo thả hoặc nhấp để chọn tệp (tối đa 50MB)'}
-                  </span>
-                  <input
-                    accept='.pdf, .doc, .docx'
-                    type="file"
-                    className="hidden"
-                    onChange={handleInputChange}
-                    disabled={uploading}
-                  />
-                </label>
+          <div className="flex items-center justify-center w-full">
+            <label
+              className={`w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg shadow-lg tracking-wide border-2 cursor-pointer transition-colors ${
+                isDragging
+                  ? 'border-primary bg-secondary'
+                  : 'border-border hover:bg-hover'
+              }`}
+              onDragEnter={handleDragEnter}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <Upload className="w-8 h-8"/>
+              <span className="mt-2 text-base">
+                {uploading
+                  ? 'Đang tải...'
+                  : isDragging
+                    ? 'Thả tệp tại đây'
+                    : 'Kéo thả hoặc nhấp để chọn tệp (tối đa 50MB)'}
+              </span>
+              <input
+                accept='.pdf, .doc, .docx'
+                type="file"
+                className="hidden"
+                onChange={handleInputChange}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+
+          <div className="space-y-4">
+            {loading && (
+              <div className="flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin"/>
               </div>
+            )}
 
-              <div className="space-y-4">
-                {loading && (
-                  <div className="flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin"/>
+            {files.length === 0 ? (
+              <p className="text-center text-gray-500">Chưa có tệp tin nào</p>
+            ) : (
+              files.map((file) => (
+                <div
+                  key={file.name}
+                  className="flex items-center justify-between p-4 bg-white rounded-lg border"
+                >
+                  <div className="flex items-center space-x-3">
+                    <FileIcon className="h-6 w-6 text-gray-400" />
+                    {/* Tên file */}
+                    <span className="font-medium">{file.name.split('/').pop()}</span>
+                    {/* Dung lượng file */}
+                    <span className="text-sm text-gray-500">
+                      {file.metadata?.size != null
+                        ? formatFileSize(file.metadata.size)
+                        : '-'}
+                    </span>
+                    {/* Thời gian cập nhật cuối */}
+                    <span className="text-sm text-gray-500">
+                      {file.updated_at
+                        ? new Date(file.updated_at).toLocaleString()
+                        : '-'}
+                    </span>
                   </div>
-                )}
 
-                {files.length === 0 ? (
-                  <p className="text-center text-gray-500">Chưa có tệp tin nào</p>
-                ) : (
-                  files.map((file) => (
-                    <div
-                      key={file.name}
-                      className="flex items-center justify-between p-4 bg-white rounded-lg border"
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => handleView(file.name)}
+                      className="p-2 text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
+                      title="Xem"
                     >
-                      <div className="flex items-center space-x-3">
-                        <FileIcon className="h-6 w-6 text-gray-400"/>
-                        <span className="font-medium">{file.name.split('/').pop()}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleView(file.name)}
-                          className="p-2 text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
-                          title="Xem"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDownload(file.name)}
-                          className="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
-                          title="Tải xuống"
-                        >
-                          <Download className="h-5 w-5"/>
-                        </button>
+                      <Eye className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDownload(file.name)}
+                      className="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+                      title="Tải xuống"
+                    >
+                      <Download className="h-5 w-5"/>
+                    </button>
+                    {role === "admin" && (
+                      <>
                         <button
                           onClick={() => handleShare(file.name)}
                           className="p-2 text-green-500 hover:bg-green-50 rounded-full transition-colors"
@@ -304,83 +334,83 @@ const Report = () => {
                         >
                           <Trash2 className="h-5 w-5"/>
                         </button>
-                      </div>
-                    </div>
-                  ))
-                )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Share Dialog */}
+          <Dialog open={Boolean(shareUrl)} onOpenChange={() => {
+            setShareUrl('');
+            setSelectedFile(null);
+          }}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Chia sẻ {selectedFile?.split('/').pop()}</DialogTitle>
+                <DialogDescription>
+                  Sao chép liên kết bên dưới để chia sẻ tệp. Liên kết này sẽ hết hạn sau 6 giờ.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={shareUrl}
+                  readOnly
+                  className="flex-1 p-2 border rounded bg-gray-50"
+                />
+                <button
+                  onClick={() => copyToClipboard(shareUrl)}
+                  className="p-2 text-primary-600 hover:bg-primary-50 rounded-full transition-colors relative"
+                >
+                  <Copy className="h-5 w-5"/>
+                  {showCopiedMessage && (
+                    <span
+                      className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">
+                      Đã sao chép!
+                    </span>
+                  )}
+                </button>
               </div>
+            </DialogContent>
+          </Dialog>
 
-              {/* Share Dialog */}
-              <Dialog open={Boolean(shareUrl)} onOpenChange={() => {
-                setShareUrl('');
-                setSelectedFile(null);
-              }}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Chia sẻ {selectedFile?.split('/').pop()}</DialogTitle>
-                    <DialogDescription>
-                      Sao chép liên kết bên dưới để chia sẻ tệp. Liên kết này sẽ hết hạn sau 6 giờ.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={shareUrl}
-                      readOnly
-                      className="flex-1 p-2 border rounded bg-gray-50"
-                    />
-                    <button
-                      onClick={() => copyToClipboard(shareUrl)}
-                      className="p-2 text-primary-600 hover:bg-primary-50 rounded-full transition-colors relative"
-                    >
-                      <Copy className="h-5 w-5"/>
-                      {showCopiedMessage && (
-                        <span
-                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">
-                          Đã sao chép!
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+          {/* Delete Confirmation Dialog */}
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Xóa file</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Bạn có chắc chắn muốn xóa tệp này không?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Hủy</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-red-300">
+                  Xóa
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
-              {/* Delete Confirmation Dialog */}
-              <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Xóa file</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Bạn có chắc chắn muốn xóa tệp này không?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Hủy</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-red-300">
-                      Xóa
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
-              <Dialog open={showViewer} onOpenChange={setShowViewer}>
-                <DialogContent className="max-w-5xl h-[90vh]">
-                  {/* <DialogHeader>
-                    <DialogTitle>Xem tệp</DialogTitle>
-                  </DialogHeader> */}
-                  <div className="w-full h-full">
-                    <iframe
-                      src={viewerUrl}
-                      className="w-full h-full"
-                      title="Xem file"
-                    />
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+          <Dialog open={showViewer} onOpenChange={setShowViewer}>
+            <DialogContent className="max-w-5xl h-[90vh]">
+              {/* <DialogHeader>
+                <DialogTitle>Xem tệp</DialogTitle>
+              </DialogHeader> */}
+              <div className="w-full h-full">
+                <iframe
+                  src={viewerUrl}
+                  className="w-full h-full"
+                  title="Xem file"
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardContent>
+      </Card>
     </div>
   )
 }

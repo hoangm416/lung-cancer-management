@@ -17,14 +17,6 @@ const MobileNav = () => {
   const isAuthenticated =
     !!localStorage.getItem("token") || !!sessionStorage.getItem("token");
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("email");
-  //   sessionStorage.removeItem("token");
-  //   sessionStorage.removeItem("email");
-  //   navigate("/login");
-  // };
-
   return (
     <Sheet>
       <SheetTrigger>

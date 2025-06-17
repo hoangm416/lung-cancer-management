@@ -11,7 +11,6 @@ import { loadTSV } from "@/utils/loadTSV";
 import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData";
 import FullscreenContainer from "@/components/FullScreenContainer";
 import ChartDropdown, { ChartOption } from "@/components/ChartDropdown";
-
 const HomePage = () => {
   const { records = [], isLoading } = useGetRecord();
   const [OSdata, setOSData] = useState<any[]>([]);

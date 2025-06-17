@@ -49,7 +49,7 @@ export const useGetResearchById = (id: string) => {
 
 export const useSearchResearch = (query: string) => {
   const searchResearchesRequest = async (): Promise<Research[]> => {
-    const response = await fetch(`${API_BASE_URL}/api/research/search?query=${query}`, {
+    const response = await fetch(`${API_BASE_URL}/api/research/search?detail=${query}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export const useSearchResearch = (query: string) => {
     const result = await response.json();
     return result.data; // Trả về mảng Research[]
   };
-
+  console.log("Query:", query);
   const { data: researches = [], isLoading, isError, error } = useQuery<Research[]>(
     ["searchResearches", query],
     searchResearchesRequest,

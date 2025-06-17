@@ -11,17 +11,6 @@ import { useAddResearch, useSearchResearch, useEditResearch, useDeleteResearch }
 import { Research } from '@/types';
 import { toSlug } from '@/utils/toSlug';
 
-// const toSlug = (title: string) => {
-//   return title
-//     .toLowerCase()
-//     .normalize("NFD")
-//     .replace(/[\u0300-\u036f]/g, "")
-//     .replace(/đ/g, "d")
-//     .replace(/[^a-z0-9\s-]/g, "")
-//     .trim()
-//     .replace(/\s+/g, "-");
-// };
-
 const SearchResearchPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,7 +26,7 @@ const SearchResearchPage = () => {
   const [selectedResearch, setSelectedResearch] = useState<Research | null>(null);
 
   // API hooks
-  const { researches, isLoading, isError, error } = useSearchResearch(searchQuery);
+  const { researches, isLoading, isError, error } = useSearchResearch(keyword);
   const { mutate: addResearch } = useAddResearch();
   const { mutate: editResearch } = useEditResearch();
   const { mutate: deleteResearch, isLoading: isDeleting } = useDeleteResearch();
@@ -89,13 +78,13 @@ const SearchResearchPage = () => {
     }
   };
 
-  useEffect(() => {
-    axios.get<Research[]>("http://localhost:5000/api/research")
-      .then(res => setArticles(res.data))
-      .catch(err => console.error("Lỗi khi tải bài viết:", err));
-  }, []);
-
-  const filtered = articles.filter((item) =>
+  // useEffect(() => {
+  //   axios.get<Research[]>("http://localhost:5000/api/research")
+  //     .then(res => setArticles(res.data))
+  //     .catch(err => console.error("Lỗi khi tải bài viết:", err));
+  // }, []);
+  console.log('researches:', researches, Array.isArray(researches));
+  const filtered = researches.filter((item) =>
     item.title.toLowerCase().includes(keyword.toLowerCase()) ||
     item.description.toLowerCase().includes(keyword.toLowerCase())
   );

@@ -110,7 +110,7 @@ const searchResearches = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        res.json(researches);
+        res.json({ data: researches });
     } catch (error) {
         console.error("Lỗi khi tìm kiếm bài nghiên cứu:", error);
         res.status(500).json({ message: "Lỗi server" });

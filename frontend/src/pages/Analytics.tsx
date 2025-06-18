@@ -1,56 +1,59 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
-const Analytics = () => {
-  // const [userInput, setUserInput] = useState('');
-  // const [botChoice, setBotChoice] = useState('Ollama Chatbot');
-  // const [response, setResponse] = useState('');
+const ChatbotComponent = () => {
+  const chatbotUrl = import.meta.env.VITE_CHATBOT_URL as string;
+  const [error, setError] = useState<string | null>(null);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await axios.post<{ response: string }>('http://localhost:8500/chatbot', {
-  //       user_input: userInput,
-  //       bot_choice: botChoice
-  //     });
-  //     setResponse(res.data.response);
-  //   } catch (error) {
-  //     console.error('Error calling chatbot API:', error);
-  //     setResponse('Error: Could not get response from chatbot');
-  //   }
-  // };
+  useEffect(() => {
+    // Check if CHATBOT_URL is defined
+    if (!chatbotUrl) {
+      setError('URL Chatbot chưa được cấu hình.');
+      return;
+    }
+
+    // Test URL availability
+    const testUrl = async () => {
+      try {
+        // Make a HEAD request to check if URL is reachable
+        const response = await fetch(chatbotUrl, { 
+          method: 'HEAD',
+          mode: 'no-cors' // Use no-cors to handle cross-origin issues
+        });
+        
+        if (!response.ok && response.type !== 'opaque') {
+          throw new Error('Không thể truy cập Chatbot');
+        }
+      } catch (err) {
+        setError('Không thể truy cập chatbot. Vui lòng kiểm tra kết nối hoặc thử lại sau.');
+      }
+    };
+
+    testUrl();
+  }, []);
+
   return (
     <div className="w-full min-h-0">
-      {/* <h2>Ollama Chatbot</h2>
-      <form onSubmit={handleSubmit}>
-          <input
-              type="text"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Nhập câu hỏi của bạn"
-          />
-          <select value={botChoice} onChange={(e) => setBotChoice(e.target.value)}>
-              <option value="Ollama Chatbot">Ollama Chatbot</option>
-              <option value="FAISS Bot">FAISS Bot</option>
-          </select>
-          <button type="submit">Gửi</button>
-      </form>
-      <div>
-        <h3>Phản hồi:</h3>
-        <p>{response}</p>
-      </div> */}
-      {/* <span className="text-2xl font-medium">Phân tích dữ liệu</span> */}
       <div style={{ width: '100%', height: '600px' }}>
-        <iframe
-          src={`${process.env.CHATBOT_URL}`}
-          width="100%"
-          height="100%"
-          style={{ border: 'none' }}
-          title="Chatbot hỗ trợ các câu hỏi về bệnh ung thư phổi"
-        />
+        {error ? (
+          <div className="flex items-center justify-center h-full bg-red-50 border border-destructive rounded">
+            <div className="text-destructive text-center p-4">
+              <p className="font-medium text-2xl">Lỗi tải chatbot</p>
+              <p>{error}</p>
+            </div>
+          </div>
+        ) : (
+          <iframe
+            src={chatbotUrl}
+            width="100%"
+            height="100%"
+            style={{ border: 'none' }}
+            title="Chatbot hỗ trợ các câu hỏi về bệnh ung thư phổi"
+            onError={() => setError("Không thể tải chatbot. Vui lòng thử lại sau.")}
+          />
+        )}
       </div>
     </div>
   );
 };
 
-export default Analytics;
+export default ChatbotComponent;

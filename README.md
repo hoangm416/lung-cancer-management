@@ -6,3 +6,4 @@
 # Chạy chatbot
 1. pip install các thư viện
 2. python app.py
+3. streamlit run app.py

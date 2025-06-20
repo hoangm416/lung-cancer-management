@@ -2,24 +2,36 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Research } from '@/types';
 import { createClient } from "@supabase/supabase-js";
 import { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // import CSS cho React Quill
+import "katex/dist/katex.min.css"; // Cần cho module công thức
+import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+
+// // Đăng ký formula format:
+// import Formula from "quill/formats/formula";
+// Quill.register({
+//   "formats/formula": Formula
+// });
+
+// // Đăng ký module syntax:
+// import Syntax from "quill/modules/syntax";
+// Quill.register("modules/syntax", Syntax);
+const researchSchema = z.object({
+  research_id: z.string()
+    .nonempty({ message: "Mã bài báo không được để trống" })
+    .regex(/^\S+$/, { message: "Mã bài báo không được chứa khoảng trắng" }),
+  detail: z.string().nonempty({ message: "Nội dung không được để trống" }),
+  // ... có thể thêm các trường khác nếu cần
+});
+
+type ResearchFormValues = z.infer<typeof researchSchema>;
 
 type ResearchFormProps = {
   isOpen: boolean;
@@ -35,19 +47,31 @@ const supabase = createClient(
 
 const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
 
-const ResearchForm = ({
-  isOpen,
-  onClose,
-  buttonText = "Lưu",
-  onSubmit,
-}: ResearchFormProps) => {
+const ResearchForm = ({ isOpen, onClose, buttonText = "Lưu", onSubmit }: ResearchFormProps) => {
   const form = useForm<Research>({
+    resolver: zodResolver(researchSchema),
     defaultValues: {
       date: today,
     },
   });
 
   const [uploading, setUploading] = useState(false);
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image", "video"],
+      ["clean"]
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold", "italic", "underline", "strike",
+    "list", "bullet",
+    "link", "image", "video",
+  ];
 
   // Hàm upload ảnh lên Supabase
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +81,7 @@ const ResearchForm = ({
     try {
       const researchId = form.getValues("research_id");
       if (!researchId) {
-        alert("Vui lòng nhập mã nghiên cứu trước khi chọn ảnh!");
+        toast.error("Vui lòng nhập mã bài báo trước khi chọn ảnh!");
         setUploading(false);
         return;
       }
@@ -92,18 +116,18 @@ const ResearchForm = ({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="research_id"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>Mã bài báo</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Nhập mã bài nghiên cứu" required />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -167,6 +191,9 @@ const ResearchForm = ({
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="author"
@@ -174,13 +201,7 @@ const ResearchForm = ({
                     <FormItem>
                       <FormLabel>Nhóm tác giả</FormLabel>
                       <FormControl>
-                        <textarea
-                          {...field}
-                          placeholder="Nhập nhóm tác giả"
-                          required
-                          rows={5}
-                          className="w-full p-2 border border-gray-300 rounded-md"
-                        />
+                        <Input {...field} placeholder="Nhập nhóm tác giả" required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -242,27 +263,34 @@ const ResearchForm = ({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="detail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Chi tiết</FormLabel>
-                      <FormControl>
-                        <textarea
-                          {...field}
-                          placeholder="Nhập chi tiết bài nghiên cứu"
-                          required
-                          rows={20}
-                          className="w-full p-2 border border-gray-300 rounded-md"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="detail"
+              rules={{ required: true }}
+              render={({ field, fieldState }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Nội dung</FormLabel>
+                  <FormControl>
+                    <div className="border border-black rounded-md overflow-hidden">
+                      <ReactQuill
+                        theme="snow"
+                        {...field}
+                        placeholder="Nhập chi tiết nội dung"
+                        modules={modules}
+                        formats={formats}
+                        className="min-h-60 max-h-96"
+                        style={{ height: '100%', overflow: 'auto' }}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+
             <DialogFooter className="flex justify-center">
               <Button type="button" variant="secondary" onClick={onClose}>
                 Hủy

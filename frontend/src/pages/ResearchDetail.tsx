@@ -69,7 +69,7 @@ const ResearchDetail = () => {
       )} */}
       <p className="text-gray-700 whitespace-pre-line text-justify mt-6">{data.detail}</p>
       <p className="text-gray-700 whitespace-pre-line text-left mt-6">
-        Đường dẫn tới bài viết gốc:{" "}
+        Nguồn tham khảo:{" "}
         <a
           href={data.link}
           target="_blank"

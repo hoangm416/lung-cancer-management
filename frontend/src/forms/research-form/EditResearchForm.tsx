@@ -20,6 +20,7 @@ import {
 import { useEffect } from 'react';
 import { Research } from '@/types';
 import { createClient } from "@supabase/supabase-js";
+import { toast } from 'sonner';
 
 
 type EditResearchFormProps = {
@@ -84,9 +85,9 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                   name="research_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mã nghiên cứu</FormLabel>
+                      <FormLabel>Mã bài báo</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập mã bài nghiên cứu" disabled />
+                        <Input {...field} placeholder="Nhập mã bài báo" disabled />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -212,10 +213,9 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file) return;
-                              // Lưu dưới folder mã nghiên cứu
                               const researchId = form.getValues("research_id");
                               if (!researchId) {
-                                alert("Vui lòng nhập mã nghiên cứu trước khi chọn ảnh!");
+                                toast.error("Vui lòng nhập mã bài báo trước khi chọn ảnh!");
                                 return;
                               }
                               const filePath = `${researchId}/${file.name}`;

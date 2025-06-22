@@ -1,5 +1,5 @@
 import { User } from "@/types";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -49,7 +49,7 @@ export interface LoginResponse {
   message: string;
   token: string;
   user: {
-    id: string;
+    _id: string;
     email: string;
     name: string;
     role: string;     
@@ -82,6 +82,7 @@ export const useLoginUser = () => {
     onSuccess: (data) => {
       sessionStorage.setItem("token", data.token);
       sessionStorage.setItem("role", data.user.role);
+      sessionStorage.setItem("_id", data.user._id);
       toast.success(data.message || "Đăng nhập thành công");
     },
     onError: (error: Error) => {
@@ -96,4 +97,80 @@ export const useLoginUser = () => {
     isSuccess,
     error,
   };
+};
+
+export const useGetMyUser = () => {
+  const getMyUserRequest = async (): Promise<User> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Lấy thông tin người dùng thất bại");
+    }
+    return response.json();
+  };
+
+  const { data: currentUser, isLoading, error } = useQuery("fetchCurrentUser", getMyUserRequest);
+
+  if (error) {
+    toast.error(error.toString());
+  }
+
+  return { currentUser, isLoading };
+};
+
+type UpdateMyUserRequest = {
+  name: string;
+  job: string;
+  phone: string;
+  idcard: string;
+};
+
+export const useUpdateMyUser = () => {
+  const updateMyUserRequest = async (formData: UpdateMyUserRequest) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Cập nhật thông tin người dùng thất bại");
+    }
+
+    return response.json();
+  };
+
+  const {
+    mutateAsync: updateUser,
+    isLoading,
+    isSuccess,
+    error,
+    reset,
+  } = useMutation(updateMyUserRequest);
+
+  if (isSuccess) {
+    toast.success("Cập nhật thông tin người dùng thành công");
+  }
+
+  if (error) {
+    toast.error(error.toString());
+    reset();
+  }
+
+  return { updateUser, isLoading };
 };

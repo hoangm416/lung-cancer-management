@@ -73,7 +73,7 @@ const loginUser = async (req: Request, res: Response) => {
       message: "Đăng nhập thành công",
       token,
       user: {
-        id: user._id,
+        _id: user._id,
         email: user.email,
         name: user.name,
         role: user.role,
@@ -85,8 +85,50 @@ const loginUser = async (req: Request, res: Response) => {
   }
 };
 
+const getUser = async (req: Request, res: Response) => {
+  try {
+    const currentUser = await User.findOne({ _id: req.userId });
+    if (!currentUser) {
+      res.status(404).json({ message: "Không tìm thấy người dùng" });
+      return;
+    }
+    res.json(currentUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Đã xảy ra lỗi",
+    });
+  }
+};
+
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { name, job, phone, idcard } = req.body;
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      res.status(404).json({ message: "Không tìm thấy người dùng" });
+      return;
+    }
+
+    user.name = name;
+    user.job = job;
+    user.phone = phone;
+    user.idcard = idcard;
+
+    await user.save();
+
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Lỗi cập nhật hồ sơ" });
+  }
+};
+
 export default {
   createUser,
   loginUser,
+  getUser,
+  updateUser
 }
 

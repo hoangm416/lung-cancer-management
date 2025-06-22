@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/user";
 
+// Khai báo global để thêm các thuộc tính tùy chỉnh vào Request
 declare global {
   namespace Express {
     interface Request {
@@ -11,32 +12,31 @@ declare global {
   }
 }
 
-export const jwtParse = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+// Định nghĩa hàm jwtParse với kiểu rõ ràng
+export const jwtParse = (req: Request, res: Response, next: NextFunction): void => {
   const { authorization } = req.headers;
 
+  // Kiểm tra xem token có tồn tại và đúng định dạng không
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Không có token xác thực" });
+    res.status(401).json({ message: "Không có token xác thực" });
+    return; // Dừng hàm, nhưng không trả về giá trị
   }
 
   const token = authorization.split(" ")[1];
 
   try {
+    // Xác thực token
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
 
-    // Lấy userId và email từ token
+    // Gán thông tin người dùng vào req
     req.userId = decoded.userId;
     req.userEmail = decoded.email;
 
-    // Có thể kiểm tra user tồn tại trong DB nếu muốn
-    // const user = await User.findById(decoded.userId);
-    // if (!user) return res.status(401).json({ message: "User không tồn tại" });
-
+    // Chuyển sang middleware tiếp theo
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Token không hợp lệ" });
+    // Gửi phản hồi lỗi nếu token không hợp lệ
+    res.status(401).json({ message: "Token không hợp lệ" });
+    return; 
   }
 };

@@ -4,17 +4,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// import research1 from "../assets/research1.png";
-// import research2 from "../assets/research2.png";
-// import research3 from "../assets/research3.png";
-
 interface ResearchItem {
   research_id: string;
   type: string;
   title: string;
   date: string;
   author: string;
-  link:string;
+  link: string;
   description: string;
   image: string;
   detail: string;
@@ -57,7 +53,13 @@ const ResearchDetail = () => {
       </Button>
 
       <h2 className="text-4xl font-bold mb-4">{data.title}</h2>
-      <p className="text-sm text-gray-500 mb-4 text-right">📅 {data.date}</p>
+      <p className="text-sm text-gray-500 mb-4 text-right">
+        📅{new Date(data.date).toLocaleDateString('vi-VN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })}
+      </p>
       {/* {data.image && (
         <img
           src={`/images/${data.image}`}
@@ -67,7 +69,7 @@ const ResearchDetail = () => {
       )} */}
       <p className="text-gray-700 whitespace-pre-line text-justify mt-6">{data.detail}</p>
       <p className="text-gray-700 whitespace-pre-line text-left mt-6">
-        Đường dẫn tới bài viết gốc:{" "}
+        Nguồn tham khảo:{" "}
         <a
           href={data.link}
           target="_blank"

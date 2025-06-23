@@ -63,7 +63,7 @@ const SearchResearchForm = ({ query, onChange }: Props) => {
                     {...field}
                     type="text"
                     placeholder="Nhập nội dung tìm kiếm"
-                    className="h-11 w-[216px] border-border pl-10"
+                    className="h-10 w-[216px] border-border pl-10"
                   />
                 </FormControl>
                 <FormMessage />

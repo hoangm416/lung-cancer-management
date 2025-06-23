@@ -9,11 +9,11 @@ import EditRecordForm from '@/forms/lung-record-form/EditRecordForm';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { useGetRecord, useAddRecord, useEditRecord, useDeleteRecord, useSearchRecord } from '@/api/LungRecordApi';
 import { Record } from '@/types';
-// import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 const HealthRecord = () => {
   const navigate = useNavigate();
+  const role = sessionStorage.getItem("role") ?? "user";
 
   // State quản lý dialog và bản ghi được chọn
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -82,7 +82,7 @@ const HealthRecord = () => {
   };
 
   const [searchParams, setSearchParams] = useState<{ [key: string]: string }>({});
-  const { data: searchResults, isLoading: isSearching } = useSearchRecord(searchParams);
+  const { data: searchResults } = useSearchRecord(searchParams);
 
   // Hàm xử lý tìm kiếm
   const handleSearch = (searchKey: string) => {
@@ -156,22 +156,26 @@ const HealthRecord = () => {
           <div className="flex items-center gap-3">
             <LucideEye
               className="h-5 w-5 cursor-pointer text-green-500"
-              onClick={() => handleRowClick(row.original)} // Gọi hàm handleRowClick khi n
+              onClick={() => handleRowClick(row.original)} 
             />
-            <LucidePencil
-              className="h-5 w-5 cursor-pointer text-blue-500"
-              onClick={(event) => {
-                event.stopPropagation();
-                openEditDialog(row.original);
-              }}
-            />
-            <LucideTrash
-              className="h-5 w-5 cursor-pointer text-red-500"
-              onClick={(event) => {
-                event.stopPropagation();
-                openConfirmDialog(row.original);
-              }}
-            />
+            {role === "admin" && (
+              <>
+                <LucidePencil
+                  className="h-5 w-5 cursor-pointer text-blue-500"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    openEditDialog(row.original);
+                  }}
+                />
+                <LucideTrash
+                  className="h-5 w-5 cursor-pointer text-red-500"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    openConfirmDialog(row.original);
+                  }}
+                />
+              </>
+            )}
           </div>
         ),
       }),
@@ -242,13 +246,13 @@ const HealthRecord = () => {
         footer: info => info.column.id,
       }),
     ],
-    [columnHelper]
+    [columnHelper, role]
   );
 
   return (
     <div>
       <div className="flex flex-row items-start justify-between gap-[28px]">
-        <span className="text-2xl font-medium text-text">Bảng dữ liệu bệnh phẩm</span>
+        <span className="text-2xl font-medium">Bảng dữ liệu bệnh phẩm</span>
         <div className="relative">
           <LucideSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <Input
@@ -258,13 +262,15 @@ const HealthRecord = () => {
             onChange={(e) => handleSearch(e.target.value)} // Gọi hàm tìm kiếm khi nhập
           />
         </div>
-        <Button
-          className="flex items-center gap-2 border font-normal"
-          onClick={openAddDialog}
-        >
-          <LucidePlus className="inline-block h-4 w-4" />
-          Thêm bản ghi
-        </Button>
+        {role === "admin" && (
+          <Button
+            className="flex items-center gap-2 border font-normal"
+            onClick={openAddDialog}
+          >
+            <LucidePlus className="inline-block h-4 w-4" />
+            Thêm bản ghi
+          </Button>
+        )}
       </div>
 
       <div className="mt-5 w-full">
@@ -282,52 +288,59 @@ const HealthRecord = () => {
       </div>
 
       {/* Dialog thêm bản ghi */}
-      <RecordForm
-        isOpen={isAddDialogOpen}
-        onClose={closeAddDialog}
-        onSubmit={(data) => {
-          addRecord(data, {
-            onSuccess: () => {
-              closeAddDialog();
-            },
-            onError: () => {
-              alert('Thêm bản ghi thất bại!');
-            },
-          });
-        }}
-      />
-
-      {/* Dialog chỉnh sửa bản ghi */}
-      <EditRecordForm
-        isOpen={isEditDialogOpen}
-        onClose={closeEditDialog}
-        defaultValues={selectedRecord ?? {} as Record}
-        onSubmit={(data) => {
-          editRecord(
-            { sample_id: selectedRecord?.sample_id, updatedRecord: data },
-            {
+      {role === "admin" && (
+        <RecordForm
+          isOpen={isAddDialogOpen}
+          onClose={closeAddDialog}
+          onSubmit={(data) => {
+            addRecord(data, {
               onSuccess: () => {
-                // alert('Cập nhật bản ghi thành công!');
-                closeEditDialog();
+                closeAddDialog();
               },
               onError: (error) => {
-                console.error('Lỗi khi cập nhật bản ghi:', error);
-                // alert('Cập nhật bản ghi thất bại!');
+                console.error('Lỗi khi thêm bản ghi:', error);
               },
-            }
-          );
-        }}
-      />
+            });
+          }}
+        />
+      )}
+      
+
+      {/* Dialog chỉnh sửa bản ghi */}
+      {role === "admin" && (
+        <EditRecordForm
+          isOpen={isEditDialogOpen}
+          onClose={closeEditDialog}
+          defaultValues={selectedRecord ?? {} as Record}
+          onSubmit={(data) => {
+            editRecord(
+              { sample_id: selectedRecord?.sample_id, updatedRecord: data },
+              {
+                onSuccess: () => {
+                  // alert('Cập nhật bản ghi thành công!');
+                  closeEditDialog();
+                },
+                onError: (error) => {
+                  console.error('Lỗi khi cập nhật bản ghi:', error);
+                },
+              }
+            );
+          }}
+        />
+      )}
+      
 
       {/* ConfirmDialog xóa bản ghi */}
-      <ConfirmDialog
-        isOpen={isConfirmOpen}
-        close={closeConfirmDialog}
-        isLoading={isDeleting}
-        handleSubmit={handleDelete}
-        title="Xác nhận xóa"
-        body={`Bạn có chắc chắn muốn xóa bản ghi: ${selectedRecord?.sample_id}?`}
-      />
+      {role === "admin" && (
+        <ConfirmDialog
+          isOpen={isConfirmOpen}
+          close={closeConfirmDialog}
+          isLoading={isDeleting}
+          handleSubmit={handleDelete}
+          title="Xác nhận xóa"
+          body={`Bạn có chắc chắn muốn xóa bản ghi: ${selectedRecord?.sample_id}?`}
+        />
+      )}
     </div>
   );
 };

@@ -1,0 +1,10 @@
+flask
+flask-cors
+streamlit
+langchain_ollama
+langchain-core
+faiss-cpu
+sentence-transformers
+pandas
+numpy
+requests

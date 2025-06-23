@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Research from "../models/research";
 import slugify from "slugify";
+import { toSlug } from "../utils/toSlug";
 
 const getResearchById = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -9,7 +10,7 @@ const getResearchById = async (req: Request, res: Response): Promise<void> => {
             res.status(404).json({ message: "Nghiên cứu không tồn tại" });
             return;
         }
-        res.json(research);
+        res.json({ data: research });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Lỗi server" });
@@ -19,7 +20,7 @@ const getResearchById = async (req: Request, res: Response): Promise<void> => {
 const getAllResearches = async (req: Request, res: Response): Promise<void> => {
     try {
         const researches = await Research.find();
-        res.json(researches);
+        res.json({ data: researches });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Lỗi server" });
@@ -48,7 +49,8 @@ const updateResearch = async (req: Request, res: Response): Promise<void> => {
         // Nếu có trường 'title' thì cập nhật 'slug'
         if (title) {
             updateData.title = title;
-            updateData.slug = slugify(title, { lower: true, strict: true });
+            // updateData.slug = slugify(title, { lower: true, strict: true });
+            updateData.slug = toSlug(title);
         }
 
         const updatedResearch = await Research.findByIdAndUpdate(req.params.id, updateData, { new: true });
@@ -108,7 +110,7 @@ const searchResearches = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        res.json(researches);
+        res.json({ data: researches });
     } catch (error) {
         console.error("Lỗi khi tìm kiếm bài nghiên cứu:", error);
         res.status(500).json({ message: "Lỗi server" });

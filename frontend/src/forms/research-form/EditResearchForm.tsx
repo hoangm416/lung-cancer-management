@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/select";
 import { useEffect } from 'react';
 import { Research } from '@/types';
+import { createClient } from "@supabase/supabase-js";
+import { toast } from 'sonner';
+
 
 type EditResearchFormProps = {
   isOpen: boolean;
@@ -27,9 +30,18 @@ type EditResearchFormProps = {
   onSubmit: (data: Research) => void;
 };
 
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
+
+const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+
 const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditResearchFormProps) => {
   const form = useForm<Research>({
-    defaultValues,
+    defaultValues: {
+      date: today,
+    }
   });
 
   // Reset form values when defaultValues change
@@ -73,9 +85,9 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                   name="research_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mã nghiên cứu</FormLabel>
+                      <FormLabel>Mã bài báo</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập mã bài nghiên cứu" disabled />
+                        <Input {...field} placeholder="Nhập mã bài báo" disabled />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -125,7 +137,13 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                     <FormItem>
                       <FormLabel>Ngày đăng</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập ngày đăng bài nghiên cứu" required />
+                        <Input
+                          {...field}
+                          value={field.value ? (typeof field.value === "string" ? field.value : (field.value as Date).toISOString().slice(0, 10)) : ""}
+                          type="date"
+                          disabled
+                          required
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -183,7 +201,40 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                     <FormItem>
                       <FormLabel>Ảnh minh họa</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập ảnh minh họa" required />
+                        <>
+                          <Input
+                            {...field}
+                            placeholder="Đường dẫn ảnh minh họa"
+                            readOnly
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const researchId = form.getValues("research_id");
+                              if (!researchId) {
+                                toast.error("Vui lòng nhập mã bài báo trước khi chọn ảnh!");
+                                return;
+                              }
+                              const filePath = `${researchId}/${file.name}`;
+                              const { error } = await supabase.storage.from("research").upload(filePath, file, { upsert: true });
+                              if (error) {
+                                alert("Lỗi upload ảnh!");
+                                return;
+                              }
+                              const { data } = supabase.storage.from("research").getPublicUrl(filePath);
+                              if (data?.publicUrl) {
+                                field.onChange(data.publicUrl);
+                              }
+                            }}
+                            className="mt-2"
+                          />
+                          {field.value && (
+                            <img src={field.value} alt="preview" className="mt-2 max-h-32 rounded" />
+                          )}
+                        </>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

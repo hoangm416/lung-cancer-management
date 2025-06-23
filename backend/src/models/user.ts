@@ -4,7 +4,12 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, require: true },
   name: { type: String },
-  // role: { type: String } 
+  phone: { type: String },
+  idcard: { type: String },
+  job: { type: String },
+  hospital: { type: String },  
+  department: { type: String },
+  role: { type: String, default: "user" } 
 });
 
 const User = mongoose.model("User", userSchema);

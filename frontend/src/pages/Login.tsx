@@ -1,10 +1,9 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import LungImage from '@/assets/lung-cancer.png' 
 import { Label } from '@/components/ui/label'
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { useLoginUser } from '@/api/UserApi'
 import { useNavigate } from 'react-router-dom'
@@ -12,41 +11,42 @@ import { useNavigate } from 'react-router-dom'
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPass, setShowPass] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
 
-  const { loginUser, isLoading } = useLoginUser();
+  const { loginUser } = useLoginUser();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     
     try {
+      // Kiểm tra dữ liệu đầu vào
+      console.log('Đang đăng nhập với email:', email);
       const data = await loginUser({ email, password });
+      
+      // Kiểm tra dữ liệu trả về từ server
+      console.log('Nhận được data:', data);
+      
       if (data?.token) {
-        if (rememberMe) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("email", data.user.email);
-        } else {
+        const expireTime = Date.now() + 60 * 60 * 1000; // 1 giờ
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("email", data.user.email);
-        }
+        sessionStorage.setItem("role", data.user.role);
+        sessionStorage.setItem("expireTime", expireTime.toString());
+        
+        // Chuyển hướng sang trang chủ
+        console.log('Chuyển hướng sang trang chủ');
+        navigate("/");
+      } else {
+        console.error('Không nhận được token từ server');
       }
-      setIsLoggedIn(true);
     } catch (err) {
       console.error('Đăng nhập thất bại:', err);
+    } finally {
+      setIsLoading(false);
     }
-  }
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/"); // Điều hướng đến trang chủ
-    }
-  }, [isLoggedIn, navigate]);
-
-  const handleRememberMeChange = () => {
-    setRememberMe(!rememberMe);
-  }
+  };
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
@@ -121,15 +121,18 @@ const Login = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember" checked={rememberMe} onCheckedChange={handleRememberMeChange} />
-                <Label
-                  htmlFor="remember"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
+              {/* <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(val) => {
+                    setRememberMe(val === true)
+                  }}
+                />
+                <Label htmlFor="remember" className="text-sm font-medium leading-none">
                   Nhớ mật khẩu
                 </Label>
-              </div>
+              </div> */}
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? "Đang xử lý" : "Đăng nhập"}
               </Button>

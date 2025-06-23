@@ -1,5 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, DotProps } from 'recharts';
-import { FC } from "react";
+import { useState, useMemo } from "react";
 
 const lineColors = [
   '#1f77b4', // xanh dương
@@ -20,30 +20,29 @@ interface CustomDotProps extends DotProps {
   dataKey?: string;
 }
 
-const CensorDot: FC<CustomDotProps> = ({ cx, cy, payload, dataKey, color }) => {
-  const groupKey = dataKey as string;
-  const eventKey = `${groupKey}_event`;
+// const CensorDot: FC<CustomDotProps> = ({ cx, cy, payload, dataKey, color }) => {
+//   const groupKey = dataKey as string;
+//   const eventKey = `${groupKey}_event`;
 
-  if (payload?.[eventKey] === 0 && cx !== undefined && cy !== undefined) {
-    return (
-      <text
-        x={cx}
-        y={cy}
-        dy={6}
-        textAnchor="middle"
-        fontSize={20}
-        fontWeight="900"
-        fill={color || "black"}
-        pointerEvents="none"
-      >
-        +
-      </text>
-    );
-  }
+//   if (payload?.[eventKey] === 1 && cx !== undefined && cy !== undefined) {
+//     return (
+//       <text
+//         x={cx}
+//         y={cy}
+//         dy={6}
+//         textAnchor="middle"
+//         fontSize={20}
+//         fontWeight="900"
+//         fill={color || "black"}
+//         pointerEvents="none"
+//       >
+//         +
+//       </text>
+//     );
+//   }
 
-  return null;
-};
-
+//   return null;
+// };
 
 interface KMPoint {
   time: number;
@@ -64,11 +63,19 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
   if (!kmcData || kmcData.length === 0) {
     return <div>Loading...</div>;
   }
+  
   const filteredData = kmcData.filter(group => group.group !== "NA");
   // Tính max thời gian và ticks XAxis
-  const allTimes = filteredData.flatMap(group => group.data.map(point => point.time));
-  const maxTime = Math.max(...allTimes);
-  const maxTick = Math.ceil(maxTime / 1000) * 1000;
+  const originalMaxDay = useMemo(() => {
+    const allTimes = filteredData.flatMap(group => group.data.map(point => point.time));
+    return Math.max(...allTimes);
+  }, [filteredData]);
+
+  const [currentDay, setCurrentDay] = useState<number>(originalMaxDay);
+
+  // const allTimes = filteredData.flatMap(group => group.data.map(point => point.time));
+  // const maxTime = Math.max(...allTimes);
+  const maxTick = currentDay;
   const tickValues = Array.from({ length: maxTick / 1000 + 1 }, (_, i) => i * 1000);
 
   // Map nhóm sang màu
@@ -81,18 +88,50 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
   // Gom dữ liệu
   const mergedData = mergeKMData(filteredData);
 
+  //const [maxDay, setMaxDay] = useState(maxTick); // Mặc định hiển thị toàn bộ
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentDay(Number(e.target.value));
+  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Math.max(0, Math.min(originalMaxDay, Number(e.target.value)));
+    setCurrentDay(value);
+  };
+  const filteredMergedData = mergedData.filter((d) => d.time <= currentDay);
+
   return (
     <div className="p-4 rounded-xl shadow w-full">
-      <ResponsiveContainer width="100%" height={600}>
+      <div className="mb-4 flex items-center gap-4">
+        <label className="font-medium">Giới hạn thời gian:</label>
+        <input
+          type="range"
+          min={0}
+          max={originalMaxDay}
+          step={1}
+          value={currentDay}
+          onChange={handleSliderChange}
+          className="w-64"
+        />
+        <input
+          type="number"
+          min={0}
+          max={originalMaxDay}
+          value={currentDay}
+          onChange={handleInputChange}
+          className="w-24 border px-2 py-1 rounded"
+        />
+        <span className="text-sm text-gray-600">/ {originalMaxDay} ngày</span>
+      </div>
+
+      <ResponsiveContainer width="100%" height={450}>
         <LineChart
-          data={mergedData}
+          data={filteredMergedData}
           margin={{ top: 20, right: 30, bottom: 30, left: 30 }}
         >
           <XAxis
             dataKey="time"
             type="number"
             ticks={tickValues}
-            domain={[0, maxTick + 100]}
+            domain={[0, maxTick + 200]}
             interval={0}
             allowDuplicatedCategory={false}
             label={{ value: 'Time (days)', position: 'insideBottom', offset: -20 }}
@@ -103,7 +142,10 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
             tickFormatter={(value) => `${(value * 100)}%`}
             label={{ angle: -90, position: 'insideLeft' }}
           />
-          <Tooltip formatter={(value: number) => `${(value * 100).toFixed(2)}%`} />
+          <Tooltip
+            formatter={(value: number) => `${(value * 100).toFixed(2)}%`}
+            labelFormatter={(label) => `Time: ${label} days`}
+          />
           <Legend
             layout="horizontal"
             align="center"
@@ -144,18 +186,38 @@ export default function KaplanMeierComparisonChart({ kmcData }: KaplanMeierChart
 
           {filteredData.map((group) => {
             const color = groupColorMap.get(group.group) || '#000';
+            const groupSeries = getGroupSeries(group.group, filteredMergedData);
+
             return (
               <Line
                 key={group.group}
                 type="stepAfter"
-                dataKey={group.group}
+                data={groupSeries}
+                dataKey="survival"
+                name={group.group}
                 stroke={color}
                 strokeWidth={1.5}
-                connectNulls
                 isAnimationActive={false}
-                dot={(props) => (
-                  <CensorDot {...props} dataKey={group.group} color={color} />
-                )}
+                dot={(props) => {
+                  if (props.payload.event === 0) {
+                    return (
+                      <text
+                        x={props.cx}
+                        y={props.cy}
+                        dy={6}
+                        textAnchor="middle"
+                        fontSize={20}
+                        fontWeight="900"
+                        fill={color}
+                        pointerEvents="none"
+                      >
+                        +
+                      </text>
+                    );
+                  }
+                  return <g />;
+                }}
+                activeDot={{ r: 4 }}
               />
             );
           })}
@@ -189,13 +251,21 @@ function mergeKMData(kmcData: KMGroup[]) {
         lastSurvival[group.group] = match.survival;
         entry[group.group] = match.survival;
         entry[`${group.group}_event`] = match.event ?? 1;
-        entry.event = match.event ?? 1;
       } else {
         entry[group.group] = lastSurvival[group.group];
-        entry[`${group.group}_event`] = 1;
+        entry[`${group.group}_event`] = undefined;
       }
     });
 
     return entry;
   });
+}
+
+
+function getGroupSeries(group: string, mergedData: any[]): any[] {
+  return mergedData.map((entry) => ({
+    time: entry.time,
+    survival: entry[group],
+    event: entry[`${group}_event`],
+  }));
 }

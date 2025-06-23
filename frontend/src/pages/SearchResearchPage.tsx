@@ -9,27 +9,7 @@ import SearchResearchForm from '@/forms/research-form/SearchResearchForm';
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAddResearch, useSearchResearch, useEditResearch, useDeleteResearch } from '@/api/ResearchApi';
 import { Research } from '@/types';
-
-import research1 from "../assets/research1.png";
-import research2 from "../assets/research2.png";
-import research3 from "../assets/research3.png";
-
-const imageMap: Record<string, string> = {
-  "research1.png": research1,
-  "research2.png": research2,
-  "research3.png": research3,
-};
-
-const toSlug = (title: string) => {
-  return title
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-};
+import { toSlug } from '@/utils/toSlug';
 
 const SearchResearchPage = () => {
   const navigate = useNavigate();
@@ -46,7 +26,7 @@ const SearchResearchPage = () => {
   const [selectedResearch, setSelectedResearch] = useState<Research | null>(null);
 
   // API hooks
-  const { researches, isLoading, isError, error } = useSearchResearch(searchQuery);
+  const { researches, isLoading, isError, error } = useSearchResearch(keyword);
   const { mutate: addResearch } = useAddResearch();
   const { mutate: editResearch } = useEditResearch();
   const { mutate: deleteResearch, isLoading: isDeleting } = useDeleteResearch();
@@ -98,13 +78,13 @@ const SearchResearchPage = () => {
     }
   };
 
-  useEffect(() => {
-    axios.get<Research[]>("http://localhost:5000/api/research")
-      .then(res => setArticles(res.data))
-      .catch(err => console.error("Lỗi khi tải bài viết:", err));
-  }, []);
-
-  const filtered = articles.filter((item) =>
+  // useEffect(() => {
+  //   axios.get<Research[]>("http://localhost:5000/api/research")
+  //     .then(res => setArticles(res.data))
+  //     .catch(err => console.error("Lỗi khi tải bài viết:", err));
+  // }, []);
+  console.log('researches:', researches, Array.isArray(researches));
+  const filtered = researches.filter((item) =>
     item.title.toLowerCase().includes(keyword.toLowerCase()) ||
     item.description.toLowerCase().includes(keyword.toLowerCase())
   );
@@ -139,8 +119,8 @@ const SearchResearchPage = () => {
             >
               <img
                 src={
-                  article.image && imageMap[article.image]
-                    ? imageMap[article.image]
+                  article.image.startsWith("http")
+                    ? article.image 
                     : "https://via.placeholder.com/300x200.png?text=No+Image"
                 }
                 alt={article.title}
@@ -149,7 +129,13 @@ const SearchResearchPage = () => {
               <div className="p-4 w-2/3 flex flex-col justify-between">
               <div>
                 <h1 className="text-lg font-semibold">{article.title}</h1>
-                <p className="text-gray-500 text-sm">📅 {article.date}</p>
+                <p className="text-gray-500 text-sm">
+                  📅{new Date(article.date).toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}
+                </p>
                 <p className="text-gray-600">{article.description}</p>
               </div>
               <div className="mt-3 flex items-center gap-3">

@@ -6,6 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useGetAllResearches = () => {
   const getResearchesRequest = async (): Promise<Research[]> => {
+
     const response = await fetch(`${API_BASE_URL}/api/research`, {
       method: "GET",
       headers: {
@@ -48,7 +49,7 @@ export const useGetResearchById = (id: string) => {
 
 export const useSearchResearch = (query: string) => {
   const searchResearchesRequest = async (): Promise<Research[]> => {
-    const response = await fetch(`${API_BASE_URL}/api/research/search?query=${query}`, {
+    const response = await fetch(`${API_BASE_URL}/api/research/search?detail=${query}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +63,7 @@ export const useSearchResearch = (query: string) => {
     const result = await response.json();
     return result.data; // Trả về mảng Research[]
   };
-
+  console.log("Query:", query);
   const { data: researches = [], isLoading, isError, error } = useQuery<Research[]>(
     ["searchResearches", query],
     searchResearchesRequest,
@@ -85,10 +86,13 @@ export const useAddResearch = () => {
   const queryClient = useQueryClient();
 
   const addResearchRequest = async (newResearch: Research): Promise<Research> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/research`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newResearch),
@@ -103,11 +107,11 @@ export const useAddResearch = () => {
 
   return useMutation(addResearchRequest, {
     onSuccess: () => {
-      toast.success("Thêm nghiên cứu thành công!"); // Hiển thị thông báo thành công
+      toast.success("Thêm bài báo thành công!"); // Hiển thị thông báo thành công
       queryClient.invalidateQueries("fetchResearches"); // Làm mới danh sách Research
     },
     onError: (error: Error) => {
-      toast.error(`Thêm nghiên cứu thất bại: ${error.message}`); // Hiển thị thông báo lỗi
+      toast.error(`Thêm bài báo thất bại: ${error.message}`); // Hiển thị thông báo lỗi
     },
   });
 };
@@ -120,13 +124,16 @@ export const useEditResearch = () => {
     updatedResearch,
   }: {
     _id: string,
-    submitter_id?: string;
+    research_id?: string;
     updatedResearch: Research;
   }): Promise<Research> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/research/${_id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedResearch),
@@ -156,10 +163,13 @@ export const useDeleteResearch = () => {
   const queryClient = useQueryClient();
 
   const deleteResearchRequest = async (_id: string): Promise<void> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/research/${_id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 
 const MobileNavLinks = () => {
@@ -13,9 +13,15 @@ const MobileNavLinks = () => {
 
   return (
     <>
+      <Link
+        to="/profile"
+        className="flex bg-white items-center font-bold hover:text-primary"
+      >
+        Hồ sơ cá nhân
+      </Link>
       <Button
         onClick={handleLogout}
-        className="flex items-center px-3 font-bold hover:bg-hover"
+        className="flex items-center px-3 font-bold hover:bg-hover hover:text-primary"
       >
         Đăng xuất
       </Button>

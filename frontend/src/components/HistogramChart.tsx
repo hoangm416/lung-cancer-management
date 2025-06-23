@@ -35,7 +35,7 @@ const HistogramChart = ({ data }: { data: { name: string; count: number }[] }) =
             top: 20,
             right: 30,
             left: 20,
-            bottom: 15, 
+            bottom: 35, 
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />

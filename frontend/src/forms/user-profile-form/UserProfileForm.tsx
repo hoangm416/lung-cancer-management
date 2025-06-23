@@ -18,10 +18,14 @@ import { useEffect } from "react";
 
 const formSchema = z.object({
   email: z.string().optional(),
-  name: z.string().min(1, "Họ tên là bắt buộc"),
-  addressLine1: z.string().min(1, "Địa chỉ nhà là bắt buộc"),
-  phone: z.string().min(1, "SĐT là bắt buộc"),
-  idCard: z.string().min(1, "Số CCCD là bắt buộc"),
+  name: z.string().min(1, "Vui lòng nhập họ và tên"),
+  job: z.string().min(1, "Vui lòng nhập chức vụ"),
+  phone: z.string()
+    .regex(/^[0-9]{10}$/, "Số điện thoại chỉ gồm 10 chữ số"),
+  idcard: z.string()
+    .regex(/^[0-9]{12}$/, "Số căn cước công dân chỉ gồm 12 chữ số"),
+  hospital: z.string().optional(),
+  department: z.string().optional(),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
@@ -38,7 +42,7 @@ const UserProfileForm = ({
   onSave,
   isLoading,
   currentUser,
-  title = "Hồ sơ người dùng",
+  title = "Thông tin cá nhân",
   buttonText = "Lưu thay đổi",
 }: Props) => {
   const form = useForm<UserFormData>({
@@ -49,98 +53,87 @@ const UserProfileForm = ({
   useEffect(() => {
     form.reset(currentUser);
   }, [currentUser, form]);
-
-  // Hàm xử lý định vị và lấy địa chỉ từ OpenStreetMap (Nominatim)
-  const handleLocation = async () => {
-    if (!navigator.geolocation) {
-      alert("Trình duyệt của bạn không hỗ trợ định vị.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-          );
-          const data = await response.json();
-
-          if (data && data.display_name) {
-            form.setValue("addressLine1", data.display_name);
-          } else {
-            alert("Không thể xác định địa chỉ.");
-          }
-        } catch (error) {
-          console.error("Lỗi khi gọi API Nominatim:", error);
-          alert("Đã xảy ra lỗi khi xác định địa chỉ.");
-        }
-      },
-      (error) => {
-        alert("Không thể truy cập vị trí của bạn.");
-        console.error(error);
-      }
-    );
-  };
-
+  
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSave)}
-        className="space-y-4 bg-gray-50 rounded-lg md:p-10"
+        className="space-y-4 bg-gray-200 rounded-lg md:p-10"
       >
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
           <FormDescription>
-            Cập nhật thông tin cá nhân của bạn tại đây
+            Cập nhật thông tin cá nhân tại đây
           </FormDescription>
         </div>
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} disabled className="bg-white" />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Họ và tên</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="flex flex-col md:flex-row gap-4">
           <FormField
             control={form.control}
-            name="addressLine1"
+            name="email"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Địa chỉ nhà</FormLabel>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} disabled className="bg-white" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Họ và tên</FormLabel>
                 <FormControl>
                   <Input {...field} className="bg-white" />
                 </FormControl>
                 <FormMessage />
-                <Button
-                  type="button"
-                  onClick={handleLocation}
-                  className="mt-2 bg-blue-500"
-                >
-                  Sử dụng định vị
-                </Button>
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4">
+          <FormField
+            control={form.control}
+            name="hospital"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Tên bệnh viện</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="department"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Khoa/Phòng đang làm việc</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4">
+          <FormField
+            control={form.control}
+            name="job"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Chức danh</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white" />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -159,7 +152,7 @@ const UserProfileForm = ({
           />
           <FormField
             control={form.control}
-            name="idCard"
+            name="idcard"
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormLabel>Số căn cước công dân</FormLabel>
@@ -174,7 +167,7 @@ const UserProfileForm = ({
         {isLoading ? (
           <LoadingButton />
         ) : (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-start items-center">
             <Button type="submit" className="bg-primary">
               {buttonText}
             </Button>

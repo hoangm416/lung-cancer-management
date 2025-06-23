@@ -5,9 +5,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { Separator } from "./ui/separator";
 
 const UsernameMenu = () => {
   const navigate = useNavigate();
@@ -30,6 +31,12 @@ const UsernameMenu = () => {
         {email}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem>
+          <Link to="/profile" className="font-bold">
+            Hồ sơ cá nhân
+          </Link>
+        </DropdownMenuItem>
+        <Separator />
         <DropdownMenuItem>
           <Button
             onClick={handleLogout}

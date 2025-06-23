@@ -10,9 +10,8 @@ logger.setLevel(logging.INFO)
 def load_data():
     # Chỉ load survival + demographic data, giả sử chung 1 file
     survival_data = pd.read_csv("../../data/survival.tsv", sep="\t")
-    clinical_data = pd.read_csv("../../data/TCGA-LUAD.clinical.tsv", sep="\t")  # giả định có cột gender.demographic
+    clinical_data = pd.read_csv("../../data/TCGA-LUAD.clinical.tsv", sep="\t")
 
-    # Merge survival và clinical theo cột sample (bệnh nhân)
     merged_data = pd.merge(survival_data, clinical_data[['sample', 'gender.demographic']], on='sample', how='inner')
     
     return merged_data

@@ -9,11 +9,9 @@ logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
 
 def load_data():
-    # Giả sử thông tin tuổi nằm trong file clinical
     survival_data = pd.read_csv("../../data/survival.tsv", sep="\t")
     clinical_data = pd.read_csv("../../data/TCGA-LUAD.clinical.tsv", sep="\t")
 
-    # Kiểm tra tên cột tuổi, có thể là age_at_index.demographic
     if "age_at_index.demographic" in clinical_data.columns:
         age_col = "age_at_index.demographic"
     elif "age_at_diagnosis" in clinical_data.columns:
@@ -21,7 +19,6 @@ def load_data():
     else:
         raise ValueError("Không tìm thấy cột tuổi phù hợp trong dữ liệu clinical")
 
-    # Merge dữ liệu theo 'sample'
     merged = pd.merge(
         survival_data,
         clinical_data[["sample", age_col]],
@@ -29,7 +26,6 @@ def load_data():
         how="inner"
     )
 
-    # Chuyển giá trị tuổi về kiểu số nếu cần
     merged[age_col] = pd.to_numeric(merged[age_col], errors="coerce")
     merged = merged.dropna(subset=[age_col])  # Bỏ các dòng không có tuổi
 

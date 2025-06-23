@@ -84,7 +84,7 @@ def run():
     plt.ylim(bottom=0)
 
     # Save the plot to a file (e.g., as a PNG)
-    plt.savefig('public/plots/kaplan_meier_from_cox.png', format='png')  # You can change the file name and format here
+    plt.savefig('public/data/kaplan_meier_from_cox.png', format='png')  # You can change the file name and format here
     plt.show()
 
 

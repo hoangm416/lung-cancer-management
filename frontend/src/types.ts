@@ -72,5 +72,7 @@ export type User = {
   phone?: string;
   idcard?: string;
   job?: string;
+  hospital?: string;
+  department?: string;
   role?: string;
 }

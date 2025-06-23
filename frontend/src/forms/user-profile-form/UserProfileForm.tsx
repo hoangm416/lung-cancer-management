@@ -20,8 +20,12 @@ const formSchema = z.object({
   email: z.string().optional(),
   name: z.string().min(1, "Vui lòng nhập họ và tên"),
   job: z.string().min(1, "Vui lòng nhập chức vụ"),
-  phone: z.string().min(1, "Vui lòng nhập SĐT"),
-  idcard: z.string().min(1, "Vui lòng nhập số căn cước công dân"),
+  phone: z.string()
+    .regex(/^[0-9]{10}$/, "Số điện thoại chỉ gồm 10 chữ số"),
+  idcard: z.string()
+    .regex(/^[0-9]{12}$/, "Số căn cước công dân chỉ gồm 12 chữ số"),
+  hospital: z.string().optional(),
+  department: z.string().optional(),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
@@ -94,10 +98,38 @@ const UserProfileForm = ({
         <div className="flex flex-col md:flex-row gap-4">
           <FormField
             control={form.control}
+            name="hospital"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Tên bệnh viện</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="department"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Khoa/Phòng đang làm việc</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4">
+          <FormField
+            control={form.control}
             name="job"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Chức vụ</FormLabel>
+                <FormLabel>Chức danh</FormLabel>
                 <FormControl>
                   <Input {...field} className="bg-white" />
                 </FormControl>
@@ -135,7 +167,7 @@ const UserProfileForm = ({
         {isLoading ? (
           <LoadingButton />
         ) : (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-start items-center">
             <Button type="submit" className="bg-primary">
               {buttonText}
             </Button>

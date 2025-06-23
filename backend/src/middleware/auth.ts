@@ -25,17 +25,14 @@ export const jwtParse = (req: Request, res: Response, next: NextFunction): void 
   const token = authorization.split(" ")[1];
 
   try {
-    // Xác thực token
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
 
-    // Gán thông tin người dùng vào req
     req.userId = decoded.userId;
     req.userEmail = decoded.email;
 
     // Chuyển sang middleware tiếp theo
     next();
   } catch (error) {
-    // Gửi phản hồi lỗi nếu token không hợp lệ
     res.status(401).json({ message: "Token không hợp lệ" });
     return; 
   }

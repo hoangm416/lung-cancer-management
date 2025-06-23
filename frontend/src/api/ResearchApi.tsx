@@ -86,10 +86,13 @@ export const useAddResearch = () => {
   const queryClient = useQueryClient();
 
   const addResearchRequest = async (newResearch: Research): Promise<Research> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/research`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newResearch),
@@ -124,10 +127,13 @@ export const useEditResearch = () => {
     research_id?: string;
     updatedResearch: Research;
   }): Promise<Research> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/research/${_id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedResearch),
@@ -157,10 +163,13 @@ export const useDeleteResearch = () => {
   const queryClient = useQueryClient();
 
   const deleteResearchRequest = async (_id: string): Promise<void> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/research/${_id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });

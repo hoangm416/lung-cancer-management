@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String },
   idcard: { type: String },
   job: { type: String },
+  hospital: { type: String },  
+  department: { type: String },
   role: { type: String, default: "user" } 
 });
 

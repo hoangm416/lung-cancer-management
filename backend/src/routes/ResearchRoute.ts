@@ -1,7 +1,7 @@
 import express from "express";
 import { param } from "express-validator";
 import ResearchController from "../controllers/ResearchController";
-import Research from "../models/research";
+import { jwtParse } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -39,21 +39,19 @@ router.get("/", ResearchController.getAllResearches);
 
 router.get("/:type/:slug", ResearchController.getResearchBySlug);
 
-router.post("/", ResearchController.createResearch);
+router.post("/", jwtParse, ResearchController.createResearch);
 
 router.put(
     "/:id",
-    param("id")
-        .isMongoId()
-        .withMessage("ID không hợp lệ"),
+    param("id").isMongoId().withMessage("ID không hợp lệ"),
+    jwtParse,
     ResearchController.updateResearch
 );
 
 router.delete(
     "/:id",
-    param("id")
-        .isMongoId()
-        .withMessage("ID không hợp lệ"),
+    param("id").isMongoId().withMessage("ID không hợp lệ"),
+    jwtParse,
     ResearchController.deleteResearch
 );
 

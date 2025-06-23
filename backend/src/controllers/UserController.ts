@@ -6,6 +6,7 @@ import "dotenv/config";
 
 const saltRounds = 10;
 const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_EXPIRE = process.env.JWT_EXPIRE as string;
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -65,7 +66,7 @@ const loginUser = async (req: Request, res: Response) => {
     const token = jwt.sign (
       { userId: user._id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: JWT_EXPIRE }
     )
 
     // Đăng nhập thành công
@@ -103,7 +104,7 @@ const getUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const { name, job, phone, idcard } = req.body;
+    const { name, job, phone, idcard, hospital, department } = req.body;
     const user = await User.findById(req.userId);
 
     if (!user) {
@@ -115,6 +116,8 @@ const updateUser = async (req: Request, res: Response) => {
     user.job = job;
     user.phone = phone;
     user.idcard = idcard;
+    user.hospital = hospital;
+    user.department = department;
 
     await user.save();
 

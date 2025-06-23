@@ -34,10 +34,13 @@ export const useAddRecord = () => {
   const queryClient = useQueryClient();
 
   const addRecordRequest = async (newRecord: Record): Promise<Record> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/record`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newRecord),
@@ -71,9 +74,13 @@ export const useEditRecord = () => {
     sample_id?: string;
     updatedRecord: Record;
   }): Promise<Record> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
+
     const response = await fetch(`${API_BASE_URL}/api/record/${sample_id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedRecord),
@@ -103,10 +110,13 @@ export const useDeleteRecord = () => {
   const queryClient = useQueryClient();
 
   const deleteRecordRequest = async (sample_id: string): Promise<void> => {
+    const token = sessionStorage.getItem('token');
+    if (!token) throw new Error("Thiếu token");
 
     const response = await fetch(`${API_BASE_URL}/api/record/${sample_id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });

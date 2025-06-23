@@ -132,6 +132,8 @@ type UpdateMyUserRequest = {
   job: string;
   phone: string;
   idcard: string;
+  hospital: string;
+  department: string;
 };
 
 export const useUpdateMyUser = () => {
@@ -149,7 +151,7 @@ export const useUpdateMyUser = () => {
     });
 
     if (!response.ok) {
-      throw new Error("Cập nhật thông tin người dùng thất bại");
+      throw new Error("Cập nhật thông tin thất bại");
     }
 
     return response.json();
@@ -164,7 +166,7 @@ export const useUpdateMyUser = () => {
   } = useMutation(updateMyUserRequest);
 
   if (isSuccess) {
-    toast.success("Cập nhật thông tin người dùng thành công");
+    toast.success("Cập nhật thông tin thành công");
   }
 
   if (error) {

@@ -139,11 +139,14 @@ const searchRecord = async (req: Request, res: Response) => {
     const searchCriteria: any = {};
 
     // Lấy các tham số tìm kiếm từ query
-    const { sample_id } = req.query;
+    const { sample_id, cancer_type } = req.query;
 
     // Thêm các điều kiện tìm kiếm nếu có
     if (sample_id) {
       searchCriteria.sample_id = { $regex: sample_id, $options: 'i' };
+    }
+    if (cancer_type) {
+      searchCriteria.cancer_type = { $regex: cancer_type, $options: 'i' };
     }
 
     // Tìm kiếm Record dựa trên các tiêu chí

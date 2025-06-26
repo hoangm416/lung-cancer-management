@@ -262,6 +262,9 @@ const HealthRecord = () => {
             onChange={(e) => handleSearch(e.target.value)} // Gọi hàm tìm kiếm khi nhập
           />
         </div>
+        {/* <div className="relative">
+          
+        </div> */}
         {role === "admin" && (
           <Button
             className="flex items-center gap-2 border font-normal"

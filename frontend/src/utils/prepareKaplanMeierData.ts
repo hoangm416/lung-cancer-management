@@ -9,8 +9,11 @@ export function prepareOSGroupedData(
   const raw: Record<string, { time: number; event: number }[]> = {};
 
   data.forEach((rec) => {
-    const time = parseFloat(rec["OS.time"]);
-    const event = parseInt(rec["OS"]); // 1 = tử vong, 0 = còn sống (censored)
+    const time = parseInt((rec["overall_survival_months"] * 30.4).toFixed(0)); // Chuyển đổi tháng sang ngày
+    let event // 1 = tử vong, 0 = còn sống (censored)
+    if (rec["vital_status"]?.toLowerCase() === "dead") {
+      event = 1;
+    } else event = 0
     if (isNaN(time) || isNaN(event)) return;
 
     /* Xác định khóa nhóm */
@@ -138,8 +141,11 @@ export function prepareOSUngroupedData(
   const raw: { time: number; event: number }[] = [];
 
   data.forEach((rec) => {
-    const time = parseFloat(rec["OS.time"]);
-    const event = parseInt(rec["OS"]); // 1 = tử vong, 0 = còn sống (censored)
+    const time = parseInt((rec["overall_survival_months"] * 30.4).toFixed(0)); // Chuyển đổi tháng sang ngày
+    let event // 1 = tử vong, 0 = còn sống (censored)
+    if (rec["vital_status"]?.toLowerCase() === "dead") {
+      event = 1;
+    } else event = 0
     if (isNaN(time) || isNaN(event)) return;
     raw.push({ time, event });
   });
@@ -176,7 +182,7 @@ export function prepareDFSData(
     // Quy đổi status → event: "Recurred/Progressed" → event = 1, còn lại = 0
     const event = status.includes("recurred") || status.includes("progressed") ? 1 : 0;
     
-    raw.push({ time: parseInt((time * 30).toFixed(0)), event }); // Chuyển đổi tháng sang ngày
+    raw.push({ time: parseInt((time * 30.4).toFixed(0)), event }); // Chuyển đổi tháng sang ngày
   });
 
   // Sắp xếp tăng dần theo thời gian

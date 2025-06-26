@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import PieChartComponent from "@/components/PieChartComponent";
 import HistogramChart from "@/components/HistogramChart";
 import BarChartComponent from "@/components/BarChartComponent";
-//import KaplanMeierChart from "@/components/KaplanMeierChart";
+// import KaplanMeierChart from "@/components/KaplanMeierChart";
 import KaplanMeierComparisonChart from "@/components/KaplanMeierComparisonChart";
 import { useGetRecord } from "@/api/LungRecordApi";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +14,7 @@ import ChartDropdown, { ChartOption } from "@/components/ChartDropdown";
 const HomePage = () => {
   const { records = [], isLoading } = useGetRecord();
   const [OSdata, setOSData] = useState<any[]>([]);
-  const [mergedData, setMergedData] = useState<any[]>([]);
+  // const [mergedData, setMergedData] = useState<any[]>([]);
 
   const defaultCharts = [
     { value: "gender", label: "Tỷ lệ giới tính" },
@@ -47,22 +47,21 @@ const HomePage = () => {
       .catch((err) => console.error("❌ Failed to load TSV:", err));
   }, []);
 
-  useEffect(() => {
-    if (OSdata.length > 0 && records.length > 0) {
-      const osMap = new Map(OSdata.map(os => [os._PATIENT, os]));
-      const merged = records
-        .map((rec) => {
-          const match = osMap.get(rec.patient_id);
-          if (match) {
-            return { ...rec, ...match };          }
-          return null;
-        })
-        .filter(Boolean);
+  // useEffect(() => {
+  //   if (OSdata.length > 0 && records.length > 0) {
+  //     const osMap = new Map(OSdata.map(os => [os._PATIENT, os]));
+  //     const merged = records
+  //       .map((rec) => {
+  //         const match = osMap.get(rec.patient_id);
+  //         if (match) {
+  //           return { ...rec, ...match };          }
+  //         return null;
+  //       })
+  //       .filter(Boolean);
 
-      setMergedData(merged as any[]);
-      //console.log("🔗 Merged filtered data:", merged);
-    }
-  }, [OSdata, records]);
+  //     setMergedData(merged as any[]);
+  //   }
+  // }, [OSdata, records]);
 
   // Xử lý dữ liệu biểu đồ tỷ lệ giới tính
   const genderCounts = records.reduce(
@@ -275,21 +274,21 @@ const HomePage = () => {
     });
 
   // Dữ liệu sống sót Kaplan-Meier tổng thể
-  const kmOverall = useMemo(() => mergedData.length > 0 ? prepareOSUngroupedData(mergedData) : [], [mergedData]);
+  const kmOverall = useMemo(() => records.length > 0 ? prepareOSUngroupedData(records) : [], [records]);
   // Dữ liệu DFS
   const kmDFS = useMemo(() => records.length > 0 ? prepareDFSData(records) : [], [records]);
   // OS theo giới tính
-  const KMCbySex = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "sex") : [], [mergedData]);
+  const KMCbySex = useMemo(() => records.length > 0 ? prepareOSGroupedData(records, "sex") : [], [records]);
   // OS theo nhóm tuổi
-  const KMCbyAgeGroup = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "diagnosis_age", [0, 15, 24, 44, 60]) : [], [mergedData]);
+  const KMCbyAgeGroup = useMemo(() => records.length > 0 ? prepareOSGroupedData(records, "diagnosis_age", [0, 15, 24, 44, 60]) : [], [records]);
   // OS theo giai đoạn
-  const KMCbyStage = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "ajcc_pathologic_stage") : [], [mergedData]);
+  const KMCbyStage = useMemo(() => records.length > 0 ? prepareOSGroupedData(records, "ajcc_pathologic_stage") : [], [records]);
   // OS theo AJCC-M
-  const KMCbyMStage = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "ajcc_pathologic_m") : [], [mergedData]);
+  const KMCbyMStage = useMemo(() => records.length > 0 ? prepareOSGroupedData(records, "ajcc_pathologic_m") : [], [records]);
   // OS theo AJCC-N
-  const KMCbyNStage = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "ajcc_pathologic_n") : [], [mergedData]);
+  const KMCbyNStage = useMemo(() => records.length > 0 ? prepareOSGroupedData(records, "ajcc_pathologic_n") : [], [records]);
   // OS theo AJCC-T
-  const KMCbyTStage = useMemo(() => mergedData.length > 0 ? prepareOSGroupedData(mergedData, "ajcc_pathologic_t") : [], [mergedData]);
+  const KMCbyTStage = useMemo(() => records.length > 0 ? prepareOSGroupedData(records, "ajcc_pathologic_t") : [], [records]);
 
   if (isLoading) return <div>Đang tải dữ liệu...</div>;
 

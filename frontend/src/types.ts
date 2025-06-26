@@ -65,8 +65,14 @@ export type Research = {
 };
 
 export type User = {
+  _id?: string;
   email: string;
   password: string;
   name?: string;
+  phone?: string;
+  idcard?: string;
+  job?: string;
+  hospital?: string;
+  department?: string;
   role?: string;
 }

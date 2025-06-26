@@ -34,9 +34,26 @@ services:
     ports:
       - "5173:5173"
 
+  chatbot:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./ollama:/app
+      - ollama_modules:/app/ollama_modules
+    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      - api                      # nếu chatbot cần gọi API
+    networks:
+      - lung-cancer-app
+    ports:
+      - "8501:8501"
+
 volumes:
   backend_node_modules:
   frontend_node_modules:
+  ollama_modules:
 
 networks:
   lung-cancer-app:

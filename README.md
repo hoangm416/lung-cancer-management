@@ -4,5 +4,6 @@
 3. Trở về thư mục gốc: cd ..
 
 # Chạy chatbot
-1. pip install các thư viện
-2. python app.py
+1. cd ollama
+2. pip install -r requirements.txt
+3. streamlit run app.py

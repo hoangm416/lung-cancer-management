@@ -1,5 +1,4 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, DotProps } from 'recharts';
-import { FC } from "react";
 import { useState, useMemo } from "react";
 
 const lineColors = [

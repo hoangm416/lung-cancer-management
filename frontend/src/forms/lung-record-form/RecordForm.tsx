@@ -2,22 +2,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Record } from '@/types';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const recordSchema = z.object({
+  patient_id: z.string()
+    .nonempty({ message: "Mã bệnh nhân không được để trống" })
+    .regex(/^\S+$/, { message: "Mã bệnh nhân không được chứa khoảng trắng" }),
+  sample_id: z.string()
+    .nonempty({ message: "Mã mẫu bệnh phẩm không được để trống" })
+    .regex(/^\S+$/, { message: "Mã mẫu bệnh phẩm không được chứa khoảng trắng" })
+});
 
 type RecordFormProps = {
   isOpen: boolean;
@@ -26,13 +24,9 @@ type RecordFormProps = {
   onSubmit: (data: Record) => void; // Hàm xử lý submit
 };
 
-const RecordForm = ({
-  isOpen,
-  onClose,
-  buttonText = "Lưu",
-  onSubmit,
-}: RecordFormProps) => {
+const RecordForm = ({ isOpen, onClose, buttonText = "Lưu", onSubmit }: RecordFormProps) => {
   const form = useForm<Record>({
+    resolver: zodResolver(recordSchema),
     defaultValues: {},
   });
 
@@ -47,7 +41,7 @@ const RecordForm = ({
       <DialogContent className="max-w-5xl max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl text-primary">
-            Thêm mới bản ghi y tế
+            Thêm mới dữ liệu y sinh
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -58,26 +52,26 @@ const RecordForm = ({
                 <FormField
                   control={form.control}
                   name="patient_id"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>Mã bệnh nhân</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Nhập mã bệnh nhân" required />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
                   name="sample_id"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>Mã mẫu bệnh phẩm</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Nhập mã mẫu bệnh phẩm" required />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -114,7 +108,18 @@ const RecordForm = ({
                     <FormItem>
                       <FormLabel>Loại ung thư</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="" />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn loại ung thư" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="luad">Lung Adenocarcinoma</SelectItem>
+                            <SelectItem value="lusc">Lung Squamous Cell Carcinoma</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -207,7 +212,18 @@ const RecordForm = ({
                     <FormItem>
                       <FormLabel>Có phải mẫu FFPE không?</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="" />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Không" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="yes">Có</SelectItem>
+                            <SelectItem value="no">Không</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -406,9 +422,20 @@ const RecordForm = ({
                   name="prior_malignancy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Có tiền sử ung thư ác tính trước đó</FormLabel>
+                      <FormLabel>Có tiền sử ung thư ác tính trước đó không?</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="" />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Không" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="yes">Có</SelectItem>
+                            <SelectItem value="no">Không</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -419,9 +446,20 @@ const RecordForm = ({
                   name="prior_treatment"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Đã từng điều trị trước đó</FormLabel>
+                      <FormLabel>Đã từng điều trị trước đó không?</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="" />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Không" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="yes">Có</SelectItem>
+                            <SelectItem value="no">Không</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -435,25 +473,22 @@ const RecordForm = ({
                     <FormItem>
                       <FormLabel>Loại mẫu</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="" />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Primary solid Tumor" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pst">Primary solid Tumor</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                {/* <FormField
-                  control={form.control}
-                  name="sex"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Giới tính</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <FormField
                   control={form.control}
                   name="sex"

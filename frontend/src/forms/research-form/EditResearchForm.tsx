@@ -10,22 +10,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from "@/components/ui/select";
-import { useEffect } from 'react';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useEffect, useState } from 'react';
 import { Research } from '@/types';
 import { createClient } from "@supabase/supabase-js";
 import { toast } from 'sonner';
-
+import { useGetMyUser } from '@/api/UserApi';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // import CSS cho React Quill
+import "katex/dist/katex.min.css"; // Cần cho module công thức
 
 type EditResearchFormProps = {
   isOpen: boolean;
   onClose: () => void;
+  buttonText?: string;
   defaultValues: Research;
   onSubmit: (data: Research) => void;
 };
@@ -37,11 +35,14 @@ const supabase = createClient(
 
 const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
 
-const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditResearchFormProps) => {
+const EditResearchForm = ({ isOpen, onClose, buttonText = "Cập nhật", defaultValues, onSubmit }: EditResearchFormProps) => {
+  const { currentUser } = useGetMyUser();
+  
   const form = useForm<Research>({
     defaultValues: {
       date: today,
-    }
+      author: currentUser?.name || "",
+    },
   });
 
   // Reset form values when defaultValues change
@@ -56,6 +57,51 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
   //   form.reset();
   //   onClose();
   // };
+
+  const [uploading, setUploading] = useState(false);
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image", "video"],
+      ["clean"]
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold", "italic", "underline", "strike",
+    "list", "bullet",
+    "link", "image", "video",
+  ];
+
+  // Hàm upload ảnh lên Supabase
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const researchId = form.getValues("research_id");
+      if (!researchId) {
+        toast.error("Vui lòng nhập mã bài báo trước khi chọn ảnh!");
+        setUploading(false);
+        return;
+      }
+      const filePath = `${researchId}/${file.name}`;
+      const { error } = await supabase.storage.from("research").upload(filePath, file);
+      if (error) throw error;
+      const { data } = supabase.storage.from("research").getPublicUrl(filePath);
+      if (data?.publicUrl) {
+        form.setValue("image", data.publicUrl);
+      }
+    } catch (err) {
+      alert("Lỗi upload ảnh!");
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (data: Research) => {
     const payload = {
@@ -72,24 +118,23 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
       <DialogContent className="max-w-5xl max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl text-primary">
-            Chỉnh sửa bài nghiên cứu
+            Chỉnh sửa bài báo khoa học
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 gap-6">
-              
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="research_id"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>Mã bài báo</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập mã bài báo" disabled />
+                        <Input {...field} disabled />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -108,8 +153,12 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                             <SelectValue placeholder="Chọn loại bài nghiên cứu" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="popular">Khoa học thường thức</SelectItem>
-                            <SelectItem value="specialize">Khoa học chuyên sâu</SelectItem>
+                            <SelectItem value="popular" className="cursor-pointer hover:bg-hover">
+                              Khoa học thường thức
+                            </SelectItem>
+                            <SelectItem value="specialize" className="cursor-pointer hover:bg-hover">
+                              Khoa học chuyên sâu
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -135,13 +184,12 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                   name="date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ngày đăng</FormLabel>
+                      <FormLabel>Ngày cập nhật</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           value={field.value ? (typeof field.value === "string" ? field.value : (field.value as Date).toISOString().slice(0, 10)) : ""}
                           type="date"
-                          disabled
                           required
                         />
                       </FormControl>
@@ -149,6 +197,9 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="author"
@@ -156,13 +207,7 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                     <FormItem>
                       <FormLabel>Nhóm tác giả</FormLabel>
                       <FormControl>
-                        <textarea
-                          {...field}
-                          placeholder="Nhập nhóm tác giả"
-                          required
-                          rows={5}
-                          className="w-full p-2 border border-gray-300 rounded-md"
-                        />
+                        <Input {...field} placeholder="Nhập nhóm tác giả" required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -210,27 +255,11 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              const researchId = form.getValues("research_id");
-                              if (!researchId) {
-                                toast.error("Vui lòng nhập mã bài báo trước khi chọn ảnh!");
-                                return;
-                              }
-                              const filePath = `${researchId}/${file.name}`;
-                              const { error } = await supabase.storage.from("research").upload(filePath, file, { upsert: true });
-                              if (error) {
-                                alert("Lỗi upload ảnh!");
-                                return;
-                              }
-                              const { data } = supabase.storage.from("research").getPublicUrl(filePath);
-                              if (data?.publicUrl) {
-                                field.onChange(data.publicUrl);
-                              }
-                            }}
+                            onChange={handleImageUpload}
+                            disabled={uploading}
                             className="mt-2"
                           />
+                          {uploading && <span className="text-xs text-gray-500">Đang tải ảnh...</span>}
                           {field.value && (
                             <img src={field.value} alt="preview" className="mt-2 max-h-32 rounded" />
                           )}
@@ -240,32 +269,39 @@ const EditResearchForm = ({ isOpen, onClose, defaultValues, onSubmit }: EditRese
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="detail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Chi tiết</FormLabel>
-                      <FormControl>
-                        <textarea
-                          {...field}
-                          placeholder="Nhập chi tiết bài nghiên cứu"
-                          required
-                          rows={20}
-                          className="w-full p-2 border border-gray-300 rounded-md"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="detail"
+              rules={{ required: true }}
+              render={({ field, fieldState }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Nội dung</FormLabel>
+                  <FormControl>
+                    <div className="border border-black rounded-md overflow-hidden">
+                      <ReactQuill
+                        theme="snow"
+                        {...field}
+                        placeholder="Nhập chi tiết nội dung"
+                        modules={modules}
+                        formats={formats}
+                        className="min-h-60 max-h-96"
+                        style={{ height: '100%', overflow: 'auto' }}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+
             <DialogFooter className="flex justify-center">
               <Button type="button" variant="secondary" onClick={onClose}>
                 Hủy
               </Button>
-              <Button type="submit">Cập nhật</Button>
+              <Button type="submit">{buttonText}</Button>
             </DialogFooter>
           </form>
         </Form>

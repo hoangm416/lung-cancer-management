@@ -24,15 +24,15 @@ const formSchema = z.object({
     .regex(/^[0-9]{10}$/, "Số điện thoại chỉ gồm 10 chữ số"),
   idcard: z.string()
     .regex(/^[0-9]{12}$/, "Số căn cước công dân chỉ gồm 12 chữ số"),
-  hospital: z.string().optional(),
-  department: z.string().optional(),
+  hospital: z.string().min(1, "Vui lòng nhập tên bệnh viện"),
+  department: z.string().min(1, "Vui lòng nhập phòng ban"),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
 
 type Props = {
   currentUser: User;
-  onSave: (userProfileData: UserFormData) => void;
+  onSave: (userProfileData: UserFormData) => void | Promise<void>;
   isLoading: boolean;
   title?: string;
   buttonText?: string;

@@ -13,6 +13,7 @@ import "katex/dist/katex.min.css"; // Cần cho module công thức
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
+import { useGetMyUser } from "@/api/UserApi";
 
 // // Đăng ký formula format:
 // import Formula from "quill/formats/formula";
@@ -31,7 +32,7 @@ const researchSchema = z.object({
   // ... có thể thêm các trường khác nếu cần
 });
 
-type ResearchFormValues = z.infer<typeof researchSchema>;
+// type ResearchFormValues = z.infer<typeof researchSchema>;
 
 type ResearchFormProps = {
   isOpen: boolean;
@@ -48,10 +49,13 @@ const supabase = createClient(
 const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
 
 const ResearchForm = ({ isOpen, onClose, buttonText = "Lưu", onSubmit }: ResearchFormProps) => {
+  const { currentUser } = useGetMyUser();
+
   const form = useForm<Research>({
     resolver: zodResolver(researchSchema),
     defaultValues: {
       date: today,
+      author: currentUser?.name || "",
     },
   });
 
@@ -125,7 +129,7 @@ const ResearchForm = ({ isOpen, onClose, buttonText = "Lưu", onSubmit }: Resear
                     <FormItem>
                       <FormLabel>Mã bài báo</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nhập mã bài nghiên cứu" required />
+                        <Input {...field} placeholder="Nhập mã bài báo" required />
                       </FormControl>
                       <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>

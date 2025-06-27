@@ -5,12 +5,13 @@ import BarChartComponent from "@/components/BarChartComponent";
 // import KaplanMeierChart from "@/components/KaplanMeierChart";
 import KaplanMeierComparisonChart from "@/components/KaplanMeierComparisonChart";
 import { useGetRecord } from "@/api/LungRecordApi";
-import { Card, CardContent } from "@/components/ui/card";
+// import { Card, CardContent } from "@/components/ui/card";
 import KaplanMeierImage from "@/assets/kaplan_meier_curve.png";
 import { loadTSV } from "@/utils/loadTSV";
 import { prepareOSUngroupedData, prepareDFSData, prepareOSGroupedData } from "@/utils/prepareKaplanMeierData";
 import FullscreenContainer from "@/components/FullScreenContainer";
 import ChartDropdown, { ChartOption } from "@/components/ChartDropdown";
+
 const HomePage = () => {
   const { records = [], isLoading } = useGetRecord();
   const [OSdata, setOSData] = useState<any[]>([]);
@@ -303,7 +304,6 @@ const HomePage = () => {
           onChange={(selected) => setSelectedCharts(selected)}
         />
       </div>
-
       
 
       {/* Nhóm biểu đồ nhỏ: 3 cột (Pie, Histogram) */}
@@ -409,7 +409,7 @@ const HomePage = () => {
                 return (
                   <div key="km_dfs" className="flex flex-col items-center justify-center border border-black rounded pt-2">
                     <FullscreenContainer>
-                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: DFS</h2>
+                      <h2 className="text-xl font-semibold mb-4 mt-4">Biểu đồ Kaplan-Meier: Sống sót không bệnh (DFS)</h2>
                       <KaplanMeierComparisonChart kmcData={kmDFS} />
                     </FullscreenContainer>
                   </div>
@@ -475,7 +475,7 @@ const HomePage = () => {
                       <h2 className="text-xl font-semibold items-center justify-center mb-4">Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard</h2>
                       <img
                         title ="Biểu đồ Kaplan-Meier: OS với mô hình Cox-Hazard"
-                        src="http://localhost:5000/static/plots/kaplan_meier_from_cox.png"
+                        src={KaplanMeierImage}
                         alt="Kaplan-Meier: OS from Cox"
                       />
                     </FullscreenContainer>

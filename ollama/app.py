@@ -30,28 +30,28 @@ if prompt := st.chat_input("Hi, enter your question"):
         st.markdown(prompt)
 
     # (Ollama hoặc FAISS)
-    bot_choice = st.radio(
-        "Choose the bot to get the answer from:",
-        ('Ollama Chatbot', 'FAISS Bot')
-    )
+    # bot_choice = st.radio(
+    #     "Choose the bot to get the answer from:",
+    #     ('Ollama Chatbot', 'FAISS Bot')
+    # )
 
-    if bot_choice == 'Ollama Chatbot':
-        bot_response = chat_handler(prompt)
-        chat_collection.insert_one({"role": "assistant", "content": bot_response, "timestamp": datetime.now()})
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
-        with st.chat_message("assistant"):
-            st.markdown(bot_response)
+    # if bot_choice == 'Ollama Chatbot':
+    bot_response = chat_handler(prompt)
+    chat_collection.insert_one({"role": "assistant", "content": bot_response, "timestamp": datetime.now()})
+    st.session_state.messages.append({"role": "assistant", "content": bot_response})
+    with st.chat_message("assistant"):
+        st.markdown(bot_response)
 
-    elif bot_choice == 'FAISS Bot':
-        faiss_answer = find_answer(prompt)
-        if faiss_answer:
-            chat_collection.insert_one({"role": "assistant", "content": faiss_answer, "timestamp": datetime.now()})
-            st.session_state.messages.append({"role": "assistant", "content": faiss_answer})
-            with st.chat_message("assistant"):
-                st.write(faiss_answer)
-        else:
-            error_msg = "Sorry, I couldn't find an answer."
-            chat_collection.insert_one({"role": "assistant", "content": error_msg, "timestamp": datetime.now()})
-            st.session_state.messages.append({"role": "assistant", "content": error_msg})
-            with st.chat_message("assistant"):
-                st.write(error_msg)
+    # elif bot_choice == 'FAISS Bot':
+    #     faiss_answer = find_answer(prompt)
+    #     if faiss_answer:
+    #         chat_collection.insert_one({"role": "assistant", "content": faiss_answer, "timestamp": datetime.now()})
+    #         st.session_state.messages.append({"role": "assistant", "content": faiss_answer})
+    #         with st.chat_message("assistant"):
+    #             st.write(faiss_answer)
+    #     else:
+    #         error_msg = "Sorry, I couldn't find an answer."
+    #         chat_collection.insert_one({"role": "assistant", "content": error_msg, "timestamp": datetime.now()})
+    #         st.session_state.messages.append({"role": "assistant", "content": error_msg})
+    #         with st.chat_message("assistant"):
+    #             st.write(error_msg)

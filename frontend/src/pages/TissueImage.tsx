@@ -211,14 +211,19 @@ const TissueImage = () => {
     }
   };
 
-  const ImageViewer = ({ viewerUrl, onClose }) => {
+  interface ImageViewerProps {
+    viewerUrl: string;
+    onClose: () => void
+  }
+
+  const ImageViewer = ({ viewerUrl }: ImageViewerProps) => {
     const [scale, setScale] = useState(1); // Quản lý mức độ phóng đại
     const [isFullScreen, setIsFullScreen] = useState(false); // Trạng thái toàn màn hình
-    const imageRef = useRef(null); // Tham chiếu đến ảnh
-    const [position, setPosition] = useState({x: 0, y: 0});
+    const imageRef = useRef<HTMLImageElement>(null); // Tham chiếu đến ảnh với kiểu HTMLImageElement
+    const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 }); // Vị trí chuột ban đầu
-    const containerRef = useRef(null); // Tham chiếu đến khung chứa
+    const containerRef = useRef<HTMLDivElement>(null); // Tham chiếu đến khung chứa với kiểu HTMLDivElement
 
     // Hàm phóng to
     const zoomIn = () => setScale(prev => Math.min(prev + 0.1, 3));
@@ -227,7 +232,7 @@ const TissueImage = () => {
     // Chuyển đổi chế độ toàn màn hình
     const toggleFullScreen = () => {
       if (!isFullScreen) {
-        imageRef?.current?.requestFullscreen();
+        imageRef.current?.requestFullscreen();
       } else {
         document.exitFullscreen();
       }
@@ -236,7 +241,7 @@ const TissueImage = () => {
 
     // Xử lý sự kiện cuộn chuột
     useEffect(() => {
-      const handleWheel = (e) => {
+      const handleWheel = (e: WheelEvent) => {
         if (isFullScreen) {
           e.preventDefault();
           if (e.deltaY < 0) zoomIn(); // Cuộn lên để phóng to
@@ -251,44 +256,44 @@ const TissueImage = () => {
     }, [isFullScreen]);
 
     // Bắt đầu kéo ảnh
-  const startDrag = (e) => {
-    if (scale > 1) { // Chỉ kéo khi ảnh phóng to
-      setIsDragging(true);
-      setStartPos({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y,
-      });
-    }
-  };
+    const startDrag = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (scale > 1) { // Chỉ kéo khi ảnh phóng to
+        setIsDragging(true);
+        setStartPos({
+          x: e.clientX - position.x,
+          y: e.clientY - position.y,
+        });
+      }
+    };
 
-  // Di chuyển ảnh
-  const dragImage = (e) => {
-    if (isDragging) {
-      const newX = e.clientX - startPos.x;
-      const newY = e.clientY - startPos.y;
-      setPosition({ x: newX, y: newY });
-    }
-  };
+    // Di chuyển ảnh
+    const dragImage = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isDragging) {
+        const newX = e.clientX - startPos.x;
+        const newY = e.clientY - startPos.y;
+        setPosition({ x: newX, y: newY });
+      }
+    };
 
-  // Dừng kéo
-  const stopDrag = () => setIsDragging(false);
+    // Dừng kéo
+    const stopDrag = () => setIsDragging(false);
 
-  // Căn giữa ảnh khi tải xong
-  useEffect(() => {
-    const image = imageRef.current;
-    const container = containerRef.current;
+    // Căn giữa ảnh khi tải xong
+    useEffect(() => {
+      const image = imageRef.current;
+      const container = containerRef.current;
 
-    if (image && container) {
-      const imgRect = image.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
+      if (image && container) {
+        const imgRect = image.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
 
-      // Tính toán vị trí để căn giữa
-      const centerX = (containerRect.width - imgRect.width) / 2;
-      const centerY = (containerRect.height - imgRect.height) / 2;
+        // Tính toán vị trí để căn giữa
+        const centerX = (containerRect.width - imgRect.width) / 2;
+        const centerY = (containerRect.height - imgRect.height) / 2;
 
-      setPosition({ x: centerX, y: centerY });
-    }
-  }, [viewerUrl, scale]);
+        setPosition({ x: centerX, y: centerY });
+      }
+    }, [viewerUrl, scale]);
 
     return (
       <div 
@@ -321,7 +326,6 @@ const TissueImage = () => {
             ref={imageRef}
             src={viewerUrl}
             alt="Xem ảnh"
-            // className="object-contain"
             style={{
               transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
               cursor: scale > 1 ? 'grab' : 'default', // Đổi con trỏ khi kéo được
@@ -329,16 +333,18 @@ const TissueImage = () => {
             }}
             onLoad={() => {
               // Cập nhật vị trí khi ảnh tải xong
-              const imgRect = imageRef?.current?.getBoundingClientRect();
-              const containerRect = containerRef?.current?.getBoundingClientRect();
-              const centerX = (containerRect.width - imgRect.width) / 2;
-              const centerY = (containerRect.height - imgRect.height) / 2;
-              setPosition({ x: centerX, y: centerY });
+              const imgRect = imageRef.current?.getBoundingClientRect();
+              const containerRect = containerRef.current?.getBoundingClientRect();
+              if (imgRect && containerRect) {
+                const centerX = (containerRect.width - imgRect.width) / 2;
+                const centerY = (containerRect.height - imgRect.height) / 2;
+                setPosition({ x: centerX, y: centerY });
+              }
             }}
           />
         </div>
       </div>
-    );
+  );
   };
 
   return (

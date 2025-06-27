@@ -15,7 +15,7 @@ const chartOptions: ChartOption[] = [
   { label: "Mô tả khối u (T) theo AJCC", value: "ajcc_t" },
   { label: "Mutation Count", value: "mutation_count" },
   { label: "Kaplan-Meier: Sống sót tổng thể (OS)", value: "km_overall" },
-  { label: "Kaplan-Meier: DFS", value: "km_dfs" },
+  { label: "Kaplan-Meier: Sống sót không bệnh (DFS)", value: "km_dfs" },
   { label: "Kaplan-Meier: OS theo giới tính", value: "km_sex"},
   { label: "Kaplan-Meier: OS theo độ tuổi", value: "km_age" },
   { label: "Kaplan-Meier: OS theo giai đoạn AJCC", value: "km_ajcc" },

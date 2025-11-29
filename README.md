@@ -7,3 +7,6 @@
 1. cd ollama
 2. pip install -r requirements.txt
 3. streamlit run app.py
+
+# Báo cáo đồ án
+[Xem báo cáo PDF](./20215584_vuongkimhoang_datn.pdf)
